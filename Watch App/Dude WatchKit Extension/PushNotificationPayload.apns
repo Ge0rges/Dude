@@ -1,0 +1,23 @@
+{
+  "aps": {
+    "alert": {
+      "body": "Dude, Ge0rges's current location.",
+      "title": "DUDE"
+    },
+    
+    "sound": "default",
+    "category": "mainCategory"
+  },
+  
+  "longitude" : "-74.00594130000002",
+  "latitude" : "40.7127837",
+  
+  "username": "Ge0rges",
+  
+  "WatchKit Simulator Actions": [
+      {
+            "title": "Reply",
+            "identifier": "REPLY_ACTION"
+      }
+  ]
+}

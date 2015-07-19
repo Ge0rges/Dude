@@ -1,0 +1,35 @@
+PODS:
+  - APAddressBook (0.1.8):
+    - APAddressBook/Core (= 0.1.8)
+  - APAddressBook/Core (0.1.8)
+  - Bolts/Tasks (1.1.5)
+  - JFMinimalNotifications (0.0.4)
+  - Parse (1.7.4):
+    - Bolts/Tasks (>= 1.1.5)
+  - Reachability (3.2)
+  - SDWebImage (3.7.2):
+    - SDWebImage/Core (= 3.7.2)
+  - SDWebImage/Core (3.7.2)
+  - SOMotionDetector (1.0.1)
+  - SWTableViewCell (0.3.7)
+
+DEPENDENCIES:
+  - APAddressBook
+  - JFMinimalNotifications
+  - Parse
+  - Reachability
+  - SDWebImage
+  - SOMotionDetector
+  - SWTableViewCell
+
+SPEC CHECKSUMS:
+  APAddressBook: cfff7589c5f9ee6ddbe23636b7723c2dbfa60a47
+  Bolts: aac24961496d504aa56fc267cde95162a71bac39
+  JFMinimalNotifications: 2ab80fde6b8588a338be68d61763cc2085f8c938
+  Parse: 6ca512c6e860b66739c95151b2f76ac4712b7842
+  Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
+  SDWebImage: 71b7cdc1d1721d6a82ed62889030225f2c249e29
+  SOMotionDetector: 9e7975e25ccdaa3f108db510153f92ef433767da
+  SWTableViewCell: 2a94aadc9d47b2b611fa064566bf57948b95b579
+
+COCOAPODS: 0.37.2
