@@ -40,7 +40,7 @@
 		</dict>
 	</dict>
 	<key>NSContactsUsageDescription</key>
-	<string>Dude uses your contacts to automatically add them to the sending list. They are not sent or shared with anyone.</string>
+	<string>Dude automatically adds all your friends who also have Dude to your contact list  so you can easily start shairng with them! The contacts emails are securely stored on our servers.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Dude uses your location to generate context-aware messages as well as share it with your friends when you send it to them. We don't log or store your location after we've used it.</string>
 	<key>UILaunchStoryboardName</key>

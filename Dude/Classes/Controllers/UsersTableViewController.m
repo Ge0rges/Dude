@@ -310,7 +310,7 @@
     }
     
   } else if (indexPath.section == 1) {
-    if (!contacts) {
+    if (!contacts || contacts.count == 0) {
       [self addContact];
       
     } else {
@@ -342,13 +342,31 @@
       textField.hidden = YES;
       textField.enabled = NO;
       
+      if (![self validateEmail:textField.text withAlert:YES]) return;
+      
       BOOL success = [[ContactsManager sharedInstance] addContactEmail:textField.text sendNotification:YES];
       
       if (!success) {
-        UIAlertController *errorAC = [UIAlertController alertControllerWithTitle:@"Could not find contact" message:nil preferredStyle:UIAlertControllerStyleAlert];
+        NSString *message = [NSString stringWithFormat:@"%@ is not associated with a Dude account.", textField.text];
+        
+        UIAlertController *errorAC = [UIAlertController alertControllerWithTitle:@"Contact not Found" message:message preferredStyle:UIAlertControllerStyleAlert];
         
         [errorAC addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleCancel handler:NULL]];
-        
+        [errorAC addAction:[UIAlertAction actionWithTitle:@"Dudify Them" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+          NSString *shareString = @"Hey Dude! Come join me on Dude so we can send cool smart messages each to other.";
+          UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:@[shareString, @"Download Dude at http://bit.ly/1I0MQbN"] applicationActivities:nil];
+          
+          activityVC.excludedActivityTypes = @[
+                                               UIActivityTypePrint, UIActivityTypeCopyToPasteboard, UIActivityTypeAssignToContact,
+                                               UIActivityTypeSaveToCameraRoll, UIActivityTypeAddToReadingList, UIActivityTypeAirDrop,
+                                               UIActivityTypeAirDrop, UIActivityTypePostToFacebook, UIActivityTypePostToFlickr,
+                                               UIActivityTypePostToTencentWeibo, UIActivityTypePostToTwitter, UIActivityTypePostToVimeo,
+                                               UIActivityTypePostToWeibo
+                                               ];
+          
+          [self presentViewController:activityVC animated:YES completion:NULL];
+        }]];
+
         [self presentViewController:errorAC animated:YES completion:NULL];
       }
       
@@ -379,6 +397,48 @@
     messagesTableVC.selectedTwitter = selectedTwitter;
     messagesTableVC.selectedFacebook = selectedFacebook;
   }
+}
+
+#pragma mark - Email Validation
+- (BOOL)validateEmail:(NSString*)email withAlert:(BOOL)showAlert {
+  BOOL validEmail = ([self validateEmailWithRFC:email] && [self validateEmailFormat:email]);
+  
+  if (!validEmail && showAlert) {
+    NSString *title = @"Email Invalid";
+    NSString *message = @"This email appears to be invalid, please check for typos.";
+    
+    UIAlertController *ac = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
+    [ac addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleCancel handler:NULL]];
+    
+    [self presentViewController:ac animated:YES completion:NULL];
+    
+    return NO;
+  }
+  
+  return YES;
+}
+
+- (BOOL)validateEmailFormat:(NSString*)candidate {
+  NSString *emailRegex = @"[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}";
+  NSPredicate *emailTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", emailRegex];
+  
+  return [emailTest evaluateWithObject:candidate];
+}
+
+// Complete RFC 2822 verification
+- (BOOL)validateEmailWithRFC:(NSString*)candidate {
+  NSString *emailRegex =
+  @"(?:[a-z0-9!#$%\\&'*+/=?\\^_`{|}~-]+(?:\\.[a-z0-9!#$%\\&'*+/=?\\^_`{|}"
+  @"~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\"
+  @"x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-"
+  @"z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5"
+  @"]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-"
+  @"9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21"
+  @"-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])";
+  
+  NSPredicate *emailTest = [NSPredicate predicateWithFormat:@"SELF MATCHES[c] %@", emailRegex];
+  
+  return [emailTest evaluateWithObject:candidate];
 }
 
 #pragma mark - Status Bar

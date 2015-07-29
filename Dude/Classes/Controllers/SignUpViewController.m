@@ -40,7 +40,6 @@
 - (void)viewDidLoad {
   [super viewDidLoad];
   // Do any additional setup after loading the view.
-  self.textField.delegate = self;
   
   // Update status bar
   [self setNeedsStatusBarAppearanceUpdate];
@@ -84,11 +83,15 @@
     
     [self.acceptedButton setHidden:YES];
     [self.deniedButton setHidden:YES];
+    
+    // Alloc the temp user
+    user = [DUser object];
   }];
 }
 
 - (IBAction)confirmed:(UIButton*)sender {
-  if ([self.textField.text isEqualToString:@""] || [self.textField.text isEqualToString:@" "] || self.textField.text == nil) return;
+  if (([self.textField.text isEqualToString:@""] || [self.textField.text isEqualToString:@" "] || self.textField.text == nil) && self.confirmButton.tag < 3) return;
+  
   switch (self.confirmButton.tag) {
     case -1: {
       self.logIn = YES;
@@ -127,7 +130,7 @@
           logInEmail = [self.textField.text.lowercaseString copy];
           
           [self.textField setPlaceholder:@"Password"];
-          [self.statusLabel setText:@"Pick a 6 characters long super secret password."];
+          [self.statusLabel setText:@"Pick super secret password (>6 characters)."];
           
           [self.textField resignFirstResponder];
           [self.textField setKeyboardType:UIKeyboardTypeDefault];
@@ -174,11 +177,11 @@
                   [ac addAction:[UIAlertAction actionWithTitle:@"OK"style:UIAlertActionStyleDefault handler:NULL]];
                   
                   [self presentViewController:ac animated:YES completion:NULL];
+                  
+                  // Reset the log in process
+                  self.confirmButton.tag = -1;
+                  [self confirmed:self.confirmButton];
                 }
-                
-                // Reset the log in process
-                self.confirmButton.tag = -1;
-                [self confirmed:self.confirmButton];
               }];
             }];
           }];
@@ -259,12 +262,13 @@
               [self dismissViewControllerAnimated:YES completion:NULL];
             
             } else {
-              UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"Could not sign up" message:error.localizedFailureReason preferredStyle:UIAlertControllerStyleAlert];
-              
-              [ac addAction:[UIAlertAction actionWithTitle:@"OK"style:UIAlertActionStyleDefault handler:NULL]];
-              
-              [self presentViewController:ac animated:YES completion:^{
-                [self dismissViewControllerAnimated:YES completion:NULL];
+              NSLog(@"couldnt sign up with error: %@", error);
+              [self dismissViewControllerAnimated:NO completion:^{
+                UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"Could not Sign Up" message:error.localizedFailureReason preferredStyle:UIAlertControllerStyleAlert];
+                
+                [ac addAction:[UIAlertAction actionWithTitle:@"OK"style:UIAlertActionStyleDefault handler:NULL]];
+                
+                [self presentViewController:ac animated:YES completion:NULL];
               }];
             }
           }];
@@ -336,7 +340,7 @@
   selectedImageFile = [PFFile fileWithData:UIImageJPEGRepresentation(thumbnailImage, 1)];
   
   if (selectedImageFile) {
-    [[DUser currentUser] setProfileImage:selectedImageFile];
+    [user setProfileImage:selectedImageFile];
     [self confirmed:self.confirmButton];
     
   } else {
@@ -362,26 +366,7 @@
     
     NSArray *usersWithEmail = [userQuery findObjects];
     
-    taken = (!usersWithEmail) ? NO : YES;
-
-    if (usersWithEmail.count > 1) {// Database checking
-      dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
-        // Notify Devs
-        PFQuery *innerQuery = [DUser query];
-        [innerQuery whereKey:@"email" equalTo:@"ge0rges@ge0rges.com"];
-        
-        // Build the query for this user's installation
-        PFQuery *query = [PFInstallation query];
-        [query whereKey:@"user" matchesQuery:innerQuery];
-        
-        // Send the notification.
-        PFPush *push = [PFPush push];
-        [push setMessage:[NSString stringWithFormat:@"Dude, query for %@ returned count > 1", self.textField.text.lowercaseString]];
-        [push setQuery:query];
-        
-        [push sendPushInBackground];
-      });
-    }
+    taken = (!usersWithEmail || usersWithEmail.count == 0) ? NO : YES;
   }
   
   if ((!validEmail || taken) && showAlert) {

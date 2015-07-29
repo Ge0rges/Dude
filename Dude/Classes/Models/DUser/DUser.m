@@ -240,7 +240,7 @@ NSString* const FullNameKey = @"fullName";
 + (void)showSocialServicesAlert {
 #ifndef TARGET_IS_EXTENSION
   dispatch_async(dispatch_get_main_queue(), ^{
-    UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"Error" message:@"You must allow access to social accounts to be able to use them." preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"Error" message:@"You must be logegd in to either Twitter or Facebook and allow access to social accounts to be able to use them within the app." preferredStyle:UIAlertControllerStyleAlert];
     
     if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]]) {
       [ac addAction:[UIAlertAction actionWithTitle:@"Open Preferences" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
