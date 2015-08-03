@@ -19,8 +19,8 @@
   PFFile *selectedImageFile;
   DUser *user;
   
-  NSString *logInEmail;
-  NSString *logInPassword;
+  __block NSString *logInEmail;
+  __block NSString *logInPassword;
 }
 
 @property (nonatomic) BOOL logIn;
@@ -43,6 +43,9 @@
   
   // Update status bar
   [self setNeedsStatusBarAppearanceUpdate];
+  
+  // Alloc & Init the temp user
+  user = [DUser object];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -71,26 +74,23 @@
     [self.deniedButton setAlpha:0.0];
     
     [self.textField setAlpha:1.0];
-   
+    
     self.confirmButton.tag++;
     
     [self.statusLabel setText:@"OK, first type in your full name."];
     
     [self.confirmButton setTitle:@"Next" forState:UIControlStateNormal];
-
+    
   } completion:^(BOOL finished) {
     [self.textField becomeFirstResponder];
     
     [self.acceptedButton setHidden:YES];
     [self.deniedButton setHidden:YES];
-    
-    // Alloc the temp user
-    user = [DUser object];
   }];
 }
 
 - (IBAction)confirmed:(UIButton*)sender {
-  if (([self.textField.text isEqualToString:@""] || [self.textField.text isEqualToString:@" "] || self.textField.text == nil) && self.confirmButton.tag < 3) return;
+  if ((([self.textField.text isEqualToString:@""] || [self.textField.text isEqualToString:@" "] || self.textField.text == nil) && self.confirmButton.tag != -1) && self.confirmButton.tag < 4) return;
   
   switch (self.confirmButton.tag) {
     case -1: {
@@ -99,20 +99,20 @@
       [UIView animateWithDuration:0.3 animations:^{
         [self.acceptedButton setAlpha:0.0];
         [self.deniedButton setAlpha:0.0];
-
+        
         [self.confirmButton setTitle:@"Next" forState:UIControlStateNormal];
         
         [self.textField setAlpha:1.0];
         
         [self.statusLabel setText:@"OK, first type in your email."];
-
+        
       } completion:^(BOOL finished) {
         [self.textField becomeFirstResponder];
         
         [self.acceptedButton setHidden:YES];
         [self.deniedButton setHidden:YES];
       }];
-
+      
       [self.statusLabel setText:@"First, enter your email."];
       [self.textField setPlaceholder:@"thedude@getdudeapp.com"];
       
@@ -139,10 +139,10 @@
           
         } else {
           self.textField.text = @"";
-
+          
           return;// We are still on the same step
         }
-
+        
       } else {
         [user setFullName:self.textField.text];
         
@@ -166,14 +166,16 @@
           [self.statusLabel setText:@"Which social accounts do you use?"];
           [self.textField setPlaceholder:@"Twitter or Facebook? Both!"];
           
+          [self.textField resignFirstResponder];
+          
           [user selectFacebookAccountWithCompletion:^(BOOL success, ACAccount *account, NSError *error) {
             [user selectTwitterAccountWithCompletion:^(BOOL success, ACAccount *account, NSError *error) {
               [self.statusLabel setText:@"We're done! Saving your data..."];
               [self.textField setPlaceholder:@"FINALLY!"];
               
-              [DUser logInWithUsernameInBackground:logInEmail password:logInPassword block:^(PFUser *__nullable __strong user, NSError *__nullable __strong error) {
+              [DUser logInWithUsernameInBackground:logInEmail password:logInPassword block:^(PFUser *__nullable __strong loggedInUser, NSError *__nullable __strong error) {
                 if (error) {
-                  UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"Could not log in" message:error.localizedFailureReason preferredStyle:UIAlertControllerStyleAlert];
+                  UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"Could not Log In" message:@"Dude, the password or email you entered is incorrect or non associated with an account." preferredStyle:UIAlertControllerStyleAlert];
                   [ac addAction:[UIAlertAction actionWithTitle:@"OK"style:UIAlertActionStyleDefault handler:NULL]];
                   
                   [self presentViewController:ac animated:YES completion:NULL];
@@ -181,6 +183,9 @@
                   // Reset the log in process
                   self.confirmButton.tag = -1;
                   [self confirmed:self.confirmButton];
+                  
+                } else if (loggedInUser) {
+                  [self dismissViewControllerAnimated:YES completion:NULL];
                 }
               }];
             }];
@@ -202,6 +207,7 @@
         if ([self validateEmailWithAlert:YES]) {
           [user setUsername:self.textField.text.lowercaseString];
           [user setEmail:self.textField.text.lowercaseString];
+          
           [self.textField setPlaceholder:@"Password"];
           [self.statusLabel setText:@"Pick a 6 characters long super secret password."];
           
@@ -212,7 +218,7 @@
           
         } else {
           self.textField.text = @"";
-
+          
           return;// We are still on the same step
         }
       }
@@ -239,9 +245,9 @@
         [ac addAction:[UIAlertAction actionWithTitle:@"OK"style:UIAlertActionStyleDefault handler:NULL]];
         
         [self presentViewController:ac animated:YES completion:NULL];
-
+        
         self.textField.text = @"";
-
+        
         return;// We are still on the same step
       }
       
@@ -251,16 +257,16 @@
     case 3: {
       [self.statusLabel setText:@"Which social accounts do you use?"];
       [self.textField setPlaceholder:@"Twitter or Facebook? Both!"];
-            
+      
       [user selectFacebookAccountWithCompletion:^(BOOL success, ACAccount *account, NSError *error) {
         [user selectTwitterAccountWithCompletion:^(BOOL success, ACAccount *account, NSError *error) {
           [self.statusLabel setText:@"We're done! Saving your data..."];
           [self.textField setPlaceholder:@"FINALLY!"];
-
+          
           [user signUpInBackgroundWithBlock:^(BOOL succeeded, NSError * __nullable error) {
             if (succeeded && !error) {
               [self dismissViewControllerAnimated:YES completion:NULL];
-            
+              
             } else {
               NSLog(@"couldnt sign up with error: %@", error);
               [self dismissViewControllerAnimated:NO completion:^{
@@ -318,7 +324,7 @@
 - (void)selectPicture {
   UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@"Now, choose a profile picture from"
                                                            delegate:self
-                                                  cancelButtonTitle:@"Cancel"
+                                                  cancelButtonTitle:nil
                                              destructiveButtonTitle:nil
                                                   otherButtonTitles:@"Camera", @"Library", nil];
   [actionSheet showInView:self.view];
@@ -359,8 +365,8 @@
   BOOL validEmail = ([self validateEmailWithRFC:self.textField.text] && [self validateEmailFormat:self.textField.text]);
   
   BOOL taken = NO;
-
-  if (validEmail) {
+  
+  if (validEmail && !self.logIn) {
     PFQuery *userQuery = [DUser query];
     [userQuery whereKey:@"email" equalTo:self.textField.text.lowercaseString];
     
@@ -372,7 +378,7 @@
   if ((!validEmail || taken) && showAlert) {
     NSString *title = (taken) ? @"Email Taken" : @"Email Invalid";
     NSString *message = (taken) ? @"This email is already associated with an account." : @"This email appears to be invalid, please check for typos.";
-
+    
     UIAlertController *ac = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
     [ac addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleCancel handler:NULL]];
     

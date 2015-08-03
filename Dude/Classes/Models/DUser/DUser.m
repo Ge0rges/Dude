@@ -135,7 +135,7 @@ NSString* const FullNameKey = @"fullName";
     if(granted) {
       // Check if there are any Twitter accounts
       NSArray *accounts = [accountStore accountsWithAccountType:twitterTypeAccount];
-      if (!accounts) {
+      if (!accounts || accounts.count == 0) {
         completion(YES, nil, [NSError errorWithDomain:@"NoAccounts" code:404 userInfo:nil]);
         return;
       }
@@ -168,14 +168,13 @@ NSString* const FullNameKey = @"fullName";
                             ACFacebookAppIdKey: @"374328212774790",
                             ACFacebookPermissionsKey: @[@"user_birthday", @"publish_actions"],
                             ACFacebookAudienceKey: ACFacebookAudienceEveryone
-              
                             };
   
   [accountStore requestAccessToAccountsWithType:facebookTypeAccount options:options completion:^(BOOL granted, NSError *error) {
     if(granted) {
       // Check if there are any Faceboook accounts
       NSArray *accounts = [accountStore accountsWithAccountType:facebookTypeAccount];
-      if (!accounts) {
+      if (!accounts || accounts.count == 0) {
         completion(YES, nil, [NSError errorWithDomain:@"NoAccounts" code:404 userInfo:nil]);
         return;
       }
@@ -240,7 +239,7 @@ NSString* const FullNameKey = @"fullName";
 + (void)showSocialServicesAlert {
 #ifndef TARGET_IS_EXTENSION
   dispatch_async(dispatch_get_main_queue(), ^{
-    UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"Error" message:@"You must be logegd in to either Twitter or Facebook and allow access to social accounts to be able to use them within the app." preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"Error" message:@"You must be logged in to either Twitter or Facebook and allow access to social accounts to be able to use them within the app." preferredStyle:UIAlertControllerStyleAlert];
     
     if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]]) {
       [ac addAction:[UIAlertAction actionWithTitle:@"Open Preferences" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
