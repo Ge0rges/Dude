@@ -21,7 +21,7 @@
     UIImage *image = [self imageWithAlpha];
     
     // Build a context that's the same dimensions as the new size
-    CGContextRef context = CGBitmapContextCreate(NULL,
+    CGContextRef context = CGBitmapContextCreate(nil,
                                                  image.size.width,
                                                  image.size.height,
                                                  CGImageGetBitsPerComponent(image.CGImage),

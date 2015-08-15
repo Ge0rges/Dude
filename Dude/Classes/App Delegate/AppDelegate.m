@@ -185,7 +185,7 @@
   MessagesTableViewController *messagesTableVC = [self.window.rootViewController.storyboard instantiateViewControllerWithIdentifier:@"MessagesTable"];
   messagesTableVC.selectedUsers = @[sender];
   
-  [self.window.rootViewController.navigationController presentViewController:messagesTableVC animated:YES completion:NULL];
+  [self.window.rootViewController.navigationController presentViewController:messagesTableVC animated:YES completion:nil];
   
   completionHandler();
 }
@@ -216,7 +216,7 @@
     
     DUser *receiver = (DUser*)[senderQuery getFirstObject];
     
-    [[MessagesManager sharedInstance] sendMessage:userInfo[@"message"] toContact:receiver withCompletion:NULL];
+    [[MessagesManager sharedInstance] sendMessage:userInfo[@"message"] toContact:receiver withCompletion:nil];
   }
 }
 

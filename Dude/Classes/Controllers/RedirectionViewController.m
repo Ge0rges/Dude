@@ -61,9 +61,10 @@
     
   } else if ([networkReachability isReachable]) {
     // Show the log/sign in view
-    SignUpViewController *signUpViewController = (SignUpViewController*)[self.storyboard instantiateViewControllerWithIdentifier:@"SignUpVC"];
-    
-    [self presentViewController:signUpViewController animated:YES completion:NULL];
+    [self performSegueWithIdentifier:@"welcomeSegue" sender:nil];
+  
+  } else {
+    [self checkConnection:nil];
   }
 }
 
@@ -78,9 +79,11 @@
       internetConnectionViewIsShowing = YES;
     }];
     
-  } else if (internetConnectionViewIsShowing && !networkReachability.isReachable){
-    internetConnectionViewIsShowing = NO;
-    [self.navigationController popViewControllerAnimated:YES];
+  } else if (internetConnectionViewIsShowing && networkReachability.isReachable){
+    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    [appDelegate.visibleViewController dismissViewControllerAnimated:YES completion:^{
+      internetConnectionViewIsShowing = NO;
+    }];
   }
 }
 

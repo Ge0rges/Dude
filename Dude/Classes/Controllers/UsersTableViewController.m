@@ -335,7 +335,7 @@
   dispatch_async(dispatch_get_main_queue(), ^{
     UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"Enter Contact Email" message:nil preferredStyle:UIAlertControllerStyleAlert];
     
-    [ac addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:NULL]];
+    [ac addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
     
     [ac addAction:[UIAlertAction actionWithTitle:@"Done" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
       UITextField *textField = (UITextField*)ac.textFields[0];
@@ -351,7 +351,7 @@
         
         UIAlertController *errorAC = [UIAlertController alertControllerWithTitle:@"Contact not Found" message:message preferredStyle:UIAlertControllerStyleAlert];
         
-        [errorAC addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleCancel handler:NULL]];
+        [errorAC addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleCancel handler:nil]];
         [errorAC addAction:[UIAlertAction actionWithTitle:@"Dudify Them" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
           NSString *shareString = @"Hey Dude! Come join me on Dude so we can send cool smart messages each to other.";
           UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:@[shareString, @"Download Dude at http://bit.ly/1I0MQbN"] applicationActivities:nil];
@@ -364,10 +364,10 @@
                                                UIActivityTypePostToWeibo
                                                ];
           
-          [self presentViewController:activityVC animated:YES completion:NULL];
+          [self presentViewController:activityVC animated:YES completion:nil];
         }]];
 
-        [self presentViewController:errorAC animated:YES completion:NULL];
+        [self presentViewController:errorAC animated:YES completion:nil];
       }
       
         [self performSelectorInBackground:@selector(reloadData) withObject:nil];
@@ -378,7 +378,7 @@
       [textField setKeyboardType:UIKeyboardTypeEmailAddress];
     }];
     
-    [self presentViewController:ac animated:YES completion:NULL];
+    [self presentViewController:ac animated:YES completion:nil];
   });
 }
 
@@ -408,9 +408,9 @@
     NSString *message = @"This email appears to be invalid, please check for typos.";
     
     UIAlertController *ac = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
-    [ac addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleCancel handler:NULL]];
+    [ac addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleCancel handler:nil]];
     
-    [self presentViewController:ac animated:YES completion:NULL];
+    [self presentViewController:ac animated:YES completion:nil];
     
     return NO;
   }

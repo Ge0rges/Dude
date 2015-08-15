@@ -81,7 +81,7 @@
   [WKInterfaceController openParentApplication:@{WatchRequestSendMessages: WatchRequestsKey,
                                                  @"message": messages[rowIndex],
                                                  @"senderEmail": selectedUser.email}
-                                         reply:NULL];
+                                         reply:nil];
   
   [self popToRootController];
 }

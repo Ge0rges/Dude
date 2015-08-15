@@ -18,20 +18,19 @@
 @interface SignUpViewController () <UIImagePickerControllerDelegate, UIActionSheetDelegate, UINavigationControllerDelegate, UITextFieldDelegate> {
   PFFile *selectedImageFile;
   DUser *user;
-  
-  __block NSString *logInEmail;
-  __block NSString *logInPassword;
 }
 
 @property (nonatomic) BOOL logIn;
 
-@property (strong, nonatomic) IBOutlet UILabel *statusLabel;
+@property (strong, nonatomic) IBOutlet UILabel *stepLabel;
+@property (strong, nonatomic) IBOutlet UILabel *titleStepLabel;
 
 @property (strong, nonatomic) IBOutlet UITextField *textField;
 
-@property (strong, nonatomic) IBOutlet UIButton *deniedButton;
-@property (strong, nonatomic) IBOutlet UIButton *acceptedButton;
+@property (strong, nonatomic) IBOutlet UIImageView *stepImageView;
+
 @property (strong, nonatomic) IBOutlet UIButton *confirmButton;
+@property (strong, nonatomic) IBOutlet UIButton *backButton;
 
 @end
 
@@ -46,6 +45,13 @@
   
   // Alloc & Init the temp user
   user = [DUser object];
+  
+  // Start a timer to check if the button should be enabled
+#warning replace this timer with appropriate callings
+  [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(checkConfirmButton) userInfo:nil repeats:YES];
+  
+  // Simulate a first press for initial setup
+  [self confirmed:self.confirmButton];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -56,232 +62,231 @@
   appDelegate.visibleViewController = self;
 }
 
-#pragma mark - IBActions
-- (IBAction)deniedAccess:(UIButton*)sender {
-  // Show a funny alert
-  NSString *message = @"Your name is so people can recognize you. Email so we can identify you and people can find you, it is kept private. Profile Picture so we can share your smile.";
-  UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"We keep it private!" message:message preferredStyle:UIAlertControllerStyleAlert];
-  
-  [ac addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleCancel handler:NULL]];
-  
-  [self presentViewController:ac animated:YES completion:NULL];
-}
+#warning set a away to detect log in and sign up
 
-- (IBAction)acceptedAccess:(UIButton*)sender {
-  // Show textField and confirm button and hide the YES and NO
-  [UIView animateWithDuration:0.3 animations:^{
-    [self.acceptedButton setAlpha:0.0];
-    [self.deniedButton setAlpha:0.0];
-    
-    [self.textField setAlpha:1.0];
-    
-    self.confirmButton.tag++;
-    
-    [self.statusLabel setText:@"OK, first type in your full name."];
-    
-    [self.confirmButton setTitle:@"Next" forState:UIControlStateNormal];
-    
-  } completion:^(BOOL finished) {
-    [self.textField becomeFirstResponder];
-    
-    [self.acceptedButton setHidden:YES];
-    [self.deniedButton setHidden:YES];
-  }];
-}
-
+#pragma mark - Steps
 - (IBAction)confirmed:(UIButton*)sender {
-  if ((([self.textField.text isEqualToString:@""] || [self.textField.text isEqualToString:@" "] || self.textField.text == nil) && self.confirmButton.tag != -1) && self.confirmButton.tag < 4) return;
-  
-  switch (self.confirmButton.tag) {
-    case -1: {
-      self.logIn = YES;
-      
-      [UIView animateWithDuration:0.3 animations:^{
-        [self.acceptedButton setAlpha:0.0];
-        [self.deniedButton setAlpha:0.0];
+  if (self.logIn) {
+    switch (self.confirmButton.tag) {
+      case 0: {
+        [self proceedToEmail];
+        break;
+      }
         
-        [self.confirmButton setTitle:@"Next" forState:UIControlStateNormal];
+      case 1: {
+        user.email = self.textField.text.lowercaseString;
+        user.username = self.textField.text.lowercaseString;
+
+        [self proceedToPassword];
+        break;
+      }
         
-        [self.textField setAlpha:1.0];
+      case 2: {
+        user.password = self.textField.text;
+        DUser *loggedInUser = [DUser logInWithUsername:user.email password:user.password];
+        if (!loggedInUser) {
+          [self dismissViewControllerAnimated:YES completion:nil];
         
-        [self.statusLabel setText:@"OK, first type in your email."];
-        
-      } completion:^(BOOL finished) {
-        [self.textField becomeFirstResponder];
-        
-        [self.acceptedButton setHidden:YES];
-        [self.deniedButton setHidden:YES];
-      }];
-      
-      [self.statusLabel setText:@"First, enter your email."];
-      [self.textField setPlaceholder:@"thedude@getdudeapp.com"];
-      
-      [self.textField resignFirstResponder];
-      [self.textField setKeyboardType:UIKeyboardTypeEmailAddress];
-      [self.textField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
-      [self.textField becomeFirstResponder];
-      
-      break;
-    }
-      
-    case 0: {
-      if (self.logIn) {
-        if ([self validateEmailWithAlert:YES]) {
-          logInEmail = [self.textField.text.lowercaseString copy];
-          
-          [self.textField setPlaceholder:@"Password"];
-          [self.statusLabel setText:@"Pick super secret password (>6 characters)."];
-          
-          [self.textField resignFirstResponder];
-          [self.textField setKeyboardType:UIKeyboardTypeDefault];
-          [self.textField setSecureTextEntry:YES];
-          [self.textField becomeFirstResponder];
-          
         } else {
-          self.textField.text = @"";
-          
-          return;// We are still on the same step
+          // Go back to the redirection controller
+          [self dismissViewControllerAnimated:YES completion:^{
+            [self.presentingViewController dismissViewControllerAnimated:NO completion:nil];
+          }];
         }
+        break;
+      }
         
-      } else {
-        [user setFullName:self.textField.text];
+      default: {
+        break;
+      }
+    }
+    
+  } else {
+    switch (self.confirmButton.tag) {
+      case 0: {
+        [self proceedToName];
+        break;
+      }
         
-        [self.statusLabel setText:@"Next, enter your email."];
-        [self.textField setPlaceholder:@"thedude@getdudeapp.com"];
+      case 1: {
+        [self proceedToEmail];
+        break;
+      }
         
-        [self.textField resignFirstResponder];
-        [self.textField setKeyboardType:UIKeyboardTypeEmailAddress];
-        [self.textField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
-        [self.textField becomeFirstResponder];
+      case 2: {
+        if (![self isValidEmailWithAlert:YES]) return;
+        
+        user.email = self.textField.text.lowercaseString;
+        
+        [self proceedToPassword];
+        break;
+      }
+        
+      case 3: {
+        user.password = self.textField.text;
+        [self proceedToPhoto];
+        break;
       }
       
-      break;
-    }
-      
-    case 1: {
-      if (self.logIn) {
-        if (self.textField.text.length >= 6) {
-          logInPassword = [self.textField.text copy];
-          
-          [self.statusLabel setText:@"Which social accounts do you use?"];
-          [self.textField setPlaceholder:@"Twitter or Facebook? Both!"];
-          
-          [self.textField resignFirstResponder];
-          
-          [user selectFacebookAccountWithCompletion:^(BOOL success, ACAccount *account, NSError *error) {
-            [user selectTwitterAccountWithCompletion:^(BOOL success, ACAccount *account, NSError *error) {
-              [self.statusLabel setText:@"We're done! Saving your data..."];
-              [self.textField setPlaceholder:@"FINALLY!"];
-              
-              [DUser logInWithUsernameInBackground:logInEmail password:logInPassword block:^(PFUser *__nullable __strong loggedInUser, NSError *__nullable __strong error) {
-                if (error) {
-                  UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"Could not Log In" message:@"Dude, the password or email you entered is incorrect or non associated with an account." preferredStyle:UIAlertControllerStyleAlert];
-                  [ac addAction:[UIAlertAction actionWithTitle:@"OK"style:UIAlertActionStyleDefault handler:NULL]];
-                  
-                  [self presentViewController:ac animated:YES completion:NULL];
-                  
-                  // Reset the log in process
-                  self.confirmButton.tag = -1;
-                  [self confirmed:self.confirmButton];
-                  
-                } else if (loggedInUser) {
-                  [self dismissViewControllerAnimated:YES completion:NULL];
-                }
-              }];
+      case 4: {
+        [self proceedToSocial];
+        break;
+      }
+        
+      case 5: {
+        [user selectFacebookAccountWithCompletion:^(BOOL success, ACAccount *account, NSError *error) {
+          [user selectTwitterAccountWithCompletion:^(BOOL success, ACAccount *account, NSError *error) {
+            [user signUpInBackgroundWithBlock:^(BOOL succeeded, NSError *PF_NULLABLE_S error) {
+              if (!succeeded) {
+                [self dismissViewControllerAnimated:YES completion:nil];
+                
+              } else {
+                // Go back to the redirection controller
+                [self dismissViewControllerAnimated:YES completion:^{
+                  [self.presentingViewController dismissViewControllerAnimated:NO completion:nil];
+                }];
+              }
             }];
           }];
-          
-        } else {
-          UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"Password too short" message:@"Your password must consist of at least 6 letters, numbers or special characters." preferredStyle:UIAlertControllerStyleAlert];
-          
-          [ac addAction:[UIAlertAction actionWithTitle:@"OK"style:UIAlertActionStyleDefault handler:NULL]];
-          
-          [self presentViewController:ac animated:YES completion:NULL];
-          
-          self.textField.text = @"";
-          
-          return;// We are still on the same step
-        }
-        
-      } else {
-        if ([self validateEmailWithAlert:YES]) {
-          [user setUsername:self.textField.text.lowercaseString];
-          [user setEmail:self.textField.text.lowercaseString];
-          
-          [self.textField setPlaceholder:@"Password"];
-          [self.statusLabel setText:@"Pick a 6 characters long super secret password."];
-          
-          [self.textField resignFirstResponder];
-          [self.textField setKeyboardType:UIKeyboardTypeDefault];
-          [self.textField setSecureTextEntry:YES];
-          [self.textField becomeFirstResponder];
-          
-        } else {
-          self.textField.text = @"";
-          
-          return;// We are still on the same step
-        }
+        }];
       }
-      
+        
+      default: {
+        break;
+      }
+    }
+  }
+}
+
+- (void)proceedToName {
+  // Update UI
+  [self.stepImageView setImage:[UIImage imageNamed:@"Name Tag"]];
+  [self.stepLabel setText:@"Your name will be shown to others along with your profile photo"];
+  [self.titleStepLabel setText:@"Your Name"];
+  
+  [self.textField setPlaceholder:@"The Duderino"];
+  [self.textField setText:@""];
+  [self.textField setHidden:NO];
+  [self.textField setKeyboardType:UIKeyboardTypeDefault];
+  [self.textField setSecureTextEntry:NO];
+
+  [self.confirmButton setTitle:@"CONTINUE" forState:UIControlStateNormal];
+  [self.backButton setTitle:@" Back" forState:UIControlStateNormal];
+  
+  self.confirmButton.tag++;
+  
+  [self.stepImageView removeGestureRecognizer:self.stepImageView.gestureRecognizers[0]];
+  
+  [self.textField becomeFirstResponder];
+}
+
+- (void)proceedToPassword {
+  // Update UI
+  [self.stepImageView setImage:[UIImage imageNamed:@"Password"]];
+  [self.stepLabel setText:@"Choose a super secret password. (Pssst, don't share it)"];
+  [self.titleStepLabel setText:@"Password"];
+  
+  [self.textField setPlaceholder:@"At least six characters, security!"];
+  [self.textField setText:@""];
+  [self.textField setHidden:NO];
+  [self.textField setKeyboardType:UIKeyboardTypeDefault];
+  [self.textField setSecureTextEntry:YES];
+  
+  [self.confirmButton setTitle:@"CONTINUE" forState:UIControlStateNormal];
+  [self.backButton setTitle:@" Email" forState:UIControlStateNormal];
+  
+  self.confirmButton.tag++;
+  
+  [self.textField becomeFirstResponder];
+}
+
+- (void)proceedToSocial {
+  // Update UI
+#warning merge the 2 images
+  [self.stepImageView setImage:[UIImage imageNamed:@"Facebook"]]; // Twitter too
+  [self.stepLabel setText:@"We only use your Twitter and Facebook account when you use them to post messages."];
+  [self.titleStepLabel setText:@"Accounts"];
+
+  [self.textField setHidden:YES];
+
+  [self.confirmButton setTitle:@"ALLOW ACCESS" forState:UIControlStateNormal];
+  [self.backButton setTitle:@" Photo" forState:UIControlStateNormal];
+  
+  self.confirmButton.tag++;
+  
+  [self.stepImageView removeGestureRecognizer:self.stepImageView.gestureRecognizers[0]];
+  
+  [self.textField resignFirstResponder];
+}
+
+- (void)proceedToEmail {
+  // Update UI
+  [self.stepImageView setImage:[UIImage imageNamed:@"Mail"]];
+  [self.stepLabel setText:@"We never share your email address, and we only contact you about your account."];
+  [self.titleStepLabel setText:@"Email Address"];
+  
+  [self.textField setPlaceholder:@"thedude@is.awesome"];
+  [self.textField setText:@""];
+  [self.textField setHidden:NO];
+  [self.textField setKeyboardType:UIKeyboardTypeEmailAddress];
+  [self.textField setSecureTextEntry:NO];
+
+  [self.confirmButton setTitle:@"CONTINUE" forState:UIControlStateNormal];
+  [self.backButton setTitle:@" Name" forState:UIControlStateNormal];
+  
+  self.confirmButton.tag++;
+  
+  [self.stepImageView removeGestureRecognizer:self.stepImageView.gestureRecognizers[0]];
+  
+  [self.textField becomeFirstResponder];
+
+}
+
+- (void)proceedToPhoto {
+  // Update UI
+  [self.stepImageView setImage:[UIImage imageNamed:@"Add Photo"]];
+  [self.stepLabel setText:@"Your profile photo will be visible other users. Smile!"];
+  [self.titleStepLabel setText:@"Profile Photo"];
+  
+  [self.textField setHidden:YES];
+  
+  [self.confirmButton setTitle:@"CONTINUE" forState:UIControlStateNormal];
+  [self.backButton setTitle:@" Password" forState:UIControlStateNormal];
+  
+  self.confirmButton.tag++;
+  
+  UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(selectPicture)];
+  [self.stepImageView addGestureRecognizer:tapGestureRecognizer];
+  
+  [self.textField resignFirstResponder];
+}
+
+#pragma mark - Other
+- (void)checkConfirmButton {
+  switch (self.confirmButton.tag) {
+    case 1: {
+      self.confirmButton.enabled = (self.textField.text.length > 0);
       break;
     }
       
     case 2: {
-      if (self.textField.text.length >= 6) {
-        [self.textField resignFirstResponder];
-        
-        [user setPassword:self.textField.text.lowercaseString];
-        [self.textField setPlaceholder:@"Picture Time!"];
-        [self.statusLabel setText:@"Now, choose a profile picture from"];
-        
-        [self.confirmButton setHidden:YES];
-        
-        [self selectPicture];
-        // We simulate the confirm button when the user selects an image
-        
-      } else {
-        UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"Password too short" message:@"Your password must consist of at least 6 letters, numbers or special characters." preferredStyle:UIAlertControllerStyleAlert];
-        
-        [ac addAction:[UIAlertAction actionWithTitle:@"OK"style:UIAlertActionStyleDefault handler:NULL]];
-        
-        [self presentViewController:ac animated:YES completion:NULL];
-        
-        self.textField.text = @"";
-        
-        return;// We are still on the same step
-      }
-      
+      self.confirmButton.enabled = [self isValidEmailWithAlert:NO];
       break;
     }
       
     case 3: {
-      [self.statusLabel setText:@"Which social accounts do you use?"];
-      [self.textField setPlaceholder:@"Twitter or Facebook? Both!"];
+      self.confirmButton.enabled = (self.textField.text.length > 5);
+      break;
+    }
       
-      [user selectFacebookAccountWithCompletion:^(BOOL success, ACAccount *account, NSError *error) {
-        [user selectTwitterAccountWithCompletion:^(BOOL success, ACAccount *account, NSError *error) {
-          [self.statusLabel setText:@"We're done! Saving your data..."];
-          [self.textField setPlaceholder:@"FINALLY!"];
-          
-          [user signUpInBackgroundWithBlock:^(BOOL succeeded, NSError * __nullable error) {
-            if (succeeded && !error) {
-              [self dismissViewControllerAnimated:YES completion:NULL];
-              
-            } else {
-              NSLog(@"couldnt sign up with error: %@", error);
-              [self dismissViewControllerAnimated:NO completion:^{
-                UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"Could not Sign Up" message:error.localizedFailureReason preferredStyle:UIAlertControllerStyleAlert];
-                
-                [ac addAction:[UIAlertAction actionWithTitle:@"OK"style:UIAlertActionStyleDefault handler:NULL]];
-                
-                [self presentViewController:ac animated:YES completion:NULL];
-              }];
-            }
-          }];
-          
-        }];
-      }];
+    case 4: {
+      self.confirmButton.enabled = (selectedImageFile);
       
+      break;
+    }
+      
+    case 5: {
+      self.confirmButton.enabled = YES;
       break;
     }
       
@@ -290,8 +295,49 @@
     }
   }
   
-  [self.textField setText:nil];
-  self.confirmButton.tag += 1;
+  self.confirmButton.backgroundColor = (self.confirmButton.enabled) ? self.confirmButton.tintColor : [UIColor lightGrayColor];
+}
+
+- (IBAction)back {
+  switch (self.confirmButton.tag) {
+    case 1: {
+      [self dismissViewControllerAnimated:YES completion:nil];
+      break;
+    }
+      
+    case 2: {
+      [self proceedToName];
+      break;
+    }
+      
+    case 3: {
+      [self proceedToEmail];
+      break;
+    }
+      
+    case 4: {
+      [self proceedToPassword];
+      
+      break;
+    }
+      
+    case 5: {
+      [self proceedToPhoto];
+      break;
+    }
+      
+    case 6: {
+      [self proceedToSocial];
+      break;
+    }
+      
+    default: {
+      break;
+    }
+  }
+  
+  self.confirmButton.tag--;// One to compensate for the ++ the proceed command does
+  self.confirmButton.tag--;// One to actually go back
 }
 
 #pragma mark - UIActionSheet Delegate
@@ -303,12 +349,12 @@
   switch (buttonIndex) {
     case 0:
       picker.sourceType = UIImagePickerControllerSourceTypeCamera;
-      [self presentViewController:picker animated:YES completion:NULL];
+      [self presentViewController:picker animated:YES completion:nil];
       break;
       
     case 1:
       picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-      [self presentViewController:picker animated:YES completion:NULL];
+      [self presentViewController:picker animated:YES completion:nil];
       break;
       
     case 2:
@@ -337,7 +383,7 @@
 }
 
 - (void)imagePickerController:(UIImagePickerController*)picker didFinishPickingMediaWithInfo:(NSDictionary*)info {
-  [picker dismissViewControllerAnimated:YES completion:NULL];
+  [picker dismissViewControllerAnimated:YES completion:nil];
   
   UIImage *selectedImage = info[UIImagePickerControllerEditedImage];
   UIImage *thumbnailImage = [selectedImage imageByScalingAndCroppingForSize:CGSizeMake(200, 200)];
@@ -361,7 +407,7 @@
   return YES;
 }
 
-- (BOOL)validateEmailWithAlert:(BOOL)showAlert {
+- (BOOL)isValidEmailWithAlert:(BOOL)showAlert {
   BOOL validEmail = ([self validateEmailWithRFC:self.textField.text] && [self validateEmailFormat:self.textField.text]);
   
   BOOL taken = NO;
@@ -380,14 +426,14 @@
     NSString *message = (taken) ? @"This email is already associated with an account." : @"This email appears to be invalid, please check for typos.";
     
     UIAlertController *ac = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
-    [ac addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleCancel handler:NULL]];
+    [ac addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleCancel handler:nil]];
     
-    [self presentViewController:ac animated:YES completion:NULL];
+    [self presentViewController:ac animated:YES completion:nil];
     
     return NO;
   }
   
-  return YES;
+  return (validEmail && !taken);
 }
 
 - (BOOL)validateEmailFormat:(NSString*)candidate {

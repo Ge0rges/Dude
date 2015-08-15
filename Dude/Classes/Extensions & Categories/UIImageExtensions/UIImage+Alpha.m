@@ -32,7 +32,7 @@
     size_t height = CGImageGetHeight(imageRef);
     
     // The bitsPerComponent and bitmapInfo values are hard-coded to prevent an "unsupported parameter combination" error
-    CGContextRef offscreenContext = CGBitmapContextCreate(NULL,
+    CGContextRef offscreenContext = CGBitmapContextCreate(nil,
                                                           width,
                                                           height,
                                                           8,
@@ -61,7 +61,7 @@
     CGRect newRect = CGRectMake(0, 0, image.size.width + borderSize * 2, image.size.height + borderSize * 2);
     
     // Build a context that's the same dimensions as the new size
-    CGContextRef bitmap = CGBitmapContextCreate(NULL,
+    CGContextRef bitmap = CGBitmapContextCreate(nil,
                                                 newRect.size.width,
                                                 newRect.size.height,
                                                 CGImageGetBitsPerComponent(self.CGImage),
@@ -98,7 +98,7 @@
     CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceGray();
     
     // Build a context that's the same dimensions as the new size
-    CGContextRef maskContext = CGBitmapContextCreate(NULL,
+    CGContextRef maskContext = CGBitmapContextCreate(nil,
                                                      size.width,
                                                      size.height,
                                                      8, // 8-bit grayscale

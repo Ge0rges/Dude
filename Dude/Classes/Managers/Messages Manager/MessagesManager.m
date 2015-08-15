@@ -141,7 +141,7 @@
     NSMutableArray *messages = [NSMutableArray new];
 
     // Check we are allowed to have location and if we should still generate messsages and get venues if so
-    if (numberOfMessagesToGenerate-6 > 0) {
+    if (numberOfMessagesToGenerate-6 > 0 && !userIsInAutomobile) {
 #warning venue messages not generating
       NSArray *venues = [self getNearbyVenuesNameAndCategory:numberOfMessagesToGenerate-6 withResponse:nil];
       
@@ -194,39 +194,13 @@
   return nil;
 }
 
-- (NSArray*)getNearbyVenuesNameAndCategory:(NSInteger)venueNumber withResponse:(NSDictionary*)response {
+- (NSArray*)getNearbyVenuesNameAndCategory:(NSInteger)numberOfVenues withResponse:(NSDictionary*)response {
   // Set a default venue count if none is provided
-  if (!venueNumber || venueNumber <= 0) venueNumber = 3;
+  if (!numberOfVenues || numberOfVenues <= 0) numberOfVenues = 3;
   if ([CLLocationManager authorizationStatus] != kCLAuthorizationStatusDenied) {// If we have permission
     // Only if a response wasn't passed
     if (!response) {
-      if (!self.locationManager.location) return nil;
-      
-      // Get the date in YYYYMMDD
-      NSDateFormatter *dateFormat = [NSDateFormatter new];
-      [dateFormat setDateFormat:@"YYYMMdd"];
-      
-      // Build the URL
-      NSString *openNow = @"1";
-      NSString *sortByDistance = @"1";
-      NSString *radius = @"200";
-      NSString *clientID = @"3VUKCE1KQH5G30T4XDF0M0L1L25ETMTGFWXJ05PXNMG3QXW5";
-      NSString *clientSecret = @"4O34UZ5VIQVMRSI5GQTGEG4P1MJP3QNWGY0IPYQYWQVQ25U1";
-      NSString *date = [dateFormat stringFromDate:[NSDate date]];
-      CLLocationCoordinate2D currentLocationCoordinates = self.locationManager.location.coordinate;
-      
-      NSString *urlString = [NSString stringWithFormat:@"https://api.foursquare.com/v2/venues/explore?ll=%f,%f&openNow=%@&sortByDistance=%@&limit=%li&radius=%@&llAcc=%f&client_id=%@&client_secret=%@&v=%@",  currentLocationCoordinates.latitude, currentLocationCoordinates.longitude, openNow, sortByDistance, (long)venueNumber, radius,self.locationManager.location.horizontalAccuracy, clientID, clientSecret, date];
-      
-      // Make the request
-      NSMutableURLRequest *request = [NSMutableURLRequest new];
-      [request setURL:[NSURL URLWithString:urlString]];
-      [request setHTTPMethod:@"GET"];
-      
-      // Make sure we have valid data to parse otherwise app will crash
-      NSData *responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:nil];
-      if (responseData) {
-        response = [(NSDictionary*)[NSJSONSerialization JSONObjectWithData:responseData options:0 error:nil] objectForKey:@"response"];
-      }
+      response = [self queryFoursquareForNearbyVenues:numberOfVenues];
       
       if (!response) return nil;
       searchedLocation = (response[@"headerLocation"]) ? response[@"headerLocation"] : @"Could not determine City.";
@@ -240,14 +214,14 @@
     NSDictionary *nestedGroups = [groups objectAtIndex:0];
     NSArray *items = nestedGroups[@"items"];
     
-    if (venueNumber > [items count]) {
+    if (numberOfVenues > [items count]) {
       // If we have less venues than ordered
-      if (venueNumber-1 == 0) return nil;// If only 1 message was ordered return nil
+      if (numberOfVenues-1 == 0) return nil;// If only 1 message was ordered return nil
       
-      return [self getNearbyVenuesNameAndCategory:venueNumber-1 withResponse:response];// Decrease the ordered messages by 1
+      return [self getNearbyVenuesNameAndCategory:numberOfVenues-1 withResponse:response];// Decrease the ordered messages by 1
     }
     
-    for (NSInteger i=0; i<venueNumber; i++) {
+    for (NSInteger i=0; i<numberOfVenues; i++) {
       // Start parsing until we get the venue
       NSDictionary *outerVenue = [items objectAtIndex:i];
       NSDictionary *venue = outerVenue[@"venue"];
@@ -279,6 +253,38 @@
     
     return  nil;
   }
+}
+
+- (NSDictionary*)queryFoursquareForNearbyVenues:(NSInteger)numberOfVenues {
+  if (!self.locationManager.location) return nil;
+  
+  // Get the date in YYYYMMDD
+  NSDateFormatter *dateFormat = [NSDateFormatter new];
+  [dateFormat setDateFormat:@"YYYMMdd"];
+  
+  // Build the URL
+  NSString *openNow = @"1";
+  NSString *sortByDistance = @"1";
+  NSString *radius = @"200";
+  NSString *clientID = @"3VUKCE1KQH5G30T4XDF0M0L1L25ETMTGFWXJ05PXNMG3QXW5";
+  NSString *clientSecret = @"4O34UZ5VIQVMRSI5GQTGEG4P1MJP3QNWGY0IPYQYWQVQ25U1";
+  NSString *date = [dateFormat stringFromDate:[NSDate date]];
+  CLLocationCoordinate2D currentLocationCoordinates = self.locationManager.location.coordinate;
+  
+  NSString *urlString = [NSString stringWithFormat:@"https://api.foursquare.com/v2/venues/explore?ll=%f,%f&openNow=%@&sortByDistance=%@&limit=%li&radius=%@&llAcc=%f&client_id=%@&client_secret=%@&v=%@",  currentLocationCoordinates.latitude, currentLocationCoordinates.longitude, openNow, sortByDistance, (long)numberOfVenues, radius,self.locationManager.location.horizontalAccuracy, clientID, clientSecret, date];
+  
+  // Make the request
+  NSMutableURLRequest *request = [NSMutableURLRequest new];
+  [request setURL:[NSURL URLWithString:urlString]];
+  [request setHTTPMethod:@"GET"];
+  
+  // Make sure we have valid data to parse otherwise app will crash
+  NSData *responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:nil];
+  if (responseData) {
+    return [(NSDictionary*)[NSJSONSerialization JSONObjectWithData:responseData options:0 error:nil] objectForKey:@"response"];
+  }
+  
+  return nil;
 }
 
 #pragma mark - Sending
@@ -409,7 +415,7 @@
   
   [push sendPushInBackgroundWithBlock:handler];
   
-//TO DO: Implement cloud code for last seens
+#warning TO DO: Implement cloud code for last seens
 //    if (lastSeen) {
 //      NSMutableDictionary *lastSeens = [[DUser currentUser][@"lastSeens"] mutableCopy];
 //      [lastSeens setObject:lastSeen forKey:email];
@@ -585,10 +591,10 @@
       }]];
     }
     
-    [ac addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleCancel handler:NULL]];
+    [ac addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleCancel handler:nil]];
     
     AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-    [appDelegate.visibleViewController presentViewController:ac animated:YES completion:NULL];
+    [appDelegate.visibleViewController presentViewController:ac animated:YES completion:nil];
   });
 }
 

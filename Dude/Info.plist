@@ -40,9 +40,9 @@
 		</dict>
 	</dict>
 	<key>NSContactsUsageDescription</key>
-	<string>Dude automatically adds all your friends who also have Dude to your contact list  so you can easily start shairng with them! The contacts emails are securely stored on our servers.</string>
+	<string>We only access your contact list to automatically add your friends to Dude.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Dude uses your location to generate context-aware messages as well as share it with your friends when you send it to them. We don't log or store your location after we've used it.</string>
+	<string>We us your location to generate smart context-aware messages, your current city is sent along to your friends with every message.</string>
 	<key>UILaunchStoryboardName</key>
 	<string>Launch Screen</string>
 	<key>UIMainStoryboardFile</key>

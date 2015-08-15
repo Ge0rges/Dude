@@ -204,11 +204,11 @@ NSString* const FullNameKey = @"fullName";
   ACAccount *facebookAccount = [accountStore accountWithIdentifier:[[NSUserDefaults standardUserDefaults] stringForKey:@"facebookAccountID"]];
   
   if (twitterAccount) {
-    [accountStore renewCredentialsForAccount:twitterAccount completion:NULL];
+    [accountStore renewCredentialsForAccount:twitterAccount completion:nil];
   }
   
   if (facebookAccount) {
-    [accountStore renewCredentialsForAccount:facebookAccount completion:NULL];
+    [accountStore renewCredentialsForAccount:facebookAccount completion:nil];
   }
 }
 
@@ -230,7 +230,7 @@ NSString* const FullNameKey = @"fullName";
     
     // Present the alert on the visible view controller
     AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-    [appDelegate.visibleViewController presentViewController:ac animated:YES completion:NULL];
+    [appDelegate.visibleViewController presentViewController:ac animated:YES completion:nil];
   });
 #endif
 }
@@ -247,11 +247,11 @@ NSString* const FullNameKey = @"fullName";
       }]];
     }
     
-    [ac addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleCancel handler:NULL]];
+    [ac addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleCancel handler:nil]];
     
     // Present the alert on the visible view controller
     AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-    [appDelegate.visibleViewController presentViewController:ac animated:YES completion:NULL];
+    [appDelegate.visibleViewController presentViewController:ac animated:YES completion:nil];
   });
 #endif
 }
