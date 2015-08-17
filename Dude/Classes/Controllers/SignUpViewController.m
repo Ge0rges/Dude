@@ -83,7 +83,7 @@
         
       case 2: {
         user.password = self.textField.text;
-        DUser *loggedInUser = [DUser logInWithUsername:user.email password:user.password];
+        DUser *loggedInUser = [DUser logInWithUsername:user.username password:user.password];
         if (!loggedInUser) {
           [self dismissViewControllerAnimated:YES completion:nil];
         
@@ -117,6 +117,7 @@
         if (![self isValidEmailWithAlert:YES]) return;
         
         user.email = self.textField.text.lowercaseString;
+        user.username = self.textField.text.lowercaseString;
         
         [self proceedToPassword];
         break;
@@ -261,6 +262,7 @@
   [self.textField resignFirstResponder];
 }
 
+
 #pragma mark - Other
 - (void)checkConfirmButton {
   switch (self.confirmButton.tag) {
@@ -301,7 +303,7 @@
 - (IBAction)back {
   switch (self.confirmButton.tag) {
     case 1: {
-      [self dismissViewControllerAnimated:YES completion:nil];
+      [self performSegueWithIdentifier:@"backToWelcomeSegue" sender:nil];
       break;
     }
       

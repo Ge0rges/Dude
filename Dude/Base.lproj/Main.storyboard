@@ -152,7 +152,7 @@
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                                 <connections>
-                                    <segue destination="s5m-Wi-Am9" kind="custom" identifier="loginSegue" id="Bs1-jN-UFN"/>
+                                    <segue destination="s5m-Wi-Am9" kind="custom" identifier="loginSegue" customClass="SlidingSegueLR" id="Bs1-jN-UFN"/>
                                 </connections>
                             </button>
                             <button opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hSJ-DF-uf3">
@@ -172,7 +172,7 @@
                                     </userDefinedRuntimeAttribute>
                                 </userDefinedRuntimeAttributes>
                                 <connections>
-                                    <segue destination="s5m-Wi-Am9" kind="custom" identifier="signUpSegue" id="Nbs-OA-gvm"/>
+                                    <segue destination="s5m-Wi-Am9" kind="custom" identifier="signUpSegue" customClass="SlidingSegueRL" id="Nbs-OA-gvm"/>
                                 </connections>
                             </button>
                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Pin Faded" translatesAutoresizingMaskIntoConstraints="NO" id="JRv-Oe-4Kk">
@@ -184,7 +184,7 @@
                                 <color key="textColor" red="0.23921568630000001" green="0.59215686270000001" blue="0.85882352939999995" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Quickly share what you're doing, when you're doing it." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JAS-SY-i0k">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Quickly share what you're doing, when you're doing it." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JAS-SY-i0k">
                                 <rect key="frame" x="181" y="357" width="240" height="43"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="240" id="yjg-4T-Y3f"/>
@@ -273,7 +273,7 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" returnKeyType="next" enablesReturnKeyAutomatically="YES"/>
                             </textField>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1e2-rq-AWB">
+                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1e2-rq-AWB">
                                 <rect key="frame" x="16" y="20" width="62" height="22"/>
                                 <state key="normal" title=" Back" image="Back Indicator">
                                     <color key="titleColor" red="0.23921568630000001" green="0.59215686270000001" blue="0.85882352939999995" alpha="1" colorSpace="calibratedRGB"/>
@@ -309,11 +309,12 @@
                         <outlet property="stepLabel" destination="ZgH-rG-OFD" id="uB9-Rh-HZV"/>
                         <outlet property="textField" destination="T1T-0T-RM7" id="xZ6-XD-FCU"/>
                         <outlet property="titleStepLabel" destination="bpI-Gx-EGY" id="Ulu-hQ-7od"/>
+                        <segue destination="f2Y-4a-9Y5" kind="custom" identifier="backToWelcomeSegue" customClass="SlidingSegueLR" id="gty-8W-OR1"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="wEM-hu-abb" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-600" y="1437"/>
+            <point key="canvasLocation" x="-588" y="1447"/>
         </scene>
         <!--Users Table View Controller-->
         <scene sceneID="5iD-rc-Z23">
@@ -450,7 +451,8 @@
         <image name="defaultProfileImage" width="120" height="120"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="Nbs-OA-gvm"/>
+        <segue reference="gty-8W-OR1"/>
+        <segue reference="Bs1-jN-UFN"/>
     </inferredMetricsTieBreakers>
     <color key="tintColor" red="0.23921568627450981" green="0.59215686274509804" blue="0.85882352941176465" alpha="1" colorSpace="calibratedRGB"/>
 </document>

@@ -45,6 +45,7 @@
 		DAF7FC4D1B31FECE008F7A96 /* DMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = DAF7FC4B1B31FECE008F7A96 /* DMessage.m */; };
 		F912672043AC2C92004FCA65 /* libPods-Dude WatchKit Extension.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9D20CD04C45B6488B4BD606 /* libPods-Dude WatchKit Extension.a */; };
 		FB2FAF701B514FE70055018B /* Launch Screen.xib in Resources */ = {isa = PBXBuildFile; fileRef = FB2FAF6F1B514FE70055018B /* Launch Screen.xib */; };
+		FBDE26D71B81E0B5006485D0 /* SlidingSegues.m in Sources */ = {isa = PBXBuildFile; fileRef = FBDE26D61B81E0B5006485D0 /* SlidingSegues.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -145,6 +146,8 @@
 		DAF7FC4A1B31FECE008F7A96 /* DMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMessage.h; sourceTree = "<group>"; };
 		DAF7FC4B1B31FECE008F7A96 /* DMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DMessage.m; sourceTree = "<group>"; };
 		FB2FAF6F1B514FE70055018B /* Launch Screen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = "Launch Screen.xib"; path = "Base.lproj/Launch Screen.xib"; sourceTree = "<group>"; };
+		FBDE26D51B81E0B5006485D0 /* SlidingSegues.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SlidingSegues.h; sourceTree = "<group>"; };
+		FBDE26D61B81E0B5006485D0 /* SlidingSegues.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SlidingSegues.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -438,6 +441,7 @@
 		DAEF376B1B1E1D3300391DD0 /* Extensions & Categories */ = {
 			isa = PBXGroup;
 			children = (
+				FBDE26D81B81E0C3006485D0 /* Custom Segues */,
 				DA4262931B1EEA0C00560925 /* UIView+KZLayout */,
 				DAB5FCAF1AC69449003D8062 /* NSString Extensions */,
 				DACEE7D81AB02DF000B958F0 /* UIImage Extensions */,
@@ -474,6 +478,15 @@
 				B9D20CD04C45B6488B4BD606 /* libPods-Dude WatchKit Extension.a */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		FBDE26D81B81E0C3006485D0 /* Custom Segues */ = {
+			isa = PBXGroup;
+			children = (
+				FBDE26D51B81E0B5006485D0 /* SlidingSegues.h */,
+				FBDE26D61B81E0B5006485D0 /* SlidingSegues.m */,
+			);
+			name = "Custom Segues";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -738,6 +751,7 @@
 				DAB5FCAD1AC69314003D8062 /* NSStringExtensions.m in Sources */,
 				DACEE7D71AB02DB200B958F0 /* UIImageExtensions.m in Sources */,
 				DA19B0A41A374CB300ADDAF1 /* RedirectionViewController.m in Sources */,
+				FBDE26D71B81E0B5006485D0 /* SlidingSegues.m in Sources */,
 				DA8E11CD1AD6A3DD005F9CF2 /* UIImage+RoundedCorner.m in Sources */,
 				DA8E11CB1AD6A3DD005F9CF2 /* UIImage+Resize.m in Sources */,
 				DAF7FC4C1B31FECE008F7A96 /* DMessage.m in Sources */,
