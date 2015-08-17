@@ -152,7 +152,7 @@
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                                 <connections>
-                                    <segue destination="s5m-Wi-Am9" kind="custom" identifier="loginSegue" customClass="SlidingSegueLR" id="Bs1-jN-UFN"/>
+                                    <segue destination="s5m-Wi-Am9" kind="custom" identifier="loginSegue" customClass="SlidingSegueRL" id="Bs1-jN-UFN"/>
                                 </connections>
                             </button>
                             <button opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hSJ-DF-uf3">

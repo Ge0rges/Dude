@@ -6,6 +6,8 @@
 //  Copyright (c) 2015 Georges Kanaan. All rights reserved.
 //
 
+#define kAnimationDuration 0.3
+
 #import <QuartzCore/QuartzCore.h>
 #import "SlidingSegues.h"
 
@@ -20,7 +22,7 @@
   destinationController.view.transform = CGAffineTransformMakeTranslation(sourceViewController.view.frame.size.width, 0);
   
   // Prepare the source controller
-  [UIView animateWithDuration:0.3 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+  [UIView animateWithDuration:kAnimationDuration delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
     destinationController.view.transform = CGAffineTransformMakeTranslation(0, 0);
     sourceViewController.view.transform = CGAffineTransformMakeTranslation(-sourceViewController.view.frame.size.width, 0);
 
@@ -42,7 +44,7 @@
   destinationController.view.transform = CGAffineTransformMakeTranslation(-sourceViewController.view.frame.size.width, 0);
   
   // Prepare the source controller
-  [UIView animateWithDuration:0.3 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
+  [UIView animateWithDuration:kAnimationDuration delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
     destinationController.view.transform = CGAffineTransformMakeTranslation(0, 0);
     sourceViewController.view.transform = CGAffineTransformMakeTranslation(sourceViewController.view.frame.size.width, 0);
     
