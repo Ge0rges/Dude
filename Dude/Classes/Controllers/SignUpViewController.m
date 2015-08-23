@@ -20,8 +20,6 @@
   DUser *user;
 }
 
-@property (nonatomic) BOOL logIn;
-
 @property (strong, nonatomic) IBOutlet UILabel *stepLabel;
 @property (strong, nonatomic) IBOutlet UILabel *titleStepLabel;
 
@@ -62,8 +60,6 @@
   appDelegate.visibleViewController = self;
 }
 
-#warning set a away to detect log in and sign up
-
 #pragma mark - Steps
 - (IBAction)confirmed:(UIButton*)sender {
   if (self.logIn) {
@@ -76,7 +72,7 @@
       case 1: {
         user.email = self.textField.text.lowercaseString;
         user.username = self.textField.text.lowercaseString;
-
+        
         [self proceedToPassword];
         break;
       }
@@ -86,7 +82,7 @@
         DUser *loggedInUser = [DUser logInWithUsername:user.username password:user.password];
         if (!loggedInUser) {
           [self dismissViewControllerAnimated:YES completion:nil];
-        
+          
         } else {
           // Go back to the redirection controller
           [self dismissViewControllerAnimated:YES completion:^{
@@ -109,6 +105,7 @@
       }
         
       case 1: {
+        [self animateToNextStepWithInitialScreenshot:[self screenshot] fromRight:YES];
         [self proceedToEmail];
         break;
       }
@@ -119,17 +116,21 @@
         user.email = self.textField.text.lowercaseString;
         user.username = self.textField.text.lowercaseString;
         
+        [self animateToNextStepWithInitialScreenshot:[self screenshot] fromRight:YES];
         [self proceedToPassword];
         break;
       }
         
       case 3: {
         user.password = self.textField.text;
+        
+        [self animateToNextStepWithInitialScreenshot:[self screenshot] fromRight:YES];
         [self proceedToPhoto];
         break;
       }
-      
+        
       case 4: {
+        [self animateToNextStepWithInitialScreenshot:[self screenshot] fromRight:YES];
         [self proceedToSocial];
         break;
       }
@@ -170,7 +171,7 @@
   [self.textField setHidden:NO];
   [self.textField setKeyboardType:UIKeyboardTypeDefault];
   [self.textField setSecureTextEntry:NO];
-
+  
   [self.confirmButton setTitle:@"CONTINUE" forState:UIControlStateNormal];
   [self.backButton setTitle:@" Back" forState:UIControlStateNormal];
   
@@ -178,7 +179,7 @@
   
   [self.stepImageView removeGestureRecognizer:self.stepImageView.gestureRecognizers[0]];
   
-  [self.textField becomeFirstResponder];
+  [self.textField performSelector:@selector(becomeFirstResponder) withObject:nil afterDelay:0.35];//.05 seconds after animation
 }
 
 - (void)proceedToPassword {
@@ -203,13 +204,12 @@
 
 - (void)proceedToSocial {
   // Update UI
-#warning merge the 2 images
-  [self.stepImageView setImage:[UIImage imageNamed:@"Facebook"]]; // Twitter too
+  [self.stepImageView setImage:[UIImage imageNamed:@"CoumpoundSocial"]];
   [self.stepLabel setText:@"We only use your Twitter and Facebook account when you use them to post messages."];
   [self.titleStepLabel setText:@"Accounts"];
-
+  
   [self.textField setHidden:YES];
-
+  
   [self.confirmButton setTitle:@"ALLOW ACCESS" forState:UIControlStateNormal];
   [self.backButton setTitle:@" Photo" forState:UIControlStateNormal];
   
@@ -231,7 +231,7 @@
   [self.textField setHidden:NO];
   [self.textField setKeyboardType:UIKeyboardTypeEmailAddress];
   [self.textField setSecureTextEntry:NO];
-
+  
   [self.confirmButton setTitle:@"CONTINUE" forState:UIControlStateNormal];
   [self.backButton setTitle:@" Name" forState:UIControlStateNormal];
   
@@ -240,10 +240,13 @@
   [self.stepImageView removeGestureRecognizer:self.stepImageView.gestureRecognizers[0]];
   
   [self.textField becomeFirstResponder];
-
+  
 }
 
 - (void)proceedToPhoto {
+  // Prepare for animation
+  [self screenshot];
+  
   // Update UI
   [self.stepImageView setImage:[UIImage imageNamed:@"Add Photo"]];
   [self.stepLabel setText:@"Your profile photo will be visible other users. Smile!"];
@@ -262,6 +265,99 @@
   [self.textField resignFirstResponder];
 }
 
+#pragma mark - Animation
+- (UIImage *)screenshot {
+  CGSize imageSize = CGSizeZero;
+  
+  UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+  if (UIInterfaceOrientationIsPortrait(orientation)) {
+    imageSize = [UIScreen mainScreen].bounds.size;
+    
+  } else {
+    imageSize = CGSizeMake([UIScreen mainScreen].bounds.size.height, [UIScreen mainScreen].bounds.size.width);
+  }
+  
+  UIGraphicsBeginImageContextWithOptions(imageSize, NO, 0);
+  CGContextRef context = UIGraphicsGetCurrentContext();
+  for (UIWindow *window in [[UIApplication sharedApplication] windows]) {
+    CGContextSaveGState(context);
+    CGContextTranslateCTM(context, window.center.x, window.center.y);
+    CGContextConcatCTM(context, window.transform);
+    CGContextTranslateCTM(context, -window.bounds.size.width * window.layer.anchorPoint.x, -window.bounds.size.height * window.layer.anchorPoint.y);
+  
+    if (orientation == UIInterfaceOrientationLandscapeLeft) {
+      CGContextRotateCTM(context, M_PI_2);
+      CGContextTranslateCTM(context, 0, -imageSize.width);
+    
+    } else if (orientation == UIInterfaceOrientationLandscapeRight) {
+      CGContextRotateCTM(context, -M_PI_2);
+      CGContextTranslateCTM(context, -imageSize.height, 0);
+    
+    } else if (orientation == UIInterfaceOrientationPortraitUpsideDown) {
+      CGContextRotateCTM(context, M_PI);
+      CGContextTranslateCTM(context, -imageSize.width, -imageSize.height);
+    }
+    
+    if ([window respondsToSelector:@selector(drawViewHierarchyInRect:afterScreenUpdates:)]) {
+      [window drawViewHierarchyInRect:window.bounds afterScreenUpdates:NO];
+    
+    } else {
+      [window.layer renderInContext:context];
+    }
+    
+    CGContextRestoreGState(context);
+  }
+  
+  UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+  UIGraphicsEndImageContext();
+  
+  return image;
+}
+
+- (void)animateToNextStepWithInitialScreenshot:(UIImage*)screenshot fromRight:(BOOL)fromRight {
+  if (fromRight) {
+    __block UIImageView *sourceImageView = [[UIImageView alloc] initWithImage:screenshot];
+    __block UIView *destinationView = self.view;
+    
+    // Prepare the views locations
+    [self.view.superview addSubview:sourceImageView];
+    [self.view.superview bringSubviewToFront:sourceImageView];
+    
+    sourceImageView.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
+    destinationView.transform = CGAffineTransformMakeTranslation(sourceImageView.frame.size.width, 0);
+
+    // Prepare the source controller
+    [UIView animateWithDuration:0.3 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
+      destinationView.transform = CGAffineTransformMakeTranslation(0, 0);
+      sourceImageView.transform = CGAffineTransformMakeTranslation(-sourceImageView.frame.size.width, 0);
+      
+    } completion:^(BOOL finished) {
+      [sourceImageView removeFromSuperview];
+      sourceImageView = nil;
+    }];
+    
+  } else {
+    __block UIImageView *sourceImageView = [[UIImageView alloc] initWithImage:screenshot];
+    __block UIView *destinationView = self.view;
+    
+    // Prepare the views locations
+    [self.view.superview addSubview:sourceImageView];
+    [self.view.superview bringSubviewToFront:sourceImageView];
+    
+    sourceImageView.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
+    destinationView.transform = CGAffineTransformMakeTranslation(-sourceImageView.frame.size.width, 0);
+    
+    // Prepare the source controller
+    [UIView animateWithDuration:0.3 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
+      destinationView.transform = CGAffineTransformMakeTranslation(0, 0);
+      sourceImageView.transform = CGAffineTransformMakeTranslation(sourceImageView.frame.size.width, 0);
+      
+    } completion:^(BOOL finished) {
+      [sourceImageView removeFromSuperview];
+      sourceImageView = nil;
+    }];
+  }
+}
 
 #pragma mark - Other
 - (void)checkConfirmButton {
@@ -308,27 +404,32 @@
     }
       
     case 2: {
+      [self animateToNextStepWithInitialScreenshot:[self screenshot] fromRight:NO];
       [self proceedToName];
       break;
     }
       
     case 3: {
+      [self animateToNextStepWithInitialScreenshot:[self screenshot] fromRight:NO];
       [self proceedToEmail];
       break;
     }
       
     case 4: {
+      [self animateToNextStepWithInitialScreenshot:[self screenshot] fromRight:NO];
       [self proceedToPassword];
       
       break;
     }
       
     case 5: {
+      [self animateToNextStepWithInitialScreenshot:[self screenshot] fromRight:NO];
       [self proceedToPhoto];
       break;
     }
       
     case 6: {
+      [self animateToNextStepWithInitialScreenshot:[self screenshot] fromRight:NO];
       [self proceedToSocial];
       break;
     }
@@ -410,7 +511,7 @@
 }
 
 - (BOOL)isValidEmailWithAlert:(BOOL)showAlert {
-  BOOL validEmail = ([self validateEmailWithRFC:self.textField.text] && [self validateEmailFormat:self.textField.text]);
+  BOOL validEmail = [self validateEmailWithRFC:self.textField.text];
   
   BOOL taken = NO;
   
@@ -436,13 +537,6 @@
   }
   
   return (validEmail && !taken);
-}
-
-- (BOOL)validateEmailFormat:(NSString*)candidate {
-  NSString *emailRegex = @"[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}";
-  NSPredicate *emailTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", emailRegex];
-  
-  return [emailTest evaluateWithObject:candidate];
 }
 
 // Complete RFC 2822 verification

@@ -8,7 +8,6 @@
 
 #define kAnimationDuration 0.3
 
-#import <QuartzCore/QuartzCore.h>
 #import "SlidingSegues.h"
 
 @implementation SlidingSegueRL
@@ -22,10 +21,10 @@
   destinationController.view.transform = CGAffineTransformMakeTranslation(sourceViewController.view.frame.size.width, 0);
   
   // Prepare the source controller
-  [UIView animateWithDuration:kAnimationDuration delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+  [UIView animateWithDuration:kAnimationDuration delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
     destinationController.view.transform = CGAffineTransformMakeTranslation(0, 0);
     sourceViewController.view.transform = CGAffineTransformMakeTranslation(-sourceViewController.view.frame.size.width, 0);
-
+    
   } completion:^(BOOL finished) {
     [sourceViewController presentViewController:destinationController animated:NO completion:nil];
   }];

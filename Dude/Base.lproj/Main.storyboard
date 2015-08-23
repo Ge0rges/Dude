@@ -135,7 +135,7 @@
         <!--Sign Up-->
         <scene sceneID="9uF-Mm-gLC">
             <objects>
-                <viewController storyboardIdentifier="WelcomeVC" title="Sign Up" useStoryboardIdentifierAsRestorationIdentifier="YES" id="f2Y-4a-9Y5" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="WelcomeVC" title="Sign Up" modalTransitionStyle="crossDissolve" useStoryboardIdentifierAsRestorationIdentifier="YES" id="f2Y-4a-9Y5" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="FKe-Se-CtC"/>
                         <viewControllerLayoutGuide type="bottom" id="yLA-a5-W5d"/>
@@ -152,7 +152,7 @@
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                                 <connections>
-                                    <segue destination="s5m-Wi-Am9" kind="custom" identifier="loginSegue" customClass="SlidingSegueRL" id="Bs1-jN-UFN"/>
+                                    <segue destination="s5m-Wi-Am9" kind="custom" identifier="logInSegue" customClass="SlidingSegueRL" id="Bs1-jN-UFN"/>
                                 </connections>
                             </button>
                             <button opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hSJ-DF-uf3">
@@ -210,7 +210,6 @@
                             <constraint firstItem="JRv-Oe-4Kk" firstAttribute="top" secondItem="FKe-Se-CtC" secondAttribute="bottom" constant="65" id="rwP-Lr-Shz"/>
                         </constraints>
                     </view>
-                    <extendedEdge key="edgesForExtendedLayout"/>
                     <navigationItem key="navigationItem" id="tWl-9u-0Mu"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="xWz-eB-RrH" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -273,8 +272,8 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" returnKeyType="next" enablesReturnKeyAutomatically="YES"/>
                             </textField>
-                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1e2-rq-AWB">
-                                <rect key="frame" x="16" y="20" width="62" height="22"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1e2-rq-AWB">
+                                <rect key="frame" x="16" y="20" width="60" height="22"/>
                                 <state key="normal" title=" Back" image="Back Indicator">
                                     <color key="titleColor" red="0.23921568630000001" green="0.59215686270000001" blue="0.85882352939999995" alpha="1" colorSpace="calibratedRGB"/>
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -451,8 +450,8 @@
         <image name="defaultProfileImage" width="120" height="120"/>
     </resources>
     <inferredMetricsTieBreakers>
+        <segue reference="Nbs-OA-gvm"/>
         <segue reference="gty-8W-OR1"/>
-        <segue reference="Bs1-jN-UFN"/>
     </inferredMetricsTieBreakers>
     <color key="tintColor" red="0.23921568627450981" green="0.59215686274509804" blue="0.85882352941176465" alpha="1" colorSpace="calibratedRGB"/>
 </document>
