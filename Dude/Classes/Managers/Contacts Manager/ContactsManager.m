@@ -171,19 +171,13 @@
 }
 
 #pragma mark - Adding
-- (BOOL)addContactEmail:(NSString*)email sendNotification:(BOOL)sendNotification {
+- (BOOL)addContactToContacts:(DUser*)user sendNotification:(BOOL)sendNotification {
   NSMutableSet *savedContacts = [[DUser currentUser].contactsEmails mutableCopy];
-  if ([email isEqualToString:[DUser currentUser].email]  || [savedContacts containsObject:email.lowercaseString]) return YES;
-  
-  // Get the user with that email to make sure its valid
-  PFQuery *userQuery = [DUser query];
-  [userQuery whereKey:@"email" equalTo:email.lowercaseString];
-  
-  DUser *user = (DUser*)[userQuery getFirstObject];
+  if ([user.email.lowercaseString isEqualToString:[DUser currentUser].email.lowercaseString]  || [savedContacts containsObject:user.email.lowercaseString]) return YES;
   
   if (user) {
     // Save the user to the list of contacts
-    [savedContacts addObject:email];
+    [savedContacts addObject:user.email];
     
     [[DUser currentUser] setContactsEmails:savedContacts];
     

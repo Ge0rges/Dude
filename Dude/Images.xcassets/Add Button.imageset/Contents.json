@@ -2,18 +2,16 @@
   "images" : [
     {
       "idiom" : "universal",
-      "scale" : "1x",
-      "filename" : "cellGrabber.png"
+      "scale" : "1x"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "cellGrabber-1.png"
+      "filename" : "BarAdd@2x.png"
     },
     {
       "idiom" : "universal",
-      "scale" : "3x",
-      "filename" : "cellGrabber-2.png"
+      "scale" : "3x"
     }
   ],
   "info" : {

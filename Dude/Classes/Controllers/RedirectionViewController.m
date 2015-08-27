@@ -38,6 +38,9 @@
 
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
+#warning testing
+  [self performSegueWithIdentifier:@"mainSegue" sender:nil];
+  return;
   
   // check for internet connection
   [[NSNotificationCenter defaultCenter] addObserver:self

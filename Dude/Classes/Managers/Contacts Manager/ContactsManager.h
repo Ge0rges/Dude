@@ -21,7 +21,7 @@
 // Adding
 - (void)addDeviceContactsAndSendNotification:(BOOL)sendNotification;
 - (BOOL)addContactToFavourites:(DUser*)user;
-- (BOOL)addContactEmail:(NSString*)email sendNotification:(BOOL)sendNotification;
+- (BOOL)addContactToContacts:(DUser*)user sendNotification:(BOOL)sendNotification;
 
 // Blocking and unblocking
 - (void)blockContact:(DUser*)user;

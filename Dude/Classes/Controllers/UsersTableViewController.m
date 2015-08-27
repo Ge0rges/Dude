@@ -28,6 +28,15 @@
   
   BOOL selectedFacebook;
   BOOL selectedTwitter;
+  
+  UIImageView *leftBarButtonitemImageView;
+  UIImageView *resultImageView;
+  
+  UILabel *resultNameLabel;
+  
+  UIButton *resultButton;
+  
+  UIVisualEffectView *friendSearchView;
 }
 
 @property (nonatomic) BOOL favoritesOnly;
@@ -64,20 +73,23 @@
   // Add Next button to nav bar
   UIBarButtonItem *nextButton = [[UIBarButtonItem alloc] initWithTitle:@"Next" style:UIBarButtonItemStyleDone target:self action:@selector(showMessages)];
   nextButton.enabled = NO;
-  [self.navigationItem setRightBarButtonItem:nextButton];
-}
+  nextButton.tintColor = [UIColor whiteColor];
 
-- (void)viewWillAppear:(BOOL)animated {
-  [super viewWillAppear:animated];
+  [self.navigationItem setRightBarButtonItem:nextButton];
   
-  // Make sure the + button is removed
-  if (self.favoritesOnly) {
-    [self.navigationItem setLeftBarButtonItem:nil];
+  // Add + to nav bar
+  leftBarButtonitemImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"Add Button"]];
+  leftBarButtonitemImageView.autoresizingMask = UIViewAutoresizingNone;
+  leftBarButtonitemImageView.contentMode = UIViewContentModeCenter;
   
-  } else {
-    UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addContact)];
-    [self.navigationItem setLeftBarButtonItem:addButton];
-  }
+  UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
+  button.frame = CGRectMake(0, 0, 40, 40);
+  [button addSubview:leftBarButtonitemImageView];
+  [button addTarget:self action:@selector(beginAddFriendSearch) forControlEvents:UIControlEventTouchUpInside];
+  
+  leftBarButtonitemImageView.center = button.center;
+  
+  self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:button];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -160,7 +172,7 @@
     
   } else {
     if (!contacts || contacts.count == 0) {
-      [cell.textLabel setText:@"Dude, you're alone... but not for long!"];
+      [cell.textLabel setText:@"Dude, you're alone... Tap the + to add friends"];
       
     } else {
       DUser *user = contacts[indexPath.row];
@@ -311,7 +323,7 @@
     
   } else if (indexPath.section == 1) {
     if (!contacts || contacts.count == 0) {
-      [self addContact];
+      [self beginAddFriendSearch];
       
     } else {
       if (cell.accessoryType == UITableViewCellAccessoryCheckmark) {
@@ -331,55 +343,80 @@
 }
 
 #pragma mark - Adding Contact
-- (void)addContact {
-  dispatch_async(dispatch_get_main_queue(), ^{
-    UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"Enter Contact Email" message:nil preferredStyle:UIAlertControllerStyleAlert];
-    
-    [ac addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
-    
-    [ac addAction:[UIAlertAction actionWithTitle:@"Done" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-      UITextField *textField = (UITextField*)ac.textFields[0];
-      textField.hidden = YES;
-      textField.enabled = NO;
-      
-      if (![self validateEmail:textField.text withAlert:YES]) return;
-      
-      BOOL success = [[ContactsManager sharedInstance] addContactEmail:textField.text sendNotification:YES];
-      
-      if (!success) {
-        NSString *message = [NSString stringWithFormat:@"%@ is not associated with a Dude account.", textField.text];
-        
-        UIAlertController *errorAC = [UIAlertController alertControllerWithTitle:@"Contact not Found" message:message preferredStyle:UIAlertControllerStyleAlert];
-        
-        [errorAC addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleCancel handler:nil]];
-        [errorAC addAction:[UIAlertAction actionWithTitle:@"Dudify Them" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-          NSString *shareString = @"Hey Dude! Come join me on Dude so we can send cool smart messages each to other.";
-          UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:@[shareString, @"Download Dude at http://bit.ly/1I0MQbN"] applicationActivities:nil];
-          
-          activityVC.excludedActivityTypes = @[
-                                               UIActivityTypePrint, UIActivityTypeCopyToPasteboard, UIActivityTypeAssignToContact,
-                                               UIActivityTypeSaveToCameraRoll, UIActivityTypeAddToReadingList, UIActivityTypeAirDrop,
-                                               UIActivityTypeAirDrop, UIActivityTypePostToFacebook, UIActivityTypePostToFlickr,
-                                               UIActivityTypePostToTencentWeibo, UIActivityTypePostToTwitter, UIActivityTypePostToVimeo,
-                                               UIActivityTypePostToWeibo
-                                               ];
-          
-          [self presentViewController:activityVC animated:YES completion:nil];
-        }]];
+- (void)beginAddFriendSearch {
+  // Results interface
+  friendSearchView = [[UIVisualEffectView alloc] initWithEffect:[UIBlurEffect effectWithStyle:UIBlurEffectStyleExtraLight]];
+  friendSearchView.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
+  friendSearchView.alpha = 0.0;
+  
+  resultImageView  = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"defaultProfileImage"]];
+  resultImageView.frame = CGRectMake(CGRectGetMidX(friendSearchView.frame)-75, CGRectGetMidY(friendSearchView.frame)-75, 150, 150);
+  resultImageView.layer.cornerRadius = 75;
+  resultImageView.clipsToBounds = YES;
+  
+  resultNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMidX(friendSearchView.frame)-75, resultImageView.frame.size.height+resultImageView.frame.origin.y+15, 150, 25)];
+  resultNameLabel.textAlignment = NSTextAlignmentCenter;
+  resultNameLabel.adjustsFontSizeToFitWidth = YES;
 
-        [self presentViewController:errorAC animated:YES completion:nil];
-      }
-      
-        [self performSelectorInBackground:@selector(reloadData) withObject:nil];
-    }]];
-    
-    [ac addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-      textField.placeholder = @"friend@getdudeapp.com";
-      [textField setKeyboardType:UIKeyboardTypeEmailAddress];
+  resultButton = [[UIButton alloc] initWithFrame:CGRectMake(CGRectGetMidX(friendSearchView.frame)-25, resultImageView.frame.size.height+resultNameLabel.frame.origin.y+7, 50, 25)];
+
+  [friendSearchView addSubview:resultImageView];
+  [friendSearchView addSubview:resultNameLabel];
+  [friendSearchView addSubview:resultButton];
+
+  // Create textfield for friend search
+  UIView *textfieldView = [[UIView alloc] initWithFrame:CGRectMake(0, -44, self.view.frame.size.width, 64)];
+  textfieldView.backgroundColor = self.navigationController.navigationBar.barTintColor;
+  
+  UITextField *searchTextfield = [[UITextField alloc] initWithFrame:CGRectMake(22, 24, self.view.frame.size.width-44, 30)];
+  searchTextfield.alpha = 0.0;
+  searchTextfield.backgroundColor = [UIColor whiteColor];
+  searchTextfield.keyboardType = UIKeyboardTypeEmailAddress;
+  searchTextfield.borderStyle = UITextBorderStyleRoundedRect;
+  searchTextfield.placeholder = @"friend@getdudeapp.com";
+  
+  [searchTextfield addTarget:self action:@selector(textfieldValueChanged:) forControlEvents:UIControlEventEditingChanged];
+  
+  // Add allthe subviews
+  [self.view addSubview:friendSearchView];
+  [textfieldView addSubview:searchTextfield];
+  [self.view addSubview:textfieldView];
+
+  // Animate in
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [UIView animateWithDuration:0.3 animations:^{
+      leftBarButtonitemImageView.transform = CGAffineTransformMakeRotation(M_PI/4);
+      friendSearchView.alpha = 1.0;
+      searchTextfield.alpha = 0.8;
     }];
-    
-    [self presentViewController:ac animated:YES completion:nil];
   });
+  
+  [UIView animateWithDuration:0.5 delay:0 usingSpringWithDamping:0.6 initialSpringVelocity:1.0 options:UIViewAnimationOptionLayoutSubviews animations:^{
+    textfieldView.center = CGPointMake(self.navigationController.navigationBar.center.x, self.navigationController.navigationBar.center.y-20);
+   } completion:nil];
+}
+
+- (void)textfieldValueChanged:(UITextField*)textfield {
+  if (![self validateEmail:textfield.text withAlert:NO]) {
+#warning change results to invalid email
+    return;
+  }
+  
+  // Get the user with that email to make sure its valid
+  PFQuery *userQuery = [DUser query];
+  [userQuery whereKey:@"email" equalTo:textfield.text.lowercaseString];
+  
+  DUser *user = (DUser*)[userQuery getFirstObject];
+  
+  // If valid update results UI
+  if (user) {
+    [resultImageView sd_setImageWithURL:[NSURL URLWithString:user.profileImage.url] placeholderImage:[UIImage imageNamed:@"defaultProfileImage"]];
+    resultNameLabel.text = user.fullName;
+    
+#warning do status checking for user email, blocked, can add,
+    //resultButton setImage:[UIImage imageNamed:<#(NSString *)#>] forState:UIControlState
+    
+  }
 }
 
 #pragma mark - Showing Messages
@@ -401,7 +438,7 @@
 
 #pragma mark - Email Validation
 - (BOOL)validateEmail:(NSString*)email withAlert:(BOOL)showAlert {
-  BOOL validEmail = ([self validateEmailWithRFC:email] && [self validateEmailFormat:email]);
+  BOOL validEmail = [self validateEmailFormat:email];
   
   if (!validEmail && showAlert) {
     NSString *title = @"Email Invalid";
@@ -421,23 +458,7 @@
 - (BOOL)validateEmailFormat:(NSString*)candidate {
   NSString *emailRegex = @"[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}";
   NSPredicate *emailTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", emailRegex];
-  
-  return [emailTest evaluateWithObject:candidate];
-}
 
-// Complete RFC 2822 verification
-- (BOOL)validateEmailWithRFC:(NSString*)candidate {
-  NSString *emailRegex =
-  @"(?:[a-z0-9!#$%\\&'*+/=?\\^_`{|}~-]+(?:\\.[a-z0-9!#$%\\&'*+/=?\\^_`{|}"
-  @"~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\"
-  @"x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-"
-  @"z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5"
-  @"]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-"
-  @"9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21"
-  @"-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])";
-  
-  NSPredicate *emailTest = [NSPredicate predicateWithFormat:@"SELF MATCHES[c] %@", emailRegex];
-  
   return [emailTest evaluateWithObject:candidate];
 }
 
