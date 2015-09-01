@@ -26,6 +26,8 @@
 // Blocking and unblocking
 - (void)blockContact:(DUser*)user;
 - (void)unblockContact:(DUser*)user;
+- (BOOL)currentUserBlockedContact:(DUser*)user;
+- (BOOL)contactBlockedCurrentUser:(DUser*)user;
 
 // Removing
 - (NSArray*)removeContact:(DUser*)user reloadContacts:(BOOL)reload;

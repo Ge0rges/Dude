@@ -47,7 +47,6 @@
 		FB1FF5691B8A2119001831D9 /* WelcomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FB1FF5681B8A2119001831D9 /* WelcomeViewController.m */; };
 		FB2FAF701B514FE70055018B /* Launch Screen.xib in Resources */ = {isa = PBXBuildFile; fileRef = FB2FAF6F1B514FE70055018B /* Launch Screen.xib */; };
 		FBDE26D71B81E0B5006485D0 /* SlidingSegues.m in Sources */ = {isa = PBXBuildFile; fileRef = FBDE26D61B81E0B5006485D0 /* SlidingSegues.m */; };
-		FBDF1B7B1B8C748C001FF4FA /* ATNavigationBarService.m in Sources */ = {isa = PBXBuildFile; fileRef = FBDF1B7A1B8C748C001FF4FA /* ATNavigationBarService.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -152,8 +151,6 @@
 		FB2FAF6F1B514FE70055018B /* Launch Screen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = "Launch Screen.xib"; path = "Base.lproj/Launch Screen.xib"; sourceTree = "<group>"; };
 		FBDE26D51B81E0B5006485D0 /* SlidingSegues.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SlidingSegues.h; sourceTree = "<group>"; };
 		FBDE26D61B81E0B5006485D0 /* SlidingSegues.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SlidingSegues.m; sourceTree = "<group>"; };
-		FBDF1B791B8C748C001FF4FA /* ATNavigationBarService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ATNavigationBarService.h; sourceTree = "<group>"; };
-		FBDF1B7A1B8C748C001FF4FA /* ATNavigationBarService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ATNavigationBarService.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -449,7 +446,6 @@
 		DAEF376B1B1E1D3300391DD0 /* Extensions & Categories */ = {
 			isa = PBXGroup;
 			children = (
-				FBDF1B7C1B8C7497001FF4FA /* ATNavigationBarService */,
 				FBDE26D81B81E0C3006485D0 /* Custom Segues */,
 				DA4262931B1EEA0C00560925 /* UIView+KZLayout */,
 				DAB5FCAF1AC69449003D8062 /* NSString Extensions */,
@@ -496,15 +492,6 @@
 				FBDE26D61B81E0B5006485D0 /* SlidingSegues.m */,
 			);
 			name = "Custom Segues";
-			sourceTree = "<group>";
-		};
-		FBDF1B7C1B8C7497001FF4FA /* ATNavigationBarService */ = {
-			isa = PBXGroup;
-			children = (
-				FBDF1B791B8C748C001FF4FA /* ATNavigationBarService.h */,
-				FBDF1B7A1B8C748C001FF4FA /* ATNavigationBarService.m */,
-			);
-			name = ATNavigationBarService;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -761,7 +748,6 @@
 				DA6F4C511A1E439800D40186 /* AppDelegate.m in Sources */,
 				FB1FF5691B8A2119001831D9 /* WelcomeViewController.m in Sources */,
 				DA4262921B1EE4B100560925 /* UsersTableViewController.m in Sources */,
-				FBDF1B7B1B8C748C001FF4FA /* ATNavigationBarService.m in Sources */,
 				DAC3B8271B21B67200C303CD /* SignUpViewController.m in Sources */,
 				DA8E11C91AD6A3DD005F9CF2 /* UIImage+Alpha.m in Sources */,
 				DAB605F11B2002FA00341828 /* DUser.m in Sources */,

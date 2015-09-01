@@ -16,8 +16,14 @@
 
 
 @interface SignUpViewController () <UIImagePickerControllerDelegate, UIActionSheetDelegate, UINavigationControllerDelegate, UITextFieldDelegate> {
+  
+  PFQuery *emailTakenQuery;
+  
   PFFile *selectedImageFile;
+  
   DUser *user;
+  
+  UIImageView *retakeImageView;
 }
 
 @property (strong, nonatomic) IBOutlet UILabel *stepLabel;
@@ -45,9 +51,8 @@
   user = [DUser object];
   
   // Start a timer to check if the button should be enabled
-#warning replace this timer with appropriate callings
-  [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(checkConfirmButton) userInfo:nil repeats:YES];
-  
+  [self.textField addTarget:self action:@selector(checkConfirmButton) forControlEvents:UIControlEventEditingChanged];
+
   // Simulate a first press for initial setup
   [self confirmed:self.confirmButton];
 }
@@ -158,6 +163,9 @@
       }
     }
   }
+  
+  // Initial check for next step
+  [self checkConfirmButton];
 }
 
 - (void)proceedToName {
@@ -180,6 +188,12 @@
   [self.stepImageView removeGestureRecognizer:self.stepImageView.gestureRecognizers[0]];
   
   [self.textField performSelector:@selector(becomeFirstResponder) withObject:nil afterDelay:0.35];//.05 seconds after animation
+  
+  [retakeImageView removeFromSuperview];
+  retakeImageView = nil;
+  
+  self.stepImageView.layer.cornerRadius = 0;
+  self.stepImageView.clipsToBounds = NO;
 }
 
 - (void)proceedToPassword {
@@ -200,6 +214,12 @@
   self.confirmButton.tag++;
   
   [self.textField becomeFirstResponder];
+  
+  [retakeImageView removeFromSuperview];
+  retakeImageView = nil;
+  
+  self.stepImageView.layer.cornerRadius = 0;
+  self.stepImageView.clipsToBounds = NO;
 }
 
 - (void)proceedToSocial {
@@ -218,6 +238,12 @@
   [self.stepImageView removeGestureRecognizer:self.stepImageView.gestureRecognizers[0]];
   
   [self.textField resignFirstResponder];
+  
+  [retakeImageView removeFromSuperview];
+  retakeImageView = nil;
+  
+  self.stepImageView.layer.cornerRadius = 0;
+  self.stepImageView.clipsToBounds = NO;
 }
 
 - (void)proceedToEmail {
@@ -241,6 +267,11 @@
   
   [self.textField becomeFirstResponder];
   
+  [retakeImageView removeFromSuperview];
+  retakeImageView = nil;
+  
+  self.stepImageView.layer.cornerRadius = 0;
+  self.stepImageView.clipsToBounds = NO;
 }
 
 - (void)proceedToPhoto {
@@ -249,7 +280,7 @@
   
   // Update UI
   [self.stepImageView setImage:[UIImage imageNamed:@"Add Photo"]];
-  [self.stepLabel setText:@"Your profile photo will be visible other users. Smile!"];
+  [self.stepLabel setText:@"Your profile photo will be visible to other users. Smile!"];
   [self.titleStepLabel setText:@"Profile Photo"];
   
   [self.textField setHidden:YES];
@@ -263,6 +294,14 @@
   [self.stepImageView addGestureRecognizer:tapGestureRecognizer];
   
   [self.textField resignFirstResponder];
+  
+  [retakeImageView removeFromSuperview];
+  retakeImageView = nil;
+  
+  self.stepImageView.layer.cornerRadius = 0;
+  self.stepImageView.clipsToBounds = NO;
+  
+  selectedImageFile = nil;
 }
 
 #pragma mark - Animation
@@ -360,6 +399,14 @@
 }
 
 #pragma mark - Other
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+  if (self.confirmButton.enabled) {
+    [self confirmed:self.confirmButton];
+  }
+  
+  return self.confirmButton.enabled;
+}
+
 - (void)checkConfirmButton {
   switch (self.confirmButton.tag) {
     case 1: {
@@ -441,6 +488,8 @@
   
   self.confirmButton.tag--;// One to compensate for the ++ the proceed command does
   self.confirmButton.tag--;// One to actually go back
+  
+  [self checkConfirmButton];
 }
 
 #pragma mark - UIActionSheet Delegate
@@ -481,7 +530,7 @@
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController*)picker {
   [picker dismissViewControllerAnimated:YES completion:^{
-    [self selectPicture];
+    [self checkConfirmButton];
   }];
 }
 
@@ -496,32 +545,40 @@
   
   if (selectedImageFile) {
     [user setProfileImage:selectedImageFile];
-    [self confirmed:self.confirmButton];
+    [self.stepImageView setImage:thumbnailImage];
     
+    // Add retake X
+    retakeImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"Photo Retake"]];
+    retakeImageView.frame = CGRectMake(self.stepImageView.frame.origin.x+40, self.stepImageView.frame.origin.y+5, 30, 30);
+    retakeImageView.userInteractionEnabled = YES;
+    
+    [self.view addSubview:retakeImageView];
+    
+    self.stepImageView.layer.cornerRadius = 100;
+    self.stepImageView.clipsToBounds = YES;
+  
   } else {
     [self selectPicture];
   }
+  
+  // For the image
+  [self checkConfirmButton];
 }
 
 #pragma mark - UITextField
-- (BOOL)textFieldShouldReturn:(UITextField*)textField {
-  [self confirmed:self.confirmButton];
-  
-  return YES;
-}
-
 - (BOOL)isValidEmailWithAlert:(BOOL)showAlert {
   BOOL validEmail = [self validateEmailWithRFC:self.textField.text];
   
   BOOL taken = NO;
   
   if (validEmail && !self.logIn) {
-    PFQuery *userQuery = [DUser query];
-    [userQuery whereKey:@"email" equalTo:self.textField.text.lowercaseString];
+    [emailTakenQuery cancel];
+    emailTakenQuery = nil;
     
-    NSArray *usersWithEmail = [userQuery findObjects];
+    emailTakenQuery = [DUser query];
+    [emailTakenQuery whereKey:@"email" equalTo:self.textField.text.lowercaseString];
     
-    taken = (!usersWithEmail || usersWithEmail.count == 0) ? NO : YES;
+    taken = ([emailTakenQuery countObjects] > 0 );
   }
   
   if ((!validEmail || taken) && showAlert) {

@@ -177,6 +177,7 @@
       if (messageCar) [messages addObject:messageCar];
       if (messageTrain) [messages addObject:messageTrain];
       if (messagePlane) [messages addObject:messagePlane];
+
       
     } else {
       DMessage *messageHome = [[DMessage alloc] initWithCategory:@"Home" location:self.locationManager.location venueName:@"Home" venueCity:searchedLocation image:nil];

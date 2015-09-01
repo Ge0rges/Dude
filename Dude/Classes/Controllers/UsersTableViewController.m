@@ -36,6 +36,8 @@
   
   UIButton *resultButton;
   
+  UIView *textfieldView;
+  
   UIVisualEffectView *friendSearchView;
 }
 
@@ -85,7 +87,7 @@
   UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
   button.frame = CGRectMake(0, 0, 40, 40);
   [button addSubview:leftBarButtonitemImageView];
-  [button addTarget:self action:@selector(beginAddFriendSearch) forControlEvents:UIControlEventTouchUpInside];
+  [button addTarget:self action:@selector(beginFriendSearch:) forControlEvents:UIControlEventTouchUpInside];
   
   leftBarButtonitemImageView.center = button.center;
   
@@ -322,10 +324,7 @@
     }
     
   } else if (indexPath.section == 1) {
-    if (!contacts || contacts.count == 0) {
-      [self beginAddFriendSearch];
-      
-    } else {
+    if (contacts && contacts.count > 0) {
       if (cell.accessoryType == UITableViewCellAccessoryCheckmark) {
         [selectedContacts removeObject:contacts[indexPath.row]];
         cell.accessoryType = UITableViewCellAccessoryNone;
@@ -343,14 +342,17 @@
 }
 
 #pragma mark - Adding Contact
-- (void)beginAddFriendSearch {
+- (void)beginFriendSearch:(UIButton*)sender {
+  // Modify the target of the button
+  [sender removeTarget:self action:@selector(beginFriendSearch:) forControlEvents:UIControlEventAllEvents];
+  [sender addTarget:self action:@selector(exitFriendSearch:) forControlEvents:UIControlEventTouchUpInside];
+
   // Results interface
   friendSearchView = [[UIVisualEffectView alloc] initWithEffect:[UIBlurEffect effectWithStyle:UIBlurEffectStyleExtraLight]];
   friendSearchView.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
   friendSearchView.alpha = 0.0;
   
-  resultImageView  = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"defaultProfileImage"]];
-  resultImageView.frame = CGRectMake(CGRectGetMidX(friendSearchView.frame)-75, CGRectGetMidY(friendSearchView.frame)-75, 150, 150);
+  resultImageView  = [[UIImageView alloc] initWithFrame:CGRectMake(CGRectGetMidX(friendSearchView.frame)-75, CGRectGetMidY(friendSearchView.frame)-75, 150, 150)];
   resultImageView.layer.cornerRadius = 75;
   resultImageView.clipsToBounds = YES;
   
@@ -365,7 +367,7 @@
   [friendSearchView addSubview:resultButton];
 
   // Create textfield for friend search
-  UIView *textfieldView = [[UIView alloc] initWithFrame:CGRectMake(0, -44, self.view.frame.size.width, 64)];
+  textfieldView = [[UIView alloc] initWithFrame:CGRectMake(0, -44, self.view.frame.size.width, 64)];
   textfieldView.backgroundColor = self.navigationController.navigationBar.barTintColor;
   
   UITextField *searchTextfield = [[UITextField alloc] initWithFrame:CGRectMake(22, 24, self.view.frame.size.width-44, 30)];
@@ -377,46 +379,104 @@
   
   [searchTextfield addTarget:self action:@selector(textfieldValueChanged:) forControlEvents:UIControlEventEditingChanged];
   
-  // Add allthe subviews
+  // Add all the subviews
   [self.view addSubview:friendSearchView];
   [textfieldView addSubview:searchTextfield];
   [self.view addSubview:textfieldView];
 
   // Animate in
-  dispatch_async(dispatch_get_main_queue(), ^{
-    [UIView animateWithDuration:0.3 animations:^{
-      leftBarButtonitemImageView.transform = CGAffineTransformMakeRotation(M_PI/4);
-      friendSearchView.alpha = 1.0;
-      searchTextfield.alpha = 0.8;
-    }];
-  });
-  
-  [UIView animateWithDuration:0.5 delay:0 usingSpringWithDamping:0.6 initialSpringVelocity:1.0 options:UIViewAnimationOptionLayoutSubviews animations:^{
+  [UIView animateWithDuration:0.3 animations:^{
+    leftBarButtonitemImageView.transform = CGAffineTransformMakeRotation(M_PI/4);
+    friendSearchView.alpha = 1.0;
+    searchTextfield.alpha = 0.8;
+    
     textfieldView.center = CGPointMake(self.navigationController.navigationBar.center.x, self.navigationController.navigationBar.center.y-20);
-   } completion:nil];
+    
+  } completion:^(BOOL finished) {
+    [searchTextfield becomeFirstResponder];
+  }];
 }
 
 - (void)textfieldValueChanged:(UITextField*)textfield {
-  if (![self validateEmail:textfield.text withAlert:NO]) {
-#warning change results to invalid email
-    return;
-  }
+#warning to do fill in image names
+  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+    if (![self validateEmail:textfield.text withAlert:NO]) {
+      [resultButton setImage:[UIImage imageNamed:@"Enter Email"] forState:UIControlStateNormal];
+      
+      dispatch_async(dispatch_get_main_queue(), ^{
+        if (![resultNameLabel.text isEqualToString:@""] || resultImageView.image != nil) {
+          [UIView animateWithDuration:0.25 animations:^{
+            [resultImageView setImage:nil];
+            resultNameLabel.text = @"";
+          }];
+        }
+      });
+      
+    } else {
+      [resultButton setImage:[UIImage imageNamed:@"requested"] forState:UIControlStateNormal];
+
+      // Get the user with that email to make sure its valid
+      PFQuery *userQuery = [DUser query];
+      [userQuery whereKey:@"email" equalTo:textfield.text.lowercaseString];
+      
+      DUser *user = (DUser*)[userQuery getFirstObject];
+      
+      // If valid update results UI
+      if (user) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+          [UIView animateWithDuration:0.25 animations:^{
+            [resultImageView sd_setImageWithURL:[NSURL URLWithString:user.profileImage.url] placeholderImage:[UIImage imageNamed:@"defaultProfileImage"] options:SDWebImageHighPriority];
+            resultNameLabel.text = user.fullName;
+          }];
+        });
+        
+        NSString *imageName;
+        if ([[ContactsManager sharedInstance] contactBlockedCurrentUser:user]) {
+          imageName = @"";
+        
+        } else if ([[DUser currentUser].contactsEmails containsObject:user.email.lowercaseString]) {
+          imageName = @"";
+        
+        } else {
+          imageName = @"";
+        }
+        
+        [resultButton setImage:[UIImage imageNamed:imageName] forState:UIControlStateNormal];
+      
+      } else {
+        [resultButton setImage:[UIImage imageNamed:@"No user"] forState:UIControlStateNormal];
+      }
+    }
+  });
+}
+
+- (void)exitFriendSearch:(UIButton*)sender {
+  // Modify the target of the button
+  [sender removeTarget:self action:@selector(exitFriendSearch:) forControlEvents:UIControlEventAllEvents];
+  [sender addTarget:self action:@selector(beginFriendSearch:) forControlEvents:UIControlEventTouchUpInside];
   
-  // Get the user with that email to make sure its valid
-  PFQuery *userQuery = [DUser query];
-  [userQuery whereKey:@"email" equalTo:textfield.text.lowercaseString];
-  
-  DUser *user = (DUser*)[userQuery getFirstObject];
-  
-  // If valid update results UI
-  if (user) {
-    [resultImageView sd_setImageWithURL:[NSURL URLWithString:user.profileImage.url] placeholderImage:[UIImage imageNamed:@"defaultProfileImage"]];
-    resultNameLabel.text = user.fullName;
+  // Animate in
+  [UIView animateWithDuration:0.3 animations:^{
+    leftBarButtonitemImageView.transform = CGAffineTransformMakeRotation(0);
+    friendSearchView.alpha = 0.0;
+    textfieldView.center = CGPointMake(self.navigationController.navigationBar.center.x, -self.navigationController.navigationBar.center.y);
     
-#warning do status checking for user email, blocked, can add,
-    //resultButton setImage:[UIImage imageNamed:<#(NSString *)#>] forState:UIControlState
+  } completion:^(BOOL finished) {
+    [resultImageView removeFromSuperview];
+    resultImageView = nil;
     
-  }
+    [resultNameLabel removeFromSuperview];
+    resultNameLabel = nil;
+    
+    [resultButton removeFromSuperview];
+    resultButton = nil;
+    
+    [friendSearchView removeFromSuperview];
+    friendSearchView = nil;
+
+    [textfieldView removeFromSuperview];
+    textfieldView = nil;
+  }];
 }
 
 #pragma mark - Showing Messages
@@ -452,7 +512,7 @@
     return NO;
   }
   
-  return YES;
+  return validEmail;
 }
 
 - (BOOL)validateEmailFormat:(NSString*)candidate {

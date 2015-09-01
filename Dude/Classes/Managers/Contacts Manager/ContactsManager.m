@@ -36,9 +36,9 @@
 }
 
 #pragma mark - Blocking
-- (BOOL)currentUserBlockedContact:(NSString*)email {
+- (BOOL)currentUserBlockedContact:(DUser*)user {
   for (NSString *blockedEmail in [DUser currentUser].blockedEmails) {
-    if ([blockedEmail isEqualToString:email]) return YES;
+    if ([blockedEmail.lowercaseString isEqualToString:user.email.lowercaseString]) return YES;
   }
   
   return NO;
@@ -46,7 +46,7 @@
 
 - (BOOL)contactBlockedCurrentUser:(DUser*)user {
   for (NSString *blockedEmail in user.blockedEmails) {
-    if ([blockedEmail isEqualToString:[DUser currentUser].email]) return YES;
+    if ([blockedEmail.lowercaseString isEqualToString:[DUser currentUser].email.lowercaseString]) return YES;
   }
   
   return NO;
