@@ -47,8 +47,13 @@ How To Use It:
     [self.minimalNotification setSubTitleFont:subTitleFont];
 
     /**
-    * Add the notification to a view
-    */
+     * Set any necessary edge padding as needed
+     */
+    self.minimalNotification.edgePadding = UIEdgeInsetsMake(0, 0, 10, 0);
+
+    /**
+     * Add the notification to a view
+     */
     [self.view addSubview:self.minimalNotification];
 }
 
@@ -88,7 +93,7 @@ self.minimalNotification = [JFMinimalNotification notificationWithStyle:JFMinima
 
 ```objective-c
 // Available Styles
-typedef NS_ENUM(NSInteger, JFMinimalNotificationStytle) {
+typedef NS_ENUM(NSInteger, JFMinimalNotificationStyle) {
     JFMinimalNotificationStyleDefault,
     JFMinimalNotificationStyleError,
     JFMinimalNotificationStyleSuccess,
@@ -112,7 +117,7 @@ Installation:
 
 ### Cocoapods
 
-`pod 'JFMinimalNotifications', '~> 0.0.3'`
+`pod 'JFMinimalNotifications', '~> 0.0.4'`
 
 ### Directly include source into your projects
 

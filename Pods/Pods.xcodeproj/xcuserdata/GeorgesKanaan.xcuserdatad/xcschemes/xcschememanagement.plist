@@ -54,11 +54,6 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>Pods-Dude-SWTableViewCell.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
 		<key>Pods-Dude.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -67,62 +62,57 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>2907FA46F4851BF63C84230F</key>
+		<key>05394EAA67161A9770334B4A</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>2BE8B944435CF9AC4AC4E276</key>
+		<key>236D14DDD6A8EB04090884B3</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>2EEA6B5D5BABB250DA96920F</key>
+		<key>3889E06859156AD4F7F0DFCB</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>470A56B4134FE8E476B98DFE</key>
+		<key>3F60F60DF6110357A0DF11D8</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>557FBD8E4ABCE9C1B8CF4DE6</key>
+		<key>6222E0963847F9A7AA6B37BE</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>5C281154148319D88B483442</key>
+		<key>6CC01288BB653507987EF06F</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>841B24904E8C9AE891717067</key>
+		<key>B5B2741A2F80325949095FE9</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>9DF39935E4E0DAAC812FEB8B</key>
+		<key>CCD853A906D05C6CBA5071B1</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>C460312BBDC5B82C13B931C5</key>
+		<key>CE5797761742CEDF5D25E750</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>DB8F4B1FDAD3F7D8C3232F26</key>
+		<key>E389A0BE149D76119A1EEAE1</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>EF1510E14AC5755E1CCA2A24</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>F8E442BFAFE11E0B9D7E7336</key>
+		<key>F5576B69FFD332BBCC7B5059</key>
 		<dict>
 			<key>primary</key>
 			<true/>

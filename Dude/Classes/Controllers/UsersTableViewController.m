@@ -13,7 +13,6 @@
 
 // Pods
 #import <SDWebImage/UIImageView+WebCache.h>
-#import <SWTableViewCell/SWTableViewCell.h>
 
 // Managers
 #import "ContactsManager.h"
@@ -22,12 +21,8 @@
 // Controllers
 #import "MessagesTableViewController.h"
 
-@interface UsersTableViewController () <SWTableViewCellDelegate> {
+@interface UsersTableViewController () <UITableViewDataSource, UITableViewDelegate> {
   NSArray *contacts;
-  NSMutableArray *selectedContacts;
-  
-  BOOL selectedFacebook;
-  BOOL selectedTwitter;
   
   UIImageView *leftBarButtonitemImageView;
   UIImageView *resultImageView;
@@ -42,6 +37,8 @@
 }
 
 @property (nonatomic) BOOL favoritesOnly;
+@property (strong, nonatomic) IBOutlet UITableView *tableView;
+@property (strong, nonatomic) IBOutlet UIToolbar *toolbar;
 
 @end
 
@@ -54,7 +51,6 @@
   //[[DUser currentUser] renewCredentials];
   
   // Initialize the arrays
-  selectedContacts = [NSMutableArray new];
   contacts = [NSArray new];
   
   // Set controller properties
@@ -72,13 +68,6 @@
   // Add device contacts
   [[ContactsManager sharedInstance] addDeviceContactsAndSendNotification:YES];
   
-  // Add Next button to nav bar
-  UIBarButtonItem *nextButton = [[UIBarButtonItem alloc] initWithTitle:@"Next" style:UIBarButtonItemStyleDone target:self action:@selector(showMessages)];
-  nextButton.enabled = NO;
-  nextButton.tintColor = [UIColor whiteColor];
-
-  [self.navigationItem setRightBarButtonItem:nextButton];
-  
   // Add + to nav bar
   leftBarButtonitemImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"Add Button"]];
   leftBarButtonitemImageView.autoresizingMask = UIViewAutoresizingNone;
@@ -91,7 +80,10 @@
   
   leftBarButtonitemImageView.center = button.center;
   
-  self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:button];
+  NSMutableArray *items  = [NSMutableArray arrayWithArray:self.toolbar.items];
+  [items insertObject:[[UIBarButtonItem alloc] initWithCustomView:button] atIndex:0];
+  
+  [self.toolbar setItems:items];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -116,7 +108,7 @@
       }
     }];
     
-  } else if (shouldRefreshFacebook ) {
+  } else if (shouldRefreshFacebook) {
     [[DUser currentUser] selectFacebookAccountWithCompletion:^(BOOL success, ACAccount *account, NSError *error) {
         [self performSelectorInBackground:@selector(reloadData) withObject:nil];
     }];
@@ -124,220 +116,124 @@
 }
 
 #pragma mark - Public Methods
-- (IBAction)reloadData {
-  [self.refreshControl performSelectorOnMainThread:@selector(beginRefreshing) withObject:nil waitUntilDone:NO];
+- (IBAction)reloadData:(UISegmentedControl*)segmentedController {
+  if (segmentedController) {
+    self.favoritesOnly = segmentedController.selectedSegmentIndex;
+  }
   
-  contacts = [[ContactsManager sharedInstance] getContactsRefreshedNecessary:YES favourites:self.favoritesOnly];
+  ContactsManager *contactsManager = [ContactsManager sharedInstance];
+  contacts = [contactsManager getContactsRefreshedNecessary:YES favourites:self.favoritesOnly];
   
   // UI must be on main thread
   [self.tableView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:YES];
-  [self.refreshControl performSelectorOnMainThread:@selector(endRefreshing) withObject:nil waitUntilDone:NO];
 }
 
 #pragma mark - Table View data source
+#warning support other sections
 - (NSInteger)tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section {
   // Return the number of rows in the section.
-  return (section == 0) ? 2 : (contacts.count > 0) ? contacts.count : 1;
+  return contacts.count;
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView*)tableView {
-  return 2;
+  return 1;
+}
+
+- (NSString*)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
+  return (self.favoritesOnly) ? @"ALL FAVORITES" : @"ALL FRIENDS";
 }
 
 - (UITableViewCell*)tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath {
-  SWTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"userCell" forIndexPath:indexPath];
+  UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"userCell" forIndexPath:indexPath];
   
   // Clear default values
   [cell.textLabel setText:nil];
   [cell.detailTextLabel setText:nil];
   [cell.imageView setImage:nil];
   
-  if (indexPath.section == 0) {
-    [cell.textLabel setTextAlignment:NSTextAlignmentLeft];
+  DUser *user = contacts[indexPath.row];
 
-    switch (indexPath.row) {
-      case 0:
-        [cell.textLabel setText:@"Twitter"];
-        [cell.detailTextLabel setText:[[DUser currentUser] twitterUsername]];
-        [cell.imageView setImage:[UIImage imageNamed:@"Twitter"]];
-        break;
-        
-      case 1:
-        [cell.textLabel setText:@"Facebook"];
-        [cell.detailTextLabel setText:[[DUser currentUser] facebookUsername]];
-        [cell.imageView setImage:[UIImage imageNamed:@"Facebook"]];
-        break;
-        
-      default:
-        break;
-    }
-    
-  } else {
-    if (!contacts || contacts.count == 0) {
-      [cell.textLabel setText:@"Dude, you're alone... Tap the + to add friends"];
-      
-    } else {
-      DUser *user = contacts[indexPath.row];
-      
-      ContactsManager *contactsManager = [ContactsManager sharedInstance];
-      
-      // Populate the cell
-      cell.textLabel.text = user.username;
-      cell.detailTextLabel.text = [contactsManager lastSeenForContactEmail:user.email];
-      
-      NSURL *profileImageURL = [NSURL URLWithString:user.profileImage.url];
-      [cell.imageView sd_setImageWithURL:profileImageURL placeholderImage:[UIImage imageNamed:@"defaultProfileImage"]];
-            
-      // Buttons
-      NSArray *utilityButtons = [self rightUtilityButtonsBlocked:[[DUser currentUser].blockedEmails containsObject:user.email] inFavorites:[[DUser currentUser].favouriteContactsEmails containsObject:user.email]];
-      [cell setRightUtilityButtons:utilityButtons WithButtonWidth:[UIImage imageNamed:@"block"].size.width];
-      
-      cell.delegate = self;
-      
-    }
-  }
+  // Populate the cell
+  cell.textLabel.text = user.username;
+  cell.detailTextLabel.text = [[ContactsManager sharedInstance] lastSeenForContactEmail:user.email];
+  
+  NSURL *profileImageURL = [NSURL URLWithString:user.profileImage.url];
+  [cell.imageView sd_setImageWithURL:profileImageURL placeholderImage:[UIImage imageNamed:@"defaultProfileImage"]];
   
   return cell;
-}
-
-- (NSArray*)rightUtilityButtonsBlocked:(BOOL)blocked inFavorites:(BOOL)favorited {
-  UIImage *blockImage = [UIImage imageNamed:(blocked) ? @"unblock" : @"block"];
-  UIImage *favoritesImage = [UIImage imageNamed:(favorited) ? @"removeFavorites" : @"addFavorites"];
-
-  NSMutableArray *rightUtilityButtons = [NSMutableArray new];
-  
-  [rightUtilityButtons sw_addUtilityButtonWithColor:[UIColor clearColor] icon:[UIImage imageNamed:@"request"]];
-  [rightUtilityButtons sw_addUtilityButtonWithColor:[UIColor clearColor] icon:blockImage];
-  [rightUtilityButtons sw_addUtilityButtonWithColor:[UIColor clearColor] icon:favoritesImage];
-  
-  return [rightUtilityButtons copy];
-}
-
-- (void)swipeableTableViewCell:(SWTableViewCell*)cell didTriggerRightUtilityButtonWithIndex:(NSInteger)index {
-  ContactsManager *contactsManager = [ContactsManager sharedInstance];
-
-  DUser *user = contacts[[self.tableView indexPathForCell:cell].row];
-
-  switch (index) {
-    case 0: {
-      [contactsManager requestStatusForContact:user inBackground:YES];
-      break;
-    }
-      
-    case 1: {
-      BOOL blocked = [[DUser currentUser].blockedEmails containsObject:user.email];
-      if (blocked) {
-        [contactsManager unblockContact:user];
-     
-      } else {
-        [contactsManager blockContact:user];
-      }
-      
-      // Update buttons
-      blocked = [[DUser currentUser].blockedEmails containsObject:user.email];
-      
-      NSArray *utilityButtons = [self rightUtilityButtonsBlocked:blocked inFavorites:[[DUser currentUser].favouriteContactsEmails containsObject:user.email]];
-      [cell setRightUtilityButtons:utilityButtons WithButtonWidth:[UIImage imageNamed:@"request"].size.width];
-      
-      break;
-    }
-      
-    case 2: {
-      [contactsManager addContactToFavourites:user];
-      
-      break;
-    }
-      
-    default: {
-      break;
-    }
-  }
-  
-  [cell hideUtilityButtonsAnimated:YES];
 }
 
 - (void)tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
   
-  if (indexPath.section == 0) {
-    switch (indexPath.row) {
-      case 0:
-        if ([cell.detailTextLabel.text isEqualToString:@"No Account Selected"]) {
-          [[DUser currentUser] selectTwitterAccountWithCompletion:^(BOOL success, ACAccount *account, NSError *error) {
-            if (success && account) {
-              selectedTwitter = YES;
-              
-              dispatch_sync(dispatch_get_main_queue(), ^{
-                [tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
-                cell.accessoryType = UITableViewCellAccessoryCheckmark;
-              });
-              
-            } else {
-              [DUser showSocialServicesAlert];
-              selectedTwitter = NO;
-            }
-          }];
-          
-        } else {
-          if (cell.accessoryType == UITableViewCellAccessoryCheckmark) {
-            selectedTwitter = NO;
-            cell.accessoryType = UITableViewCellAccessoryNone;
-            
-          } else {
-            selectedTwitter = YES;
-            cell.accessoryType = UITableViewCellAccessoryCheckmark;
-          }
-        }
-        break;
-        
-      case 1:
-        if ([cell.detailTextLabel.text isEqualToString:@"No Account Selected"]) {
-          [[DUser currentUser] selectFacebookAccountWithCompletion:^(BOOL success, ACAccount *account, NSError *error) {
-            if (success && account) {
-              selectedFacebook = YES;
-              
-              dispatch_sync(dispatch_get_main_queue(), ^{
-                [tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
-                cell.accessoryType = UITableViewCellAccessoryCheckmark;
-              });
-            
-            } else {
-              [DUser showSocialServicesAlert];
-              selectedFacebook = NO;
-            }
-          }];
-          
-        } else {
-          if (cell.accessoryType == UITableViewCellAccessoryCheckmark) {
-            selectedFacebook = NO;
-            cell.accessoryType = UITableViewCellAccessoryNone;
-            
-          } else {
-            selectedFacebook = YES;
-            cell.accessoryType = UITableViewCellAccessoryCheckmark;
-          }
-        }
-        break;
-        
-      default:
-        break;
-    }
+#warning move social selection to messages VC
+  /*switch (indexPath.row) {
+   case 0:
+   if ([cell.detailTextLabel.text isEqualToString:@"No Account Selected"]) {
+   [[DUser currentUser] selectTwitterAccountWithCompletion:^(BOOL success, ACAccount *account, NSError *error) {
+   if (success && account) {
+   selectedTwitter = YES;
+   
+   dispatch_sync(dispatch_get_main_queue(), ^{
+   [tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+   cell.accessoryType = UITableViewCellAccessoryCheckmark;
+   });
+   
+   } else {
+   [DUser showSocialServicesAlert];
+   selectedTwitter = NO;
+   }
+   }];
+   
+   } else {
+   if (cell.accessoryType == UITableViewCellAccessoryCheckmark) {
+   selectedTwitter = NO;
+   cell.accessoryType = UITableViewCellAccessoryNone;
+   
+   } else {
+   selectedTwitter = YES;
+   cell.accessoryType = UITableViewCellAccessoryCheckmark;
+   }
+   }
+   break;
+   
+   case 1:
+   if ([cell.detailTextLabel.text isEqualToString:@"No Account Selected"]) {
+   [[DUser currentUser] selectFacebookAccountWithCompletion:^(BOOL success, ACAccount *account, NSError *error) {
+   if (success && account) {
+   selectedFacebook = YES;
+   
+   dispatch_sync(dispatch_get_main_queue(), ^{
+   [tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+   cell.accessoryType = UITableViewCellAccessoryCheckmark;
+   });
+   
+   } else {
+   [DUser showSocialServicesAlert];
+   selectedFacebook = NO;
+   }
+   }];
+   
+   } else {
+   if (cell.accessoryType == UITableViewCellAccessoryCheckmark) {
+   selectedFacebook = NO;
+   cell.accessoryType = UITableViewCellAccessoryNone;
+   
+   } else {
+   selectedFacebook = YES;
+   cell.accessoryType = UITableViewCellAccessoryCheckmark;
+   }
+   }
+   break;
+   
+   default:
+   break;
+   }*/
+  
+  if (contacts && contacts.count > 0) {
     
-  } else if (indexPath.section == 1) {
-    if (contacts && contacts.count > 0) {
-      if (cell.accessoryType == UITableViewCellAccessoryCheckmark) {
-        [selectedContacts removeObject:contacts[indexPath.row]];
-        cell.accessoryType = UITableViewCellAccessoryNone;
-        
-      } else {
-        [selectedContacts addObject:contacts[indexPath.row]];
-        cell.accessoryType = UITableViewCellAccessoryCheckmark;
-      }
-    }
   }
-  
-  self.navigationItem.rightBarButtonItem.enabled = (!selectedTwitter && !selectedFacebook && (selectedContacts.count == 0 || !selectedContacts)) ? NO : YES;
-  
+
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
@@ -368,7 +264,7 @@
 
   // Create textfield for friend search
   textfieldView = [[UIView alloc] initWithFrame:CGRectMake(0, -44, self.view.frame.size.width, 64)];
-  textfieldView.backgroundColor = self.navigationController.navigationBar.barTintColor;
+  textfieldView.backgroundColor = self.toolbar.barTintColor;
   
   UITextField *searchTextfield = [[UITextField alloc] initWithFrame:CGRectMake(22, 24, self.view.frame.size.width-44, 30)];
   searchTextfield.alpha = 0.0;
@@ -390,7 +286,7 @@
     friendSearchView.alpha = 1.0;
     searchTextfield.alpha = 0.8;
     
-    textfieldView.center = CGPointMake(self.navigationController.navigationBar.center.x, self.navigationController.navigationBar.center.y-20);
+    textfieldView.center = CGPointMake(self.toolbar.center.x, self.toolbar.center.y-20);
     
   } completion:^(BOOL finished) {
     [searchTextfield becomeFirstResponder];
@@ -398,10 +294,10 @@
 }
 
 - (void)textfieldValueChanged:(UITextField*)textfield {
-#warning to do fill in image names
   dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
     if (![self validateEmail:textfield.text withAlert:NO]) {
-      [resultButton setImage:[UIImage imageNamed:@"Enter Email"] forState:UIControlStateNormal];
+      [resultButton setImage:nil forState:UIControlStateNormal];
+      [resultNameLabel setText:@"Dude enter your friend's email"];
       
       dispatch_async(dispatch_get_main_queue(), ^{
         if (![resultNameLabel.text isEqualToString:@""] || resultImageView.image != nil) {
@@ -413,7 +309,7 @@
       });
       
     } else {
-      [resultButton setImage:[UIImage imageNamed:@"requested"] forState:UIControlStateNormal];
+      [resultNameLabel setText:@"Searching..."];
 
       // Get the user with that email to make sure its valid
       PFQuery *userQuery = [DUser query];
@@ -432,13 +328,17 @@
         
         NSString *imageName;
         if ([[ContactsManager sharedInstance] contactBlockedCurrentUser:user]) {
-          imageName = @"";
+          imageName = @"Blocked Friend Search";
         
         } else if ([[DUser currentUser].contactsEmails containsObject:user.email.lowercaseString]) {
-          imageName = @"";
+          imageName = @"Friends Friend Search";
+          
+#warning check if already sent
+        //} else if (user.requestEmails) {
+          //imageName = @"Request Sent Friend Search";
         
         } else {
-          imageName = @"";
+          imageName = @"Add Friend Search";
         }
         
         [resultButton setImage:[UIImage imageNamed:imageName] forState:UIControlStateNormal];
@@ -459,7 +359,7 @@
   [UIView animateWithDuration:0.3 animations:^{
     leftBarButtonitemImageView.transform = CGAffineTransformMakeRotation(0);
     friendSearchView.alpha = 0.0;
-    textfieldView.center = CGPointMake(self.navigationController.navigationBar.center.x, -self.navigationController.navigationBar.center.y);
+    textfieldView.center = CGPointMake(self.toolbar.center.x, -self.toolbar.center.y);
     
   } completion:^(BOOL finished) {
     [resultImageView removeFromSuperview];
@@ -477,23 +377,6 @@
     [textfieldView removeFromSuperview];
     textfieldView = nil;
   }];
-}
-
-#pragma mark - Showing Messages
-
-- (void)showMessages {
-  [self performSegueWithIdentifier:@"messagesSegue" sender:selectedContacts];
-}
-
-- (void)prepareForSegue:(UIStoryboardSegue*)segue sender:(id)sender {
-  [super prepareForSegue:segue sender:sender];
-  
-  if ([segue.identifier isEqualToString:@"messagesSegue"]) {
-    MessagesTableViewController *messagesTableVC = (MessagesTableViewController*)segue.destinationViewController;
-    messagesTableVC.selectedUsers = sender;
-    messagesTableVC.selectedTwitter = selectedTwitter;
-    messagesTableVC.selectedFacebook = selectedFacebook;
-  }
 }
 
 #pragma mark - Email Validation

@@ -17,6 +17,5 @@ target :'Dude' do
   pod 'SOMotionDetector'
   pod 'JFMinimalNotifications'
   pod 'SDWebImage'
-  pod 'SWTableViewCell'
   pod 'APAddressBook'
 end

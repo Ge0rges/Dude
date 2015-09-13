@@ -12,7 +12,7 @@
 // Constants
 #import "Constants.h"
 
-@interface UsersTableViewController : UITableViewController
+@interface UsersTableViewController : UIViewController
 
 - (void)reloadData;
 
