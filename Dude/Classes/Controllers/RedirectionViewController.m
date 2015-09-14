@@ -38,14 +38,9 @@
 
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
-#warning testing
-  [self performSegueWithIdentifier:@"mainSegue" sender:nil];
-  return;
   
   // check for internet connection
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(checkConnection:)
-                                               name:kReachabilityChangedNotification object:nil];
+  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(checkConnection:) name:kReachabilityChangedNotification object:nil];
   
   // Redirect the app to the correct VC if we have an internet connection in the first place
   Reachability *networkReachability = [Reachability reachabilityForInternetConnection];
@@ -92,6 +87,6 @@
 
 #pragma mark - Other
 - (BOOL)prefersStatusBarHidden {return NO;}
-- (UIStatusBarStyle)preferredStatusBarStyle {return UIStatusBarStyleDefault;}
+- (UIStatusBarStyle)preferredStatusBarStyle {return UIStatusBarStyleLightContent;}
 
 @end

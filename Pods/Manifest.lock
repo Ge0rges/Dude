@@ -3,7 +3,6 @@ PODS:
     - APAddressBook/Core (= 0.1.11)
   - APAddressBook/Core (0.1.11)
   - Bolts/Tasks (1.2.2)
-  - JFMinimalNotifications (0.0.5)
   - Parse (1.8.3):
     - Bolts/Tasks (>= 1.2.2)
   - Reachability (3.2)
@@ -14,7 +13,6 @@ PODS:
 
 DEPENDENCIES:
   - APAddressBook
-  - JFMinimalNotifications
   - Parse
   - Reachability
   - SDWebImage
@@ -23,7 +21,6 @@ DEPENDENCIES:
 SPEC CHECKSUMS:
   APAddressBook: 2c949367b190a993d2cce769a3b20bce8bcf000c
   Bolts: 20a2bd788273360cb1e31530dc19b8544eef2544
-  JFMinimalNotifications: c0d1eba2b826c1599416880dd48059c9153a6d9a
   Parse: 4b251ac63b76d12b334a32579cc3b174446f0c39
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SDWebImage: 1d2b1a1efda1ade1b00b6f8498865f8ddedc8a84

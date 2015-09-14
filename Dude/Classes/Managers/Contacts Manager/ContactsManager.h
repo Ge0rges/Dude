@@ -14,13 +14,16 @@
 // Constants
 #import "Constants.h"
 
+// Models
+#import "DMessage.h"
+
 @interface ContactsManager : NSObject
 
 + (instancetype)sharedInstance;
 
 // Adding
 - (void)addDeviceContactsAndSendNotification:(BOOL)sendNotification;
-- (BOOL)addContactToFavourites:(DUser*)user;
+- (BOOL)addContactToFavourites:(DUser*)user reloadFavouriteContacts:(BOOL)reload;
 - (BOOL)addContactToContacts:(DUser*)user sendNotification:(BOOL)sendNotification;
 
 // Blocking and unblocking
@@ -37,7 +40,7 @@
 - (NSArray*)getContactsRefreshedNecessary:(BOOL)needsLatestData favourites:(BOOL)favs;
 
 // Last seens
-- (NSString*)lastSeenForContactEmail:(NSString*)email;
+- (DMessage*)lastMessageForContact:(DUser*)user;
 
 // Added notification
 - (void)sendAddedNotificationToContact:(DUser*)user;

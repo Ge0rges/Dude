@@ -106,68 +106,8 @@
   return users;
 }
 
-- (NSString*)lastSeenForContactEmail:(NSString*)email {
-  // Check that we didnt block this user and that he didnt block us
-  PFQuery *userQuery = [DUser query];
-  [userQuery whereKey:@"email" equalTo:email];
-  
-  DUser *user = (DUser*)[userQuery getFirstObject];
-  
-  if (!user) return @"Error retrieving last seen.";
-  
-  BOOL isBlockedByUser = [[DUser currentUser].blockedEmails containsObject:user.email];
-  BOOL isUserBlocked = [user.blockedEmails containsObject:[DUser currentUser].email];
-  
-  if (isBlockedByUser) return @"Blocked.";
-  if (isUserBlocked) return @"Last Seen not available.";
-  
-  // Get the last lastSeen for this user
-  NSDictionary *lastSeens = [DUser currentUser].lastSeens;
-  NSString *lastSeen = lastSeens[email];
-  NSString *timeStamp =  [self lastSeenTimestampForEmail:email];
-  
-  NSString *finalLastSeenString = @"";
-  if (lastSeen && timeStamp) {
-    finalLastSeenString = [NSString stringWithFormat:@"%@ %@",lastSeen, timeStamp];
-    
-  } else if (lastSeen) {
-    finalLastSeenString = lastSeen;
-  }
-  
-  return finalLastSeenString;
-}
-
-- (NSString*)lastSeenTimestampForEmail:(NSString*)email {
-  // Get the users last notification sent to us
-  NSDictionary *lastSeens = [DUser currentUser].lastSeens;
-  NSData *timestampData = lastSeens[[NSString stringWithFormat:@"%@timestamp", email]];
-  
-  if (!timestampData) return nil;
-  
-  NSDate *timestamp = [NSKeyedUnarchiver unarchiveObjectWithData:timestampData];
-  
-  NSInteger secondsSinceTimeStamp = -[timestamp timeIntervalSinceNow];
-  NSString *timestampString;
-  
-  if (secondsSinceTimeStamp) {
-    if (secondsSinceTimeStamp <= 120) {
-      timestampString = @"(Now)";
-      
-    } else if (secondsSinceTimeStamp > 120 && secondsSinceTimeStamp < 3600) {
-      NSInteger minutes = secondsSinceTimeStamp/60;
-      timestampString = [NSString stringWithFormat:@"(%lim ago)", (long)minutes];
-      
-    } else if (secondsSinceTimeStamp < 86400) {
-      NSInteger hours = secondsSinceTimeStamp/3600;
-      timestampString = [NSString stringWithFormat:@"(%lih ago)", (long)hours];
-      
-    } else {
-      NSInteger days = secondsSinceTimeStamp/86400;
-      timestampString = [NSString stringWithFormat:@"(%lid ago)", (long)days];
-    }
-  }
-  
-  return timestampString;
+- (DMessage*)lastMessageForContact:(DUser *)user {
+  return [DUser currentUser].lastSeens[user.email];
 }
 
 #pragma mark - Adding
@@ -191,7 +131,7 @@
   }
 }
 
-- (BOOL)addContactToFavourites:(NSString*)email {
+- (BOOL)addContactToFavourites:(NSString*)email reloadFavouriteContacts:(BOOL)reload {
   NSMutableSet *savedContacts = [[DUser currentUser].favouriteContactsEmails mutableCopy];
   if ([email isEqualToString:[DUser currentUser].email]  || [savedContacts containsObject:email.lowercaseString]) return YES;
   
@@ -207,7 +147,10 @@
     
     [[DUser currentUser] setFavouriteContactsEmails:savedContacts];
     
-    return [[DUser currentUser] save];
+    BOOL saved = [[DUser currentUser] save];
+    if (reload) [self getContactsRefreshedNecessary:YES favourites:YES];
+    
+    return saved;
     
   } else {// User with email does not exist
     return NO;
@@ -252,7 +195,7 @@
         
         if ([vc isKindOfClass:[UsersTableViewController class]]) {
           UsersTableViewController *userTableVC = (UsersTableViewController*)vc;
-          [userTableVC reloadData];
+          [userTableVC reloadData:nil];
         }
         
         for (DUser *user in users) {
@@ -287,7 +230,7 @@
   [[DUser currentUser] saveEventually];
   
   // Reload contacts if necessary
-  return (reload) ? [self getContactsRefreshedNecessary:YES favourites:NO] : nil;
+  return (reload) ? [self getContactsRefreshedNecessary:YES favourites:YES] : nil;
 }
 
 #pragma mark Added Notification

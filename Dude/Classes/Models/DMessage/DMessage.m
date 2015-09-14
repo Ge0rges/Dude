@@ -25,10 +25,12 @@ NSString* const LocationKey = @"location";
 NSString* const LocationCityKey = @"locationCity";
 NSString* const CategoryKey = @"category";
 NSString* const TypeKey = @"type";
+NSString* const SendDateKey = @"sendDate";
+NSString* const TimestampKey = @"timestamp";
 
 @implementation DMessage
 
-@synthesize message, notificationMessage, lastSeen, URL, location, locationCity, category, type, notificationTitle, venueName, imageURL;
+@synthesize message, notificationMessage, lastSeen, URL, location, locationCity, category, type, notificationTitle, venueName, imageURL, sendDate, timestamp;
 
 #pragma mark - Initilizations
 - (instancetype)initWithCategory:(NSString *)messageCategory location:(CLLocation *)messageLocation venueName:(NSString *)messageVenueName  venueCity:(NSString *)messageLocationCity image:(NSString *)imageURLString {
@@ -106,6 +108,8 @@ NSString* const TypeKey = @"type";
     locationCity = [aDecoder decodeObjectForKey:LocationCityKey];
     category = [aDecoder decodeObjectForKey:CategoryKey];
     type = [aDecoder decodeIntegerForKey:TypeKey];
+    sendDate = [aDecoder decodeObjectForKey:SendDateKey];
+    timestamp = [aDecoder decodeObjectForKey:TimestampKey];
   }
   
   return self;
@@ -123,6 +127,8 @@ NSString* const TypeKey = @"type";
   [aCoder encodeObject:self.locationCity forKey:LocationCityKey];
   [aCoder encodeObject:self.category forKey:CategoryKey];
   [aCoder encodeInteger:self.type forKey:TypeKey];
+  [aCoder encodeObject:self.sendDate forKey:SendDateKey];
+  [aCoder encodeObject:self.timestamp forKey:TimestampKey];
 }
 
 #pragma mark - Message Parsing
@@ -208,12 +214,12 @@ NSString* const TypeKey = @"type";
     case DMessageTypeMessage: {
       if ([self.message isEqualToString:@"Dude."]) return self.message;
       
-      NSString *truncedMessage = [self.message stringByReplacingOccurrencesOfString:@"Dude, I'm " withString:@""];
+      NSString *truncatedMessage = [self.message stringByReplacingOccurrencesOfString:@"Dude, I'm " withString:@""];
       
-      truncedMessage = [truncedMessage stringByAppendingString:[NSString stringWithFormat:@", %@", self.locationCity]];
+      truncatedMessage = [truncatedMessage stringByAppendingString:[NSString stringWithFormat:@", %@", self.locationCity]];
       
-      if (truncedMessage.length > 0) {
-        return [truncedMessage stringByReplacingCharactersInRange:NSMakeRange(0,1) withString:[[truncedMessage substringToIndex:1] capitalizedString]];
+      if (truncatedMessage.length > 0) {
+        return [truncatedMessage stringByReplacingCharactersInRange:NSMakeRange(0,1) withString:[[truncatedMessage substringToIndex:1] capitalizedString]];
         
       } else {
         return self.message;
@@ -235,6 +241,33 @@ NSString* const TypeKey = @"type";
 
 - (NSURL*)URL {
   return [NSURL URLWithString:[UIPasteboard generalPasteboard].string];
+}
+
+- (NSString*)timestamp {
+  // Get the users last notification sent to us
+  
+  NSInteger secondsSinceTimeStamp = -[self.sendDate timeIntervalSinceNow];
+  NSString *timestampString;
+  
+  if (secondsSinceTimeStamp) {
+    if (secondsSinceTimeStamp <= 120) {
+      timestampString = @"(Now)";
+      
+    } else if (secondsSinceTimeStamp > 120 && secondsSinceTimeStamp < 3600) {
+      NSInteger minutes = secondsSinceTimeStamp/60;
+      timestampString = [NSString stringWithFormat:@"(%lim ago)", (long)minutes];
+      
+    } else if (secondsSinceTimeStamp < 86400) {
+      NSInteger hours = secondsSinceTimeStamp/3600;
+      timestampString = [NSString stringWithFormat:@"(%lih ago)", (long)hours];
+      
+    } else {
+      NSInteger days = secondsSinceTimeStamp/86400;
+      timestampString = [NSString stringWithFormat:@"(%lid ago)", (long)days];
+    }
+  }
+  
+  return timestampString;
 }
 
 #pragma mark - Actions Sentences

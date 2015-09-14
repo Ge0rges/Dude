@@ -356,6 +356,9 @@
                       @"sound": @"default",
                       @"category": @"mainCategory"
                       },
+#warning toggle on composing sheet
+                  //@"long": [NSNumber numberWithDouble:message.location.coordinate.longitude],
+                  //@"lat": [NSNumber numberWithDouble:message.location.coordinate.latitude],
                   
                   @"email": [DUser currentUser].email,
                   @"username": [DUser currentUser].username,
@@ -417,29 +420,14 @@
   [push sendPushInBackgroundWithBlock:handler];
   
 #warning TO DO: Implement cloud code for last seens
-//    if (lastSeen) {
-//      NSMutableDictionary *lastSeens = [[DUser currentUser][@"lastSeens"] mutableCopy];
-//      [lastSeens setObject:lastSeen forKey:email];
-//      [lastSeens setObject:[NSKeyedArchiver archivedDataWithRootObject:[NSDate date]] forKey:[NSString stringWithFormat:@"%@timestamp", email]];
-//  
-//      [[DUser currentUser] setObject:lastSeens forKey:@"lastSeens"];
-//  
-//      [[DUser currentUser] saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-//        if ([[UIViewController topMostController] isKindOfClass:[UsersTableViewController class]]) {// If user is in the contact list (Main VC)
-//          UsersTableViewController *usersTableVC = (UsersTableViewController*)[UIViewController topMostController];// Declare it as MainVC
-//          [usersTableVC reloadData];// Reload last seens
-//        }
-//      }];
-//    }
-  
-//  [PFCloud callFunctionInBackground:@"registerPush" withParameters:payload block:^(NSString *response, NSError *error) {
-//    if (!error) {
-//      // Save the last seen if we got a message
-//    
-//    } else {
-//     // We're screwed for now.
-//    }
-//  }];
+  [PFCloud callFunctionInBackground:@"updateLastSeen" withParameters:payload block:^(id result, NSError *error) {
+    if (!error) {
+      // Save the last seen if we got a message
+    
+    } else {
+     // We're screwed for now.
+    }
+  }];
 }
 
 - (void)tweetMessage:(DMessage*)message withCompletion:(MessageCompletionBlock)handler {

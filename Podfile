@@ -15,7 +15,6 @@ target :'Dude' do
   shared_pods
   pod 'Reachability'
   pod 'SOMotionDetector'
-  pod 'JFMinimalNotifications'
   pod 'SDWebImage'
   pod 'APAddressBook'
 end

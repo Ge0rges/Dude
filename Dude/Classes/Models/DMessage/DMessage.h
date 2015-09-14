@@ -22,7 +22,7 @@ typedef NS_ENUM(NSInteger, DMessageType) {
 @property (strong, nonatomic, readonly) NSString *message;// The full message string (Dude, I'm eating sushi for lunch at Itsu.)
 @property (strong, nonatomic, readonly) NSString *notificationMessage;// The string to be used for notifications (Gio: Dude, I'm eating sushi for lunch at Itsu.)
 @property (strong, nonatomic, readonly) NSString *notificationTitle;// The string to be used for notification titles (Gio - Message/Link/'s Location)
-@property (strong, nonatomic, readonly) NSString *venueName;// The string to be used for notification titles (Itsu)
+@property (strong, nonatomic, readonly) NSString *venueName;// The string to be used for venue reference (Itsu)
 
 @property (strong, nonatomic, readonly) NSString *lastSeen;// The last seen to be used for this message (Eating sushi for lunch at Itsu, London)
 
@@ -34,6 +34,8 @@ typedef NS_ENUM(NSInteger, DMessageType) {
 
 @property (strong, nonatomic, readonly) NSString *category;// The 4sq category from which it was generated (Sushi Restaurant)
 
+@property (strong, nonatomic) NSDate *sendDate;// The date when the message was *sent*
+@property (strong, nonatomic, readonly) NSString *timestamp; // The timestamp to show for this message
 @property (nonatomic, readonly) DMessageType type;// What kind of message is this
 
 - (instancetype)initWithCategory:(NSString*)messageCategory location:(CLLocation*)messageLocation venueName:(NSString*)messageVenueName venueCity:(NSString*)messageLocationCity image:(NSString*)imageURLString;

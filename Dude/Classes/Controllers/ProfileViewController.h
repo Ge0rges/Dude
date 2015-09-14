@@ -14,4 +14,6 @@
 
 @interface ProfileViewController : UIViewController
 
+@property (strong, nonatomic) DUser *profileUser;
+
 @end

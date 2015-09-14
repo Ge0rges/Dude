@@ -16,12 +16,6 @@
 #import "MessagesManager.h"
 #import "ContactsManager.h"
 
-// Pods
-#import <JFMinimalNotifications/JFMinimalNotification.h>
-
-// Models
-#import "DUser.h"
-
 @interface AppDelegate ()
 
 @end
@@ -114,52 +108,35 @@
   double latitude = [userInfo[@"lat"] doubleValue];
   double longitude = [userInfo[@"long"] doubleValue];
   
+#warning figure out in app handling
   // Handle notification
   if (application) {// While in app
+#warning badge tab bar and put the recent intop most recent with badge
     if (url) {
-      JFMinimalNotification *minimalNotification = [JFMinimalNotification notificationWithStyle:JFMinimalNotificationStyleDefault title:title subTitle:notificationMessage dismissalDelay:3.0 touchHandler:^{
-        [[UIApplication sharedApplication] openURL:url];
-        [minimalNotification dismiss];
-      }];
-      
-      [minimalNotification show];
-      
-    } else if (latitude || longitude) {
+    } else if (latitude && longitude) {
       MKPlacemark *placemark = [[MKPlacemark alloc] initWithCoordinate:CLLocationCoordinate2DMake(latitude, longitude) addressDictionary:nil];
       mapItem = [[MKMapItem alloc] initWithPlacemark:placemark];
       mapItem.name = [NSString stringWithFormat:@"%@'s Location", username];
       
-      JFMinimalNotification *minimalNotification = [JFMinimalNotification notificationWithStyle:JFMinimalNotificationStyleDefault title:title subTitle:notificationMessage dismissalDelay:3.0 touchHandler:^{
-        [mapItem openInMapsWithLaunchOptions:nil];
-        [minimalNotification dismiss];
-      }];
-      
-      [minimalNotification show];
       
     } else {
-      JFMinimalNotification *minimalNotification = [JFMinimalNotification notificationWithStyle:JFMinimalNotificationStyleDefault title:title subTitle:notificationMessage dismissalDelay:3.0 touchHandler:^{
-        [mapItem openInMapsWithLaunchOptions:nil];
-        [minimalNotification dismiss];
-      }];
-      
-      [minimalNotification show];
     }
     
     // Reload users list
     if ([self.visibleViewController isKindOfClass:[UsersTableViewController class]]) {
       UsersTableViewController *visibleUsersTableVC = (UsersTableViewController*)self.visibleViewController;
-      [visibleUsersTableVC performSelectorInBackground:@selector(reloadData) withObject:nil];
+      [visibleUsersTableVC performSelectorInBackground:@selector(reloadData:) withObject:nil];
       
     } else if ([self.visibleViewController.presentingViewController isKindOfClass:[UsersTableViewController class]]) {
       UsersTableViewController *visibleUsersTableVC = (UsersTableViewController*)self.visibleViewController.presentingViewController;
-      [visibleUsersTableVC performSelectorInBackground:@selector(reloadData) withObject:nil];
+      [visibleUsersTableVC performSelectorInBackground:@selector(reloadData:) withObject:nil];
     }
     
   } else {
     if (url) {
       [[UIApplication sharedApplication] openURL:url];
       
-    } else if (latitude || longitude) {
+    } else if (latitude && longitude) {
       MKPlacemark *placemark = [[MKPlacemark alloc] initWithCoordinate:CLLocationCoordinate2DMake(latitude, longitude) addressDictionary:nil];
       mapItem = [[MKMapItem alloc] initWithPlacemark:placemark];
       mapItem.name = [NSString stringWithFormat:@"%@'s Location", username];

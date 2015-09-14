@@ -29,11 +29,6 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>Pods-Dude-JFMinimalNotifications.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
 		<key>Pods-Dude-Parse.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -62,57 +57,52 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>05394EAA67161A9770334B4A</key>
+		<key>09EF17A3EE3BCE629F79D0CB</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>236D14DDD6A8EB04090884B3</key>
+		<key>66271BBED12C6017F8182F75</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>3889E06859156AD4F7F0DFCB</key>
+		<key>6A45FEEB099A570F63458A6F</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>3F60F60DF6110357A0DF11D8</key>
+		<key>811EEE6029EB8DE1E584E091</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>6222E0963847F9A7AA6B37BE</key>
+		<key>CAA7B4D6DF863B57A5FFA8D3</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>6CC01288BB653507987EF06F</key>
+		<key>D45B3184FADAC8EE5E27B29D</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>B5B2741A2F80325949095FE9</key>
+		<key>DB521411F1C13055F5812C72</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>CCD853A906D05C6CBA5071B1</key>
+		<key>F9EE32B2D5734D3D7348C9E6</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>CE5797761742CEDF5D25E750</key>
+		<key>FB828D4C1058D1F28B0455CA</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>E389A0BE149D76119A1EEAE1</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>F5576B69FFD332BBCC7B5059</key>
+		<key>FE93C8393907BECFF4EAF200</key>
 		<dict>
 			<key>primary</key>
 			<true/>

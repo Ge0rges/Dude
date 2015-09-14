@@ -8,6 +8,9 @@
 
 #import <UIKit/UIKit.h>
 
+// Constants
+#import "Constants.h"
+
 @interface WelcomeViewController : UIViewController
 
 @end

@@ -8,14 +8,21 @@
 
 #import "WelcomeViewController.h"
 #import "SignUpViewController.h"
+
 @interface WelcomeViewController ()
 
 @end
 
 @implementation WelcomeViewController
 
-#pragma mark - Navigation
+- (void)viewDidAppear:(BOOL)animated {
+  [super viewDidAppear:YES];
+  if ([DUser currentUser]) {
+    [self dismissViewControllerAnimated:YES completion:nil];
+  }
+}
 
+#pragma mark - Navigation
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
   SignUpViewController *signUpViewController = (SignUpViewController*)[segue destinationViewController];
   signUpViewController.logIn = ([segue.identifier isEqualToString:@"logInSegue"]) ? YES : NO;

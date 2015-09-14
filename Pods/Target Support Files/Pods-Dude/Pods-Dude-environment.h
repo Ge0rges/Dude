@@ -24,12 +24,6 @@
 #define COCOAPODS_VERSION_MINOR_Bolts_Tasks 2
 #define COCOAPODS_VERSION_PATCH_Bolts_Tasks 2
 
-// JFMinimalNotifications
-#define COCOAPODS_POD_AVAILABLE_JFMinimalNotifications
-#define COCOAPODS_VERSION_MAJOR_JFMinimalNotifications 0
-#define COCOAPODS_VERSION_MINOR_JFMinimalNotifications 0
-#define COCOAPODS_VERSION_PATCH_JFMinimalNotifications 5
-
 // Parse
 #define COCOAPODS_POD_AVAILABLE_Parse
 #define COCOAPODS_VERSION_MAJOR_Parse 1

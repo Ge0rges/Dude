@@ -86,13 +86,12 @@
         user.password = self.textField.text;
         DUser *loggedInUser = [DUser logInWithUsername:user.username password:user.password];
         if (!loggedInUser) {
-          [self dismissViewControllerAnimated:YES completion:nil];
-          
+          UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"Dude, we couldn't find you!" message:@"WE couldn't identify you with these credentials. Check for typos and try again." preferredStyle:UIAlertControllerStyleAlert];
+          [ac addAction:[UIAlertAction actionWithTitle:@"Will do!" style:UIAlertActionStyleDefault handler:nil]];
+        
         } else {
           // Go back to the redirection controller
-          [self dismissViewControllerAnimated:YES completion:^{
-            [self.presentingViewController dismissViewControllerAnimated:NO completion:nil];
-          }];
+          [self dismissViewControllerAnimated:NO completion:nil];
         }
         break;
       }
@@ -224,7 +223,7 @@
 
 - (void)proceedToSocial {
   // Update UI
-  [self.stepImageView setImage:[UIImage imageNamed:@"CoumpoundSocial"]];
+  [self.stepImageView setImage:[UIImage imageNamed:@"Coumpound Social"]];
   [self.stepLabel setText:@"We only use your Twitter and Facebook account when you use them to post messages."];
   [self.titleStepLabel setText:@"Accounts"];
   
@@ -265,7 +264,7 @@
   
   [self.stepImageView removeGestureRecognizer:self.stepImageView.gestureRecognizers[0]];
   
-  [self.textField becomeFirstResponder];
+  [self.textField performSelector:@selector(becomeFirstResponder) withObject:nil afterDelay:0.35];//.05 seconds after animation
   
   [retakeImageView removeFromSuperview];
   retakeImageView = nil;
@@ -410,12 +409,12 @@
 - (void)checkConfirmButton {
   switch (self.confirmButton.tag) {
     case 1: {
-      self.confirmButton.enabled = (self.textField.text.length > 0);
+      self.confirmButton.enabled = (self.logIn) ? [self isValidEmailWithAlert:NO] : (self.textField.text.length > 0);
       break;
     }
       
     case 2: {
-      self.confirmButton.enabled = [self isValidEmailWithAlert:NO];
+      self.confirmButton.enabled = (self.logIn) ? (self.textField.text.length > 5) : [self isValidEmailWithAlert:NO];
       break;
     }
       
@@ -509,10 +508,6 @@
       [self presentViewController:picker animated:YES completion:nil];
       break;
       
-    case 2:
-      [self selectPicture];
-      break;
-      
     default:
       break;
   }
@@ -571,7 +566,7 @@
   
   BOOL taken = NO;
   
-  if (validEmail && !self.logIn) {
+  if (validEmail && !self.logIn) {// We rent in log in so check the taken status of the email
     [emailTakenQuery cancel];
     emailTakenQuery = nil;
     
@@ -614,6 +609,6 @@
 
 #pragma mark - Status Bar
 - (BOOL)prefersStatusBarHidden {return NO;}
-- (UIStatusBarStyle)preferredStatusBarStyle {return UIStatusBarStyleDefault;}
+- (UIStatusBarStyle)preferredStatusBarStyle {return UIStatusBarStyleLightContent;}
 
 @end

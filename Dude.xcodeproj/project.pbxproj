@@ -11,7 +11,6 @@
 		DA19B0A41A374CB300ADDAF1 /* RedirectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DA19B0A31A374CB300ADDAF1 /* RedirectionViewController.m */; };
 		DA27F32A1AD3FC8200972F96 /* UIImageExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = DACEE7D61AB02DB200B958F0 /* UIImageExtensions.m */; };
 		DA4262921B1EE4B100560925 /* UsersTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DA4262911B1EE4B100560925 /* UsersTableViewController.m */; };
-		DA4262961B1EEA0C00560925 /* UIView+KZLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = DA4262951B1EEA0C00560925 /* UIView+KZLayout.m */; };
 		DA53ED061B28E38700C0A0A7 /* DUser.m in Sources */ = {isa = PBXBuildFile; fileRef = DAB605F01B2002FA00341828 /* DUser.m */; };
 		DA6EB62B1B2351EC00362033 /* MessagesTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DA6EB62A1B2351EC00362033 /* MessagesTableViewController.m */; };
 		DA6F4C4E1A1E439800D40186 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = DA6F4C4D1A1E439800D40186 /* main.m */; };
@@ -94,8 +93,6 @@
 		DA19B0A31A374CB300ADDAF1 /* RedirectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RedirectionViewController.m; path = Classes/Controllers/RedirectionViewController.m; sourceTree = "<group>"; };
 		DA4262901B1EE4B100560925 /* UsersTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UsersTableViewController.h; path = Classes/Controllers/UsersTableViewController.h; sourceTree = "<group>"; };
 		DA4262911B1EE4B100560925 /* UsersTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UsersTableViewController.m; path = Classes/Controllers/UsersTableViewController.m; sourceTree = "<group>"; };
-		DA4262941B1EEA0C00560925 /* UIView+KZLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+KZLayout.h"; sourceTree = "<group>"; };
-		DA4262951B1EEA0C00560925 /* UIView+KZLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+KZLayout.m"; sourceTree = "<group>"; };
 		DA6EB6291B2351EC00362033 /* MessagesTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MessagesTableViewController.h; path = Classes/Controllers/MessagesTableViewController.h; sourceTree = "<group>"; };
 		DA6EB62A1B2351EC00362033 /* MessagesTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MessagesTableViewController.m; path = Classes/Controllers/MessagesTableViewController.m; sourceTree = "<group>"; };
 		DA6F4C481A1E439800D40186 /* Dude.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Dude.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -184,15 +181,6 @@
 				23B478C0D797D16066E2FF6E /* Pods-Dude WatchKit Extension.release.xcconfig */,
 			);
 			name = Pods;
-			sourceTree = "<group>";
-		};
-		DA4262931B1EEA0C00560925 /* UIView+KZLayout */ = {
-			isa = PBXGroup;
-			children = (
-				DA4262941B1EEA0C00560925 /* UIView+KZLayout.h */,
-				DA4262951B1EEA0C00560925 /* UIView+KZLayout.m */,
-			);
-			path = "UIView+KZLayout";
 			sourceTree = "<group>";
 		};
 		DA6F4C3F1A1E439800D40186 = {
@@ -447,7 +435,6 @@
 			isa = PBXGroup;
 			children = (
 				FBDE26D81B81E0C3006485D0 /* Custom Segues */,
-				DA4262931B1EEA0C00560925 /* UIView+KZLayout */,
 				DAB5FCAF1AC69449003D8062 /* NSString Extensions */,
 				DACEE7D81AB02DF000B958F0 /* UIImage Extensions */,
 			);
@@ -742,7 +729,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DA4262961B1EEA0C00560925 /* UIView+KZLayout.m in Sources */,
 				DA6EB62B1B2351EC00362033 /* MessagesTableViewController.m in Sources */,
 				DACEE7CF1AAF67BD00B958F0 /* MessagesManager.m in Sources */,
 				DA6F4C511A1E439800D40186 /* AppDelegate.m in Sources */,

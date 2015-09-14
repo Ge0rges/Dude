@@ -23,6 +23,8 @@
 
 @end
 
+#warning redo, make sure any fully public messages are put in lastSeen under currentUser email
+
 @implementation MessagesTableViewController
 
 - (void)viewDidLoad {
@@ -119,6 +121,6 @@
 
 #pragma mark - Status Bar
 - (BOOL)prefersStatusBarHidden {return NO;}
-- (UIStatusBarStyle)preferredStatusBarStyle {return UIStatusBarStyleDefault;}
+- (UIStatusBarStyle)preferredStatusBarStyle {return UIStatusBarStyleLightContent;}
 
 @end
