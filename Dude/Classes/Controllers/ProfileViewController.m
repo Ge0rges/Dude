@@ -50,7 +50,7 @@
   // Status Update
   DMessage *message = [[ContactsManager sharedInstance] lastMessageForContact:(self.profileUser)?: [DUser currentUser]];
   [self.locationLabel setText:(message && message.locationCity && message.timestamp) ? [NSString stringWithFormat:@"%@ - %@", message.locationCity, message.timestamp] : @"Location not Shared yet"];
-  [self.statusLabel setText:(message.lastSeen && message) ? message.lastSeen : @"Dude, you haven't sent a public update yet."];
+  [self.statusLabel setText:(message.lastSeen && message) ? message.lastSeen : @"Dude, no avaible update yet."];
   
   // Map
   if (message.location && message) {
@@ -94,9 +94,15 @@
       [self.favoriteButton setTitle:[NSString stringWithFormat:@"Add %@ to Favorites", self.profileUser.fullName] forState:UIControlStateNormal];
     }
     
+    // Profile Image
+    [self.profileImageView sd_setImageWithURL:[NSURL URLWithString:self.profileUser.profileImage.url] placeholderImage:[UIImage imageNamed:@"Default Profile Image"]];
+    
     // Navigation Title
     self.titleItem.title = self.profileUser.fullName;
     
+    // Name label
+    [self.nameLabel setText:self.profileUser.fullName];
+
     // Send update text
     self.sendUpdateLabel.text = [NSString stringWithFormat:@"Send %@ an Update", self.profileUser.fullName];
     
@@ -119,7 +125,7 @@
     [self.nameLabel setText:[DUser currentUser].fullName];
     
     // Send update text
-    self.sendUpdateLabel.text = [NSString stringWithFormat:@"Send %@ an Update", [DUser currentUser].fullName];
+    self.sendUpdateLabel.text = @"Compose a new Update";
 
   }
 }
@@ -150,14 +156,14 @@
 - (IBAction)toggleFavorite:(id)sender {
   if ([[DUser currentUser].favouriteContactsEmails containsObject:self.profileUser.email.lowercaseString]) {
     // Already favorited
-    [[ContactsManager sharedInstance] removeContactFromFavourites:self.profileUser reloadFavouriteContacts:YES];
+    [[ContactsManager sharedInstance] removeContactFromFavourites:self.profileUser];
     
     [self.favoriteButton setImage:[UIImage imageNamed:@"Favorite Deselected"] forState:UIControlStateNormal];
     [self.favoriteButton setTitle:[NSString stringWithFormat:@"Add %@ to Favorites", self.profileUser.fullName] forState:UIControlStateNormal];
     
   } else {
     // Not Already favorited
-    [[ContactsManager sharedInstance] addContactToFavourites:self.profileUser reloadFavouriteContacts:YES];
+    [[ContactsManager sharedInstance] addContactToFavourites:self.profileUser];
     
     [self.favoriteButton setImage:[UIImage imageNamed:@"Favorite Selected"] forState:UIControlStateNormal];
     [self.favoriteButton setTitle:[NSString stringWithFormat:@"Remove %@ from Favorites", self.profileUser.fullName] forState:UIControlStateNormal];

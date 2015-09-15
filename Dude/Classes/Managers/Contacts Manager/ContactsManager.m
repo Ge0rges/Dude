@@ -131,30 +131,18 @@
   }
 }
 
-- (BOOL)addContactToFavourites:(NSString*)email reloadFavouriteContacts:(BOOL)reload {
+- (BOOL)addContactToFavourites:(DUser*)user {
+  if (!user) return NO;
+
   NSMutableSet *savedContacts = [[DUser currentUser].favouriteContactsEmails mutableCopy];
-  if ([email isEqualToString:[DUser currentUser].email]  || [savedContacts containsObject:email.lowercaseString]) return YES;
+  if ([user.email.lowercaseString isEqualToString:[DUser currentUser].email.lowercaseString]  || [savedContacts containsObject:user.email.lowercaseString]) return YES;
   
-  // Get the user with that email to make sure its valid
-  PFQuery *userQuery = [DUser query];
-  [userQuery whereKey:@"email" equalTo:email.lowercaseString];
+  // Save the user to the list of contacts
+  [savedContacts addObject:user.email.lowercaseString];
   
-  [userQuery fromLocalDatastore];
+  [[DUser currentUser] setFavouriteContactsEmails:savedContacts];
   
-  if ([userQuery getFirstObject]) {
-    // Save the user to the list of contacts
-    [savedContacts addObject:email];
-    
-    [[DUser currentUser] setFavouriteContactsEmails:savedContacts];
-    
-    BOOL saved = [[DUser currentUser] save];
-    if (reload) [self getContactsRefreshedNecessary:YES favourites:YES];
-    
-    return saved;
-    
-  } else {// User with email does not exist
-    return NO;
-  }
+  return [[DUser currentUser] save];
 }
 
 - (void)addDeviceContactsAndSendNotification:(BOOL)sendNotification {
@@ -212,7 +200,7 @@
   // Remove the username from the list
   NSMutableSet *savedContacts = [[DUser currentUser].contactsEmails mutableCopy];
   
-  [savedContacts removeObject:email];
+  [savedContacts removeObject:email.lowercaseString];
   
   [[DUser currentUser] setContactsEmails:savedContacts];
   [[DUser currentUser] saveEventually];
@@ -221,16 +209,16 @@
   return (reload) ? [self getContactsRefreshedNecessary:YES favourites:NO] : nil;
 }
 
-- (NSArray*)removeContactFromFavourites:(NSString*)email reloadFavouriteContacts:(BOOL)reload {
+- (BOOL)removeContactFromFavourites:(DUser*)user {
+  if (!user) return NO;
+    
   // Remove the username from the list
   NSMutableSet *savedContacts = [[DUser currentUser].favouriteContactsEmails mutableCopy];
-  [savedContacts removeObject:email];
+  [savedContacts removeObject:user.email];
   
   [[DUser currentUser] setFavouriteContactsEmails:savedContacts];
-  [[DUser currentUser] saveEventually];
   
-  // Reload contacts if necessary
-  return (reload) ? [self getContactsRefreshedNecessary:YES favourites:YES] : nil;
+  return [[DUser currentUser] save];
 }
 
 #pragma mark Added Notification

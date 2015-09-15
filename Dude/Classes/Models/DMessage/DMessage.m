@@ -155,7 +155,8 @@ NSString* const TimestampKey = @"timestamp";
       rawSentence = [rawSentence stringByReplacingOccurrencesOfString:@"name" withString:venueName];
       rawSentence = [rawSentence stringByReplacingOccurrencesOfString:@"eatingAction" withString:eatingActionString];
       rawSentence = [rawSentence stringByReplacingOccurrencesOfString:@"eatingTime" withString:eatingTime];
-
+      
+      return rawSentence;
       break;
     }
     

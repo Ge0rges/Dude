@@ -6,7 +6,7 @@
 //  Copyright (c) 2015 Georges Kanaan. All rights reserved.
 //
 
-#define kAnimationDuration 0.3
+#define kAnimationDuration 0.25
 
 #import "SlidingSegues.h"
 
@@ -26,6 +26,7 @@
     sourceViewController.view.transform = CGAffineTransformMakeTranslation(-sourceViewController.view.frame.size.width, 0);
     
   } completion:^(BOOL finished) {
+    [destinationController.view removeFromSuperview];
     [sourceViewController presentViewController:destinationController animated:NO completion:nil];
   }];
 }
@@ -48,7 +49,7 @@
     sourceViewController.view.transform = CGAffineTransformMakeTranslation(sourceViewController.view.frame.size.width, 0);
     
   } completion:^(BOOL finished) {
-    [sourceViewController presentViewController:destinationController animated:NO completion:nil];
+    [destinationController dismissViewControllerAnimated:NO completion:nil];
   }];
 }
 
