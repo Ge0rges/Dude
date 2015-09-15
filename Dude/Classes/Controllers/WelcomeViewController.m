@@ -7,7 +7,12 @@
 //
 
 #import "WelcomeViewController.h"
+
+// Controllers
 #import "SignUpViewController.h"
+
+// Classes
+#import "SlidingSegues.h"
 
 @interface WelcomeViewController ()
 
@@ -23,6 +28,11 @@
 }
 
 #pragma mark - Navigation
+- (IBAction)unwindToWelcomeViewController:(UIStoryboardSegue *)segue {}
+- (UIStoryboardSegue*)segueForUnwindingToViewController:(UIViewController *)toViewController fromViewController:(UIViewController *)fromViewController identifier:(NSString *)identifier {
+  return [SlidingSegueRL segueWithIdentifier:identifier source:fromViewController destination:toViewController performHandler:^{}];
+}
+
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
   SignUpViewController *signUpViewController = (SignUpViewController*)[segue destinationViewController];
   signUpViewController.logIn = ([segue.identifier isEqualToString:@"logInSegue"]) ? YES : NO;

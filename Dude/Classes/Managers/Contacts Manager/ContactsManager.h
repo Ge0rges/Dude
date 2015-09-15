@@ -23,8 +23,8 @@
 
 // Adding
 - (void)addDeviceContactsAndSendNotification:(BOOL)sendNotification;
-- (BOOL)addContactToFavourites:(DUser*)user;
-- (BOOL)addContactToContacts:(DUser*)user sendNotification:(BOOL)sendNotification;
+- (void)addContactToFavourites:(DUser*)user;
+- (void)addContactToContacts:(DUser*)user sendNotification:(BOOL)sendNotification;
 
 // Blocking and unblocking
 - (void)blockContact:(DUser*)user;
@@ -34,7 +34,7 @@
 
 // Removing
 - (NSArray*)removeContact:(DUser*)user reloadContacts:(BOOL)reload;
-- (BOOL)removeContactFromFavourites:(DUser*)user;
+- (void)removeContactFromFavourites:(DUser*)user;
 
 // Fetching contacts
 - (NSArray*)getContactsRefreshedNecessary:(BOOL)needsLatestData favourites:(BOOL)favs;

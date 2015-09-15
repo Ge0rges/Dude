@@ -445,7 +445,7 @@
 - (IBAction)back {
   switch (self.confirmButton.tag) {
     case 1: {
-      [self performSegueWithIdentifier:@"backToWelcomeSegue" sender:nil];
+      [self performSegueWithIdentifier:@"unwindWelcome" sender:nil];
       break;
     }
       

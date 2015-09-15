@@ -140,29 +140,9 @@
     // Array to store messages
     NSMutableArray *messages = [NSMutableArray new];
 
-    // Check we are allowed to have location and if we should still generate messsages and get venues if so
-    if (numberOfMessagesToGenerate-6 > 0 && !userIsInAutomobile) {
-#warning venue messages not generating
-      NSArray *venues = [self getNearbyVenuesNameAndCategory:numberOfMessagesToGenerate-6 withResponse:nil];
-      
-      // Check if there are any venues
-      if (venues && venues.count > 0) {
-        // Get the message for each venue from the dict.
-        for (NSArray *venue in venues) {// For each venue
-          DMessage *message = [[DMessage alloc] initWithCategory:venue[1] location:self.locationManager.location venueName:venue[0] venueCity:searchedLocation image:venue[2]];
-          
-          if (message) [messages addObject:message];
-        }
-      }
-    }
-    
     // Add default messages
-    DMessage *messageDude = [[DMessage alloc] initWithCategory:@"Just Dude" location:self.locationManager.location venueName:@"Just Dude" venueCity:searchedLocation image:nil];
-    
-    
+    DMessage *messageDude = [[DMessage alloc] initWithCategory:@"Just Dude" location:self.locationManager.location venueName:@"Just Dude" venueCity:searchedLocation imageURL:nil];
     DMessage *messageLink = [[DMessage alloc] initForPasteboardURLWithLocation:self.locationManager.location];
-    
-    
     DMessage *messageLocation = [[DMessage alloc] initForLocation:self.locationManager.location venueCity:searchedLocation];
     
     if (messageDude) [messages addObject:messageDude];
@@ -170,23 +150,38 @@
     if (messageLocation) [messages addObject:messageLocation];
     
     if (userIsInAutomobile) {
-      DMessage *messageCar = [[DMessage alloc] initWithCategory:@"Car" location:self.locationManager.location venueName:@"In transit" venueCity:searchedLocation image:nil];
-      DMessage *messageTrain = [[DMessage alloc] initWithCategory:@"Train" location:self.locationManager.location venueName:@"In transit" venueCity:searchedLocation image:nil];
-      DMessage *messagePlane = [[DMessage alloc] initWithCategory:@"Plane" location:self.locationManager.location venueName:@"In transit" venueCity:searchedLocation image:nil];
+      DMessage *messageCar = [[DMessage alloc] initWithCategory:@"Car" location:self.locationManager.location venueName:@"In transit" venueCity:searchedLocation imageURL:nil];
+      DMessage *messageTrain = [[DMessage alloc] initWithCategory:@"Train" location:self.locationManager.location venueName:@"In transit" venueCity:searchedLocation imageURL:nil];
+      DMessage *messagePlane = [[DMessage alloc] initWithCategory:@"Plane" location:self.locationManager.location venueName:@"In transit" venueCity:searchedLocation imageURL:nil];
       
       if (messageCar) [messages addObject:messageCar];
       if (messageTrain) [messages addObject:messageTrain];
       if (messagePlane) [messages addObject:messagePlane];
-
+      
       
     } else {
-      DMessage *messageHome = [[DMessage alloc] initWithCategory:@"Home" location:self.locationManager.location venueName:@"Home" venueCity:searchedLocation image:nil];
-      DMessage *messageWork = [[DMessage alloc] initWithCategory:@"Work" location:self.locationManager.location venueName:@"Work" venueCity:searchedLocation image:nil];
-      DMessage *messageFriend = [[DMessage alloc] initWithCategory:@"Friend" location:self.locationManager.location venueName:@"a Friend's" venueCity:searchedLocation image:nil];
+      DMessage *messageHome = [[DMessage alloc] initWithCategory:@"Home" location:self.locationManager.location venueName:@"Home" venueCity:searchedLocation imageURL:nil];
+      DMessage *messageWork = [[DMessage alloc] initWithCategory:@"Work" location:self.locationManager.location venueName:@"Work" venueCity:searchedLocation imageURL:nil];
+      DMessage *messageFriend = [[DMessage alloc] initWithCategory:@"Friend" location:self.locationManager.location venueName:@"a Friend's" venueCity:searchedLocation imageURL:nil];
       
       if (messageHome) [messages addObject:messageHome];
       if (messageWork) [messages addObject:messageWork];
       if (messageFriend) [messages addObject:messageFriend];
+    }
+
+    // Check we are allowed to have location and if we should still generate messsages and get venues if so
+    if (numberOfMessagesToGenerate-6 > 0 && !userIsInAutomobile) {
+      NSArray *venues = [self getNearbyVenuesNameAndCategory:numberOfMessagesToGenerate-6 withResponse:nil];
+      
+      // Check if there are any venues
+      if (venues && venues.count > 0) {
+        // Get the message for each venue from the dict.
+        for (NSArray *venue in venues) {// For each venue
+          DMessage *message = [[DMessage alloc] initWithCategory:venue[1] location:self.locationManager.location venueName:venue[0] venueCity:searchedLocation imageURL:venue[2]];
+          
+          if (message) [messages addObject:message];
+        }
+      }
     }
     
     return [NSArray arrayWithArray:messages];
@@ -237,10 +232,7 @@
       NSString *category = innerCategories[@"name"];
       
       // Image URL
-      NSString *imageURLString = venue[@"url"];
-      if (!imageURLString) {
-        imageURLString = [NSString stringWithFormat:@"%@64 %@", innerCategories[@"icon"][@"prefix"], innerCategories[@"icon"][@"suffix"]];
-      }
+      NSString *imageURLString = [NSString stringWithFormat:@"%@bg_64%@", innerCategories[@"icon"][@"prefix"], innerCategories[@"icon"][@"suffix"]];
       
       [returnArray addObject:@[name, category, imageURLString]];
     }

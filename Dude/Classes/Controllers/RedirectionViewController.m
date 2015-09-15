@@ -27,8 +27,7 @@
   [super viewDidLoad];
   // Do any additional setup after loading the view.
   internetConnectionViewIsShowing = NO;
-  
-  
+    
   // Update status bar
   [self setNeedsStatusBarAppearanceUpdate];
   

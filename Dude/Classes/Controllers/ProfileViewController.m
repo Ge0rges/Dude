@@ -16,6 +16,7 @@
 
 // Classes
 #import "AppDelegate.h"
+#import "SlidingSegues.h"
 
 @interface ProfileViewController () <UINavigationControllerDelegate, UIImagePickerControllerDelegate, UIActionSheetDelegate>
 
@@ -39,8 +40,8 @@
 @end
 
 @implementation ProfileViewController
-- (void)viewWillAppear:(BOOL)animated {
-  [super viewWillAppear:animated];
+- (void)viewDidLoad {
+  [super viewDidLoad];
   // Do any additional setup after loading the view.
   
   // Update status bar
@@ -50,14 +51,14 @@
   // Status Update
   DMessage *message = [[ContactsManager sharedInstance] lastMessageForContact:(self.profileUser)?: [DUser currentUser]];
   [self.locationLabel setText:(message && message.locationCity && message.timestamp) ? [NSString stringWithFormat:@"%@ - %@", message.locationCity, message.timestamp] : @"Location not Shared yet"];
-  [self.statusLabel setText:(message.lastSeen && message) ? message.lastSeen : @"Dude, no avaible update yet."];
+  [self.statusLabel setText:(message.lastSeen && message) ? message.lastSeen : @"Dude, no available update yet."];
   
   // Map
   if (message.location && message) {
     MKPointAnnotation *annotation = [MKPointAnnotation new];
     annotation.coordinate = message.location.coordinate;
     [self.statusLocationMapView addAnnotation:annotation];
-
+    
   } else {
     [self.statusLocationMapView setFrame:CGRectMake(self.statusLocationMapView.frame.origin.x, self.statusLocationMapView.frame.origin.y, self.statusLocationMapView.frame.size.width, 0)];
   }
@@ -66,7 +67,7 @@
   NSDictionary *textAttributes = @{NSForegroundColorAttributeName : [UIColor whiteColor]};
   [self.titleItem setTitleTextAttributes:textAttributes forState:UIControlStateDisabled];
   [self.titleItem setTitleTextAttributes:textAttributes forState:UIControlStateNormal];
-
+  
   // Variable
   if (self.profileUser) {
     // Secondary button
@@ -76,7 +77,7 @@
     } else if ([[ContactsManager sharedInstance] currentUserBlockedContact:self.profileUser]) {
       [self.secondaryButton setImage:[UIImage imageNamed:@"Unblock Person"] forState:UIControlStateNormal];
       [self.secondaryButton addTarget:self action:@selector(toggleBlock) forControlEvents:UIControlEventTouchUpInside];
-
+      
     } else {
       [self.secondaryButton setImage:[UIImage imageNamed:@"Block Person"] forState:UIControlStateNormal];
       [self.secondaryButton addTarget:self action:@selector(toggleBlock) forControlEvents:UIControlEventTouchUpInside];
@@ -102,7 +103,7 @@
     
     // Name label
     [self.nameLabel setText:self.profileUser.fullName];
-
+    
     // Send update text
     self.sendUpdateLabel.text = [NSString stringWithFormat:@"Send %@ an Update", self.profileUser.fullName];
     
@@ -126,7 +127,6 @@
     
     // Send update text
     self.sendUpdateLabel.text = @"Compose a new Update";
-
   }
 }
 
@@ -150,6 +150,18 @@
     
   } else {
     [[ContactsManager sharedInstance] blockContact:self.profileUser];
+  }
+  
+  if ([[ContactsManager sharedInstance] contactBlockedCurrentUser:self.profileUser]) {
+    [self.secondaryButton setImage:[UIImage imageNamed:@"Blocked"] forState:UIControlStateNormal];
+    
+  } else if ([[ContactsManager sharedInstance] currentUserBlockedContact:self.profileUser]) {
+    [self.secondaryButton setImage:[UIImage imageNamed:@"Unblock Person"] forState:UIControlStateNormal];
+    [self.secondaryButton addTarget:self action:@selector(toggleBlock) forControlEvents:UIControlEventTouchUpInside];
+    
+  } else {
+    [self.secondaryButton setImage:[UIImage imageNamed:@"Block Person"] forState:UIControlStateNormal];
+    [self.secondaryButton addTarget:self action:@selector(toggleBlock) forControlEvents:UIControlEventTouchUpInside];
   }
 }
 
@@ -236,6 +248,9 @@
       break;
   }
 }
+
+#pragma mark - Navigation
+- (IBAction)unwindToProfileViewController:(UIStoryboardSegue *)segue {}
 
 #pragma mark - Status Bar
 - (BOOL)prefersStatusBarHidden {return NO;}

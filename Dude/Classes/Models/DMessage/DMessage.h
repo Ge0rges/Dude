@@ -38,7 +38,7 @@ typedef NS_ENUM(NSInteger, DMessageType) {
 @property (strong, nonatomic, readonly) NSString *timestamp; // The timestamp to show for this message
 @property (nonatomic, readonly) DMessageType type;// What kind of message is this
 
-- (instancetype)initWithCategory:(NSString*)messageCategory location:(CLLocation*)messageLocation venueName:(NSString*)messageVenueName venueCity:(NSString*)messageLocationCity image:(NSString*)imageURLString;
+- (instancetype)initWithCategory:(NSString*)messageCategory location:(CLLocation*)messageLocation venueName:(NSString*)messageVenueName venueCity:(NSString*)messageLocationCity imageURL:(NSString*)imageURLString;
 - (instancetype)initForPasteboardURLWithLocation:(CLLocation*)messageLocation;
 - (instancetype)initForLocation:(CLLocation*)messageLocation venueCity:(NSString*)messageLocationCity;
 

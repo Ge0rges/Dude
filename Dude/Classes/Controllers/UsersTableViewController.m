@@ -10,9 +10,11 @@
 
 // Classes
 #import "AppDelegate.h"
+#import "SlidingSegues.h"
 
 // Pods
 #import <SDWebImage/UIImageView+WebCache.h>
+#import <SDWebImage/SDWebImageDownloader.h>
 
 // Managers
 #import "ContactsManager.h"
@@ -24,7 +26,7 @@
 
 @interface UsersTableViewController () <UITableViewDataSource, UITableViewDelegate> {
   NSArray *contacts;
-  
+
   UIImageView *leftBarButtonitemImageView;
   
   DUser *friendSearchedUser;
@@ -63,7 +65,7 @@
   
   // Initialize the arrays
   contacts = [NSArray new];
-  
+
   // Set controller properties
   self.favoritesOnly = NO;
   
@@ -142,13 +144,13 @@
       self.nofavoritesView.alpha = 0.0;
       self.nofavoritesView.hidden = NO;
       
-      [UIView animateWithDuration:0.25 animations:^{
+      [UIView animateWithDuration:0.3 animations:^{
         self.nofavoritesView.alpha = 1.0;
       }];
       
     } else {
       if (!self.nofavoritesView.hidden) {
-        [UIView animateWithDuration:0.25 animations:^{
+        [UIView animateWithDuration:0.3 animations:^{
           self.nofavoritesView.alpha = 0.0;
           
         } completion:^(BOOL finished) {
@@ -163,12 +165,12 @@
         self.noFriendsView.alpha = 0.0;
         self.noFriendsView.hidden = NO;
         
-        [UIView animateWithDuration:0.25 animations:^{
+        [UIView animateWithDuration:0.3 animations:^{
           self.noFriendsView.alpha = 1.0;
         }];
         
       } else if (!self.noFriendsView.hidden) {
-        [UIView animateWithDuration:0.25 animations:^{
+        [UIView animateWithDuration:0.3 animations:^{
           self.noFriendsView.alpha = 0.0;
           
         } completion:^(BOOL finished) {
@@ -209,11 +211,14 @@
   DUser *user = contacts[indexPath.row];
   
   // Populate the cell
-  cell.textLabel.text = user.username;
+  cell.textLabel.text = user.fullName;
   cell.detailTextLabel.text = [[ContactsManager sharedInstance] lastMessageForContact:user].lastSeen;
-  
-  NSURL *profileImageURL = [NSURL URLWithString:user.profileImage.url];
-  [cell.imageView sd_setImageWithURL:profileImageURL placeholderImage:[UIImage imageNamed:@"Default Profile Image"]];
+  [cell.imageView sd_setImageWithURL:[NSURL URLWithString:user.profileImage.url] completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
+    [UIView animateWithDuration:0.15 animations:^{
+      [cell.imageView setImage:[image resizedImage:CGSizeMake(50, 50) interpolationQuality:kCGInterpolationHigh]];
+      [cell layoutSubviews];
+    }];
+  }];
   
   return cell;
 }
@@ -226,6 +231,55 @@
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+  if ([cell respondsToSelector:@selector(tintColor)]) {
+      CGFloat cornerRadius = 7.f;
+      cell.backgroundColor = UIColor.clearColor;
+      CAShapeLayer *layer = [[CAShapeLayer alloc] init];
+      CGMutablePathRef pathRef = CGPathCreateMutable();
+      CGRect bounds = CGRectInset(cell.bounds, 10, 0);
+      BOOL addLine = NO;
+      
+      if (indexPath.row == 0 && indexPath.row == [tableView numberOfRowsInSection:indexPath.section]-1) {
+        CGPathAddRoundedRect(pathRef, nil, bounds, cornerRadius, cornerRadius);
+      
+      } else if (indexPath.row == 0) {
+        CGPathMoveToPoint(pathRef, nil, CGRectGetMinX(bounds), CGRectGetMaxY(bounds));
+        CGPathAddArcToPoint(pathRef, nil, CGRectGetMinX(bounds), CGRectGetMinY(bounds), CGRectGetMidX(bounds), CGRectGetMinY(bounds), cornerRadius);
+        CGPathAddArcToPoint(pathRef, nil, CGRectGetMaxX(bounds), CGRectGetMinY(bounds), CGRectGetMaxX(bounds), CGRectGetMidY(bounds), cornerRadius);
+        CGPathAddLineToPoint(pathRef, nil, CGRectGetMaxX(bounds), CGRectGetMaxY(bounds));
+        addLine = YES;
+      
+      } else if (indexPath.row == [tableView numberOfRowsInSection:indexPath.section]-1) {
+        CGPathMoveToPoint(pathRef, nil, CGRectGetMinX(bounds), CGRectGetMinY(bounds));
+        CGPathAddArcToPoint(pathRef, nil, CGRectGetMinX(bounds), CGRectGetMaxY(bounds), CGRectGetMidX(bounds), CGRectGetMaxY(bounds), cornerRadius);
+        CGPathAddArcToPoint(pathRef, nil, CGRectGetMaxX(bounds), CGRectGetMaxY(bounds), CGRectGetMaxX(bounds), CGRectGetMidY(bounds), cornerRadius);
+        CGPathAddLineToPoint(pathRef, nil, CGRectGetMaxX(bounds), CGRectGetMinY(bounds));
+      
+      } else {
+        CGPathAddRect(pathRef, nil, bounds);
+        addLine = YES;
+      }
+      
+      layer.path = pathRef;
+      CFRelease(pathRef);
+      layer.fillColor = [UIColor colorWithWhite:1.f alpha:0.8f].CGColor;
+      
+      if (addLine == YES) {
+        CALayer *lineLayer = [[CALayer alloc] init];
+        CGFloat lineHeight = (1.f / [UIScreen mainScreen].scale);
+        lineLayer.frame = CGRectMake(CGRectGetMinX(bounds)+10, bounds.size.height-lineHeight, bounds.size.width-10, lineHeight);
+        lineLayer.backgroundColor = tableView.separatorColor.CGColor;
+        [layer addSublayer:lineLayer];
+      }
+      
+      UIView *testView = [[UIView alloc] initWithFrame:bounds];
+      [testView.layer insertSublayer:layer atIndex:0];
+      testView.backgroundColor = UIColor.clearColor;
+      cell.backgroundView = testView;
+  }
+}
+
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
   if ([segue.identifier isEqualToString:@"showProfile"]) {
     ProfileViewController *pvc = (ProfileViewController*)[segue destinationViewController];
@@ -236,7 +290,7 @@
 #pragma mark - Adding Contact
 - (void)beginFriendSearch:(UIButton*)sender {
   if (!self.nofavoritesView.hidden) {
-    [UIView animateWithDuration:0.25 animations:^{
+    [UIView animateWithDuration:0.3 animations:^{
       self.nofavoritesView.alpha = 0.0;
       
     } completion:^(BOOL finished) {
@@ -246,7 +300,7 @@
   }
   
   if (!self.noFriendsView.hidden) {
-    [UIView animateWithDuration:0.25 animations:^{
+    [UIView animateWithDuration:0.3 animations:^{
       self.noFriendsView.alpha = 0.0;
       
     } completion:^(BOOL finished) {
@@ -283,10 +337,11 @@
     if (![self validateEmail:textfield.text withAlert:NO]) {
       dispatch_async(dispatch_get_main_queue(), ^{
         [self.searchResultButton setImage:nil forState:UIControlStateNormal];
+        [self.searchResultButton setTitle:@"" forState:UIControlStateNormal];
         [self.searchResultLabel setText:@"Dude enter your friend's email"];
         
         if (![self.searchResultLabel.text isEqualToString:@""] || self.searchResultImageView.image != nil) {
-          [UIView animateWithDuration:0.25 animations:^{
+          [UIView animateWithDuration:0.3 animations:^{
             [self.searchResultImageView setImage:nil];
             self.searchResultLabel.text = @"";
           }];
@@ -296,6 +351,7 @@
     } else {
       dispatch_async(dispatch_get_main_queue(), ^{
         [self.searchResultLabel setText:@"Searching..."];
+        [self.searchResultButton setTitle:@"" forState:UIControlStateNormal];
       });
       
       // Get the user with that email to make sure its valid
@@ -307,7 +363,7 @@
       // If valid update results UI
       dispatch_async(dispatch_get_main_queue(), ^{
         if (friendSearchedUser) {
-          [UIView animateWithDuration:0.25 animations:^{
+          [UIView animateWithDuration:0.3 animations:^{
             [self.searchResultImageView sd_setImageWithURL:[NSURL URLWithString:friendSearchedUser.profileImage.url] placeholderImage:[UIImage imageNamed:@"Default Profile Image"] options:SDWebImageHighPriority];
             self.searchResultLabel.text = friendSearchedUser.fullName;
           }];
@@ -327,8 +383,9 @@
           [self.searchResultButton setImage:[UIImage imageNamed:imageName] forState:UIControlStateNormal];
           
         }  else {
-          [self.searchResultLabel setText:@"Dude, that email isn't registered..."];
+          [self.searchResultLabel setText:@"Not Found."];
           [self.searchResultButton setImage:nil forState:UIControlStateNormal];
+          [self.searchResultButton setTitle:@"Double check the email you entered." forState:UIControlStateNormal];
         }
         
         [self.searchResultButton sizeToFit];
@@ -360,6 +417,10 @@
   [addButton removeTarget:self action:@selector(exitFriendSearch:) forControlEvents:UIControlEventAllEvents];
   [addButton addTarget:self action:@selector(beginFriendSearch:) forControlEvents:UIControlEventTouchUpInside];
 }
+
+#pragma mark - Navigation
+- (IBAction)unwindToUsersTableViewController:(UIStoryboardSegue *)segue {}
+
 
 #pragma mark - Email Validation
 - (BOOL)validateEmail:(NSString*)email withAlert:(BOOL)showAlert {

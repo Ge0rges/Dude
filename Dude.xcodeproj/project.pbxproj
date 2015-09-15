@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		8D8D5F4A1732FB4AFE56C405 /* libPods-Dude.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F673BF28C1C27641C653380 /* libPods-Dude.a */; };
 		DA19B0A41A374CB300ADDAF1 /* RedirectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DA19B0A31A374CB300ADDAF1 /* RedirectionViewController.m */; };
-		DA27F32A1AD3FC8200972F96 /* UIImageExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = DACEE7D61AB02DB200B958F0 /* UIImageExtensions.m */; };
 		DA4262921B1EE4B100560925 /* UsersTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DA4262911B1EE4B100560925 /* UsersTableViewController.m */; };
 		DA53ED061B28E38700C0A0A7 /* DUser.m in Sources */ = {isa = PBXBuildFile; fileRef = DAB605F01B2002FA00341828 /* DUser.m */; };
 		DA6EB62B1B2351EC00362033 /* MessagesTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DA6EB62A1B2351EC00362033 /* MessagesTableViewController.m */; };
@@ -18,11 +17,8 @@
 		DA6F4C571A1E439800D40186 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DA6F4C551A1E439800D40186 /* Main.storyboard */; };
 		DA6F4C591A1E439800D40186 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DA6F4C581A1E439800D40186 /* Images.xcassets */; };
 		DA8E11C91AD6A3DD005F9CF2 /* UIImage+Alpha.m in Sources */ = {isa = PBXBuildFile; fileRef = DA8E11C41AD6A3DD005F9CF2 /* UIImage+Alpha.m */; };
-		DA8E11CA1AD6A3DD005F9CF2 /* UIImage+Alpha.m in Sources */ = {isa = PBXBuildFile; fileRef = DA8E11C41AD6A3DD005F9CF2 /* UIImage+Alpha.m */; };
 		DA8E11CB1AD6A3DD005F9CF2 /* UIImage+Resize.m in Sources */ = {isa = PBXBuildFile; fileRef = DA8E11C61AD6A3DD005F9CF2 /* UIImage+Resize.m */; };
-		DA8E11CC1AD6A3DD005F9CF2 /* UIImage+Resize.m in Sources */ = {isa = PBXBuildFile; fileRef = DA8E11C61AD6A3DD005F9CF2 /* UIImage+Resize.m */; };
 		DA8E11CD1AD6A3DD005F9CF2 /* UIImage+RoundedCorner.m in Sources */ = {isa = PBXBuildFile; fileRef = DA8E11C81AD6A3DD005F9CF2 /* UIImage+RoundedCorner.m */; };
-		DA8E11CE1AD6A3DD005F9CF2 /* UIImage+RoundedCorner.m in Sources */ = {isa = PBXBuildFile; fileRef = DA8E11C81AD6A3DD005F9CF2 /* UIImage+RoundedCorner.m */; };
 		DAB5FCAD1AC69314003D8062 /* NSStringExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = DAB5FCAC1AC69314003D8062 /* NSStringExtensions.m */; };
 		DAB5FCAE1AC69314003D8062 /* NSStringExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = DAB5FCAC1AC69314003D8062 /* NSStringExtensions.m */; };
 		DAB605F11B2002FA00341828 /* DUser.m in Sources */ = {isa = PBXBuildFile; fileRef = DAB605F01B2002FA00341828 /* DUser.m */; };
@@ -45,6 +41,7 @@
 		F912672043AC2C92004FCA65 /* libPods-Dude WatchKit Extension.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9D20CD04C45B6488B4BD606 /* libPods-Dude WatchKit Extension.a */; };
 		FB1FF5691B8A2119001831D9 /* WelcomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FB1FF5681B8A2119001831D9 /* WelcomeViewController.m */; };
 		FB2FAF701B514FE70055018B /* Launch Screen.xib in Resources */ = {isa = PBXBuildFile; fileRef = FB2FAF6F1B514FE70055018B /* Launch Screen.xib */; };
+		FBDB73821BA809C300C7D452 /* MainNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = FBDB73811BA809C300C7D452 /* MainNavigationController.m */; };
 		FBDE26D71B81E0B5006485D0 /* SlidingSegues.m in Sources */ = {isa = PBXBuildFile; fileRef = FBDE26D61B81E0B5006485D0 /* SlidingSegues.m */; };
 /* End PBXBuildFile section */
 
@@ -146,6 +143,8 @@
 		FB1FF5671B8A2119001831D9 /* WelcomeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WelcomeViewController.h; path = Classes/Controllers/WelcomeViewController.h; sourceTree = "<group>"; };
 		FB1FF5681B8A2119001831D9 /* WelcomeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = WelcomeViewController.m; path = Classes/Controllers/WelcomeViewController.m; sourceTree = "<group>"; };
 		FB2FAF6F1B514FE70055018B /* Launch Screen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = "Launch Screen.xib"; path = "Base.lproj/Launch Screen.xib"; sourceTree = "<group>"; };
+		FBDB73801BA809C300C7D452 /* MainNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MainNavigationController.h; path = Classes/Controllers/MainNavigationController.h; sourceTree = "<group>"; };
+		FBDB73811BA809C300C7D452 /* MainNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MainNavigationController.m; path = Classes/Controllers/MainNavigationController.m; sourceTree = "<group>"; };
 		FBDE26D51B81E0B5006485D0 /* SlidingSegues.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SlidingSegues.h; sourceTree = "<group>"; };
 		FBDE26D61B81E0B5006485D0 /* SlidingSegues.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SlidingSegues.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -282,12 +281,14 @@
 				FB1FF5681B8A2119001831D9 /* WelcomeViewController.m */,
 				DAC3B8251B21B67200C303CD /* SignUpViewController.h */,
 				DAC3B8261B21B67200C303CD /* SignUpViewController.m */,
+				FBDB73801BA809C300C7D452 /* MainNavigationController.h */,
+				FBDB73811BA809C300C7D452 /* MainNavigationController.m */,
 				DA4262901B1EE4B100560925 /* UsersTableViewController.h */,
 				DA4262911B1EE4B100560925 /* UsersTableViewController.m */,
-				DA6EB6291B2351EC00362033 /* MessagesTableViewController.h */,
-				DA6EB62A1B2351EC00362033 /* MessagesTableViewController.m */,
 				DAEF37651B1E1A2100391DD0 /* ProfileViewController.h */,
 				DAEF37661B1E1A2100391DD0 /* ProfileViewController.m */,
+				DA6EB6291B2351EC00362033 /* MessagesTableViewController.h */,
+				DA6EB62A1B2351EC00362033 /* MessagesTableViewController.m */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -741,6 +742,7 @@
 				DACEE7D31AAF67E200B958F0 /* ContactsManager.m in Sources */,
 				DA6F4C4E1A1E439800D40186 /* main.m in Sources */,
 				DAB5FCAD1AC69314003D8062 /* NSStringExtensions.m in Sources */,
+				FBDB73821BA809C300C7D452 /* MainNavigationController.m in Sources */,
 				DACEE7D71AB02DB200B958F0 /* UIImageExtensions.m in Sources */,
 				DA19B0A41A374CB300ADDAF1 /* RedirectionViewController.m in Sources */,
 				FBDE26D71B81E0B5006485D0 /* SlidingSegues.m in Sources */,
@@ -755,15 +757,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				DAB5FCAE1AC69314003D8062 /* NSStringExtensions.m in Sources */,
-				DA8E11CE1AD6A3DD005F9CF2 /* UIImage+RoundedCorner.m in Sources */,
-				DA8E11CC1AD6A3DD005F9CF2 /* UIImage+Resize.m in Sources */,
 				DA53ED061B28E38700C0A0A7 /* DUser.m in Sources */,
 				DAD223471A9A348D00AE81B0 /* RowController.m in Sources */,
 				DAD2234A1A9A36BA00AE81B0 /* MessageInterfaceController.m in Sources */,
 				DACFF3DA1A8F8FCD00E3A784 /* NotificationController.m in Sources */,
-				DA8E11CA1AD6A3DD005F9CF2 /* UIImage+Alpha.m in Sources */,
 				DACFF3D71A8F8FCD00E3A784 /* InterfaceController.m in Sources */,
-				DA27F32A1AD3FC8200972F96 /* UIImageExtensions.m in Sources */,
 				DAF7FC4D1B31FECE008F7A96 /* DMessage.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -28,21 +28,43 @@ NSString* const TypeKey = @"type";
 NSString* const SendDateKey = @"sendDate";
 NSString* const TimestampKey = @"timestamp";
 
+@interface DMessage ()
+
+@property (strong, nonatomic) NSString *message;// The full message string (Dude, I'm eating sushi for lunch at Itsu.)
+@property (strong, nonatomic) NSString *notificationMessage;// The string to be used for notifications (Gio: Dude, I'm eating sushi for lunch at Itsu.)
+@property (strong, nonatomic) NSString *notificationTitle;// The string to be used for notification titles (Gio - Message/Link/'s Location)
+@property (strong, nonatomic) NSString *venueName;// The string to be used for venue reference (Itsu)
+
+@property (strong, nonatomic) NSString *lastSeen;// The last seen to be used for this message (Eating sushi for lunch at Itsu, London)
+
+@property (strong, nonatomic) NSURL *URL;// The URL associted with message (http://itsu.com)
+@property (strong, nonatomic) NSURL *imageURL;// The URL for the image associted with message (category or venue)
+
+@property (strong, nonatomic) CLLocation *location;// The location of the sender
+@property (strong, nonatomic) NSString *locationCity;// The city of the sender (London)
+
+@property (strong, nonatomic) NSString *category;// The 4sq category from which it was generated (Sushi Restaurant)
+
+@property (strong, nonatomic) NSString *timestamp; // The timestamp to show for this message
+@property (nonatomic) DMessageType type;// What kind of message is this
+
+@end
+
 @implementation DMessage
 
 @synthesize message, notificationMessage, lastSeen, URL, location, locationCity, category, type, notificationTitle, venueName, imageURL, sendDate, timestamp;
 
 #pragma mark - Initilizations
-- (instancetype)initWithCategory:(NSString *)messageCategory location:(CLLocation *)messageLocation venueName:(NSString *)messageVenueName  venueCity:(NSString *)messageLocationCity image:(NSString *)imageURLString {
+- (instancetype)initWithCategory:(NSString *)messageCategory location:(CLLocation *)messageLocation venueName:(NSString *)messageVenueName  venueCity:(NSString *)messageLocationCity imageURL:(NSString *)imageURLString {
   if (self = [super init]) {
-    category = [messageCategory copy];
-    location = [messageLocation copy];
-    venueName = [messageVenueName copy];
-    locationCity = [messageLocationCity copy];
-    type = DMessageTypeMessage;
-    imageURL = [NSURL URLWithString:imageURLString];
+    self.category = [messageCategory copy];
+    self.location = [messageLocation copy];
+    self.venueName = [messageVenueName copy];
+    self.locationCity = [messageLocationCity copy];
+    self.type = DMessageTypeMessage;
+    self.imageURL = [NSURL URLWithString:imageURLString];
     
-    if (!location || !type || !venueName || !locationCity) return nil;
+    if (!self.location || !self.venueName || !self.locationCity) return nil;
     if (![self actionSentences][self.category]) { // Check that the category is valid othwise notifies dev
       dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
         // Notify Devs
@@ -55,7 +77,7 @@ NSString* const TimestampKey = @"timestamp";
         
         // Send the notification.
         PFPush *push = [PFPush push];
-        [push setMessage:[NSString stringWithFormat:@"Dude, unsupported category: [%@]", category]];
+        [push setMessage:[NSString stringWithFormat:@"Dude, unsupported category: [%@]", self.category]];
         [push setQuery:query];
         
         [push sendPushInBackground];
@@ -65,7 +87,7 @@ NSString* const TimestampKey = @"timestamp";
     }
     
     // Format venue name
-    venueName = ([venueName hasSuffix:@"."]) ? [venueName substringToIndex:[venueName length]-1] : venueName;
+    self.venueName = ([self.venueName hasSuffix:@"."]) ? [self.venueName substringToIndex:[self.venueName length]-1] : self.venueName;
   }
   
   return self;
@@ -73,11 +95,11 @@ NSString* const TimestampKey = @"timestamp";
 
 - (instancetype)initForLocation:(CLLocation *)messageLocation venueCity:(NSString *)messageLocationCity {
   if (self = [super init]) {
-    location = [messageLocation copy];
-    locationCity = [messageLocationCity copy];
-    type = DMessageTypeLocation;
+    self.location = [messageLocation copy];
+    self.locationCity = [messageLocationCity copy];
+    self.type = DMessageTypeLocation;
 
-    if (!location || !type || !locationCity) return nil;
+    if (!self.location || !self.locationCity) return nil;
   }
   
   return self;
@@ -85,10 +107,10 @@ NSString* const TimestampKey = @"timestamp";
 
 - (instancetype)initForPasteboardURLWithLocation:(CLLocation *)messageLocation {
   if (self = [super init]) {
-    location = [messageLocation copy];
-    type = DMessageTypeURL;
+    self.location = [messageLocation copy];
+    self.type = DMessageTypeURL;
     
-    if (!self.URL || !location || !type) return nil;
+    if (!self.URL || !self.location) return nil;
   }
   
   return self;
@@ -97,19 +119,19 @@ NSString* const TimestampKey = @"timestamp";
 #pragma mark NSCoding
 - (instancetype)initWithCoder:(NSCoder *)aDecoder {
   if (self = [super init]) {
-    message = [aDecoder decodeObjectForKey:MessageKey];
-    notificationMessage = [aDecoder decodeObjectForKey:NotificationMessageKey];
-    notificationTitle = [aDecoder decodeObjectForKey:NotificationTitleKey];
-    venueName = [aDecoder decodeObjectForKey:VenueNameKey];
-    lastSeen = [aDecoder decodeObjectForKey:LastSeenKey];
-    URL = [aDecoder decodeObjectForKey:URLKey];
-    imageURL = [aDecoder decodeObjectForKey:ImageURLKey];
-    location = [aDecoder decodeObjectForKey:LocationKey];
-    locationCity = [aDecoder decodeObjectForKey:LocationCityKey];
-    category = [aDecoder decodeObjectForKey:CategoryKey];
-    type = [aDecoder decodeIntegerForKey:TypeKey];
-    sendDate = [aDecoder decodeObjectForKey:SendDateKey];
-    timestamp = [aDecoder decodeObjectForKey:TimestampKey];
+    self.message = [aDecoder decodeObjectForKey:MessageKey];
+    self.notificationMessage = [aDecoder decodeObjectForKey:NotificationMessageKey];
+    self.notificationTitle = [aDecoder decodeObjectForKey:NotificationTitleKey];
+    self.venueName = [aDecoder decodeObjectForKey:VenueNameKey];
+    self.lastSeen = [aDecoder decodeObjectForKey:LastSeenKey];
+    self.URL = [aDecoder decodeObjectForKey:URLKey];
+    self.imageURL = [aDecoder decodeObjectForKey:ImageURLKey];
+    self.location = [aDecoder decodeObjectForKey:LocationKey];
+    self.locationCity = [aDecoder decodeObjectForKey:LocationCityKey];
+    self.category = [aDecoder decodeObjectForKey:CategoryKey];
+    self.type = [aDecoder decodeIntegerForKey:TypeKey];
+    self.sendDate = [aDecoder decodeObjectForKey:SendDateKey];
+    self.timestamp = [aDecoder decodeObjectForKey:TimestampKey];
   }
   
   return self;
@@ -152,7 +174,7 @@ NSString* const TimestampKey = @"timestamp";
       NSString *eatingActionString = [NSString stringWithFormat:@"having %@", eatingTime];
       
       // Replace the placeholders
-      rawSentence = [rawSentence stringByReplacingOccurrencesOfString:@"name" withString:venueName];
+      rawSentence = [rawSentence stringByReplacingOccurrencesOfString:@"name" withString:self.venueName];
       rawSentence = [rawSentence stringByReplacingOccurrencesOfString:@"eatingAction" withString:eatingActionString];
       rawSentence = [rawSentence stringByReplacingOccurrencesOfString:@"eatingTime" withString:eatingTime];
       
@@ -215,11 +237,14 @@ NSString* const TimestampKey = @"timestamp";
     case DMessageTypeMessage: {
       if ([self.message isEqualToString:@"Dude."]) return self.message;
       
+      // Remove Dude, I'm from message
       NSString *truncatedMessage = [self.message stringByReplacingOccurrencesOfString:@"Dude, I'm " withString:@""];
       
-      truncatedMessage = [truncatedMessage stringByAppendingString:[NSString stringWithFormat:@", %@", self.locationCity]];
+      // Add location to end of sentence
+      truncatedMessage = [truncatedMessage stringByAppendingString:[NSString stringWithFormat:@", %@.", self.locationCity]];
       
       if (truncatedMessage.length > 0) {
+        // Capitalize first letter of sentence
         return [truncatedMessage stringByReplacingCharactersInRange:NSMakeRange(0,1) withString:[[truncatedMessage substringToIndex:1] capitalizedString]];
         
       } else {

@@ -111,9 +111,9 @@
 }
 
 #pragma mark - Adding
-- (BOOL)addContactToContacts:(DUser*)user sendNotification:(BOOL)sendNotification {
+- (void)addContactToContacts:(DUser*)user sendNotification:(BOOL)sendNotification {
   NSMutableSet *savedContacts = [[DUser currentUser].contactsEmails mutableCopy];
-  if ([user.email.lowercaseString isEqualToString:[DUser currentUser].email.lowercaseString]  || [savedContacts containsObject:user.email.lowercaseString]) return YES;
+  if ([user.email.lowercaseString isEqualToString:[DUser currentUser].email.lowercaseString]  || [savedContacts containsObject:user.email.lowercaseString]) return;
   
   if (user) {
     // Save the user to the list of contacts
@@ -124,25 +124,22 @@
     // Notify the user that we added him
     if (sendNotification) [self sendAddedNotificationToContact:user];
     
-    return [[DUser currentUser] save];
-    
-  } else {// User with email does not exist
-    return NO;
+    [[DUser currentUser] saveEventually];
   }
 }
 
-- (BOOL)addContactToFavourites:(DUser*)user {
-  if (!user) return NO;
+- (void)addContactToFavourites:(DUser*)user {
+  if (!user) return;
 
   NSMutableSet *savedContacts = [[DUser currentUser].favouriteContactsEmails mutableCopy];
-  if ([user.email.lowercaseString isEqualToString:[DUser currentUser].email.lowercaseString]  || [savedContacts containsObject:user.email.lowercaseString]) return YES;
+  if ([user.email.lowercaseString isEqualToString:[DUser currentUser].email.lowercaseString]  || [savedContacts containsObject:user.email.lowercaseString]) return;
   
   // Save the user to the list of contacts
   [savedContacts addObject:user.email.lowercaseString];
   
   [[DUser currentUser] setFavouriteContactsEmails:savedContacts];
   
-  return [[DUser currentUser] save];
+  [[DUser currentUser] saveInBackground];
 }
 
 - (void)addDeviceContactsAndSendNotification:(BOOL)sendNotification {
@@ -209,8 +206,8 @@
   return (reload) ? [self getContactsRefreshedNecessary:YES favourites:NO] : nil;
 }
 
-- (BOOL)removeContactFromFavourites:(DUser*)user {
-  if (!user) return NO;
+- (void)removeContactFromFavourites:(DUser*)user {
+  if (!user) return;
     
   // Remove the username from the list
   NSMutableSet *savedContacts = [[DUser currentUser].favouriteContactsEmails mutableCopy];
@@ -218,7 +215,7 @@
   
   [[DUser currentUser] setFavouriteContactsEmails:savedContacts];
   
-  return [[DUser currentUser] save];
+  [[DUser currentUser] saveInBackground];
 }
 
 #pragma mark Added Notification
