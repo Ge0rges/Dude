@@ -14,11 +14,14 @@
 // Managers
 #import "ContactsManager.h"
 
+// Extensions & Categories
+#import "UIImageExtensions.h"
+
 // Classes
 #import "AppDelegate.h"
 #import "SlidingSegues.h"
 
-@interface ProfileViewController () <UINavigationControllerDelegate, UIImagePickerControllerDelegate, UIActionSheetDelegate>
+@interface ProfileViewController () <UINavigationControllerDelegate, UIImagePickerControllerDelegate>
 
 @property (strong, nonatomic) IBOutlet UIImageView *profileImageView;
 
@@ -187,12 +190,33 @@
 }
 
 - (IBAction)editProfileImage:(id)sender {
-  UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@"Now, choose a profile picture from"
-                                                           delegate:self
-                                                  cancelButtonTitle:@"Cancel"
-                                             destructiveButtonTitle:nil
-                                                  otherButtonTitles:@"Camera", @"Library", nil];
-  [actionSheet showInView:self.view];
+  UIAlertController *actionSheet = [UIAlertController alertControllerWithTitle:@"Choose a profile picture from" message:@"" preferredStyle:UIAlertControllerStyleActionSheet];
+  
+  [actionSheet addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+    [actionSheet dismissViewControllerAnimated:YES completion:nil];
+  }]];
+  
+  [actionSheet addAction:[UIAlertAction actionWithTitle:@"Camera" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+    UIImagePickerController *picker = [UIImagePickerController new];
+    picker.delegate = self;
+    picker.allowsEditing = YES;
+    
+    picker.sourceType = UIImagePickerControllerSourceTypeCamera;
+    [self presentViewController:picker animated:YES completion:nil];
+    
+  }]];
+  
+  [actionSheet addAction:[UIAlertAction actionWithTitle:@"Library" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+    UIImagePickerController *picker = [UIImagePickerController new];
+    picker.delegate = self;
+    picker.allowsEditing = YES;
+    
+    picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+    [self presentViewController:picker animated:YES completion:nil];
+    
+  }]];
+  
+  [self presentViewController:actionSheet animated:YES completion:nil];
 }
 
 - (IBAction)logout:(id)sender {
@@ -201,7 +225,6 @@
 }
 
 #pragma mark - UIImagePickerController
-
 - (void)imagePickerControllerDidCancel:(UIImagePickerController*)picker {
   [picker dismissViewControllerAnimated:YES completion:NULL];
 }
@@ -222,31 +245,6 @@
   }
   
   [[DUser currentUser] saveInBackground];
-}
-
-- (void)actionSheet:(UIActionSheet*)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
-  UIImagePickerController *picker = [UIImagePickerController new];
-  picker.delegate = self;
-  picker.allowsEditing = YES;
-  
-  switch (buttonIndex) {
-    case 0:
-      picker.sourceType = UIImagePickerControllerSourceTypeCamera;
-      [self presentViewController:picker animated:YES completion:nil];
-      break;
-      
-    case 1:
-      picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-      [self presentViewController:picker animated:YES completion:nil];
-      break;
-      
-    case 2:
-      [actionSheet dismissWithClickedButtonIndex:2 animated:YES];
-      break;
-      
-    default:
-      break;
-  }
 }
 
 #pragma mark - Navigation

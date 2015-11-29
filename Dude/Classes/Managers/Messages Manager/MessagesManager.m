@@ -14,6 +14,12 @@
 // Classes
 #import "AppDelegate.h"
 
+// Frameworks
+#import <Social/Social.h>
+
+// Pods
+#import <SOMotionDetector/SOMotionDetector.h>
+
 @interface MessagesManager () <CLLocationManagerDelegate, SOMotionDetectorDelegate> {
   LocationCompletionBlock locationCompletionBlock;
   
@@ -272,7 +278,7 @@
   [request setHTTPMethod:@"GET"];
   
   // Make sure we have valid data to parse otherwise app will crash
-  NSData *responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:nil];
+  NSData *responseData = [QNSURLConnection sendSynchronousRequest:request returningResponse:nil error:nil];
   if (responseData) {
     return [(NSDictionary*)[NSJSONSerialization JSONObjectWithData:responseData options:0 error:nil] objectForKey:@"response"];
   }
@@ -456,7 +462,7 @@
       NSURLRequest *request = [NSURLRequest requestWithURL:apiEndpoint cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:5.0f];
       
       NSError *error;
-      NSData *resultData = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:&error];
+      NSData *resultData = [QNSURLConnection sendSynchronousRequest:request returningResponse:nil error:&error];
 
       if (!resultData) handler(NO, error);
 
@@ -525,7 +531,7 @@
       NSURLRequest *request = [NSURLRequest requestWithURL:apiEndpoint cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:5.0f];
       
       NSError *error;
-      NSData *resultData = [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:&error];
+      NSData *resultData = [QNSURLConnection sendSynchronousRequest:request returningResponse:nil error:&error];
       
       if (!resultData) handler(NO, error);
       

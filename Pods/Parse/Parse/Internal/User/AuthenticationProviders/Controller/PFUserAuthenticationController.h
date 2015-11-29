@@ -10,33 +10,45 @@
 #import <Foundation/Foundation.h>
 
 #import <Parse/PFConstants.h>
+#import <Parse/PFUserAuthenticationDelegate.h>
 
-#import "PFAuthenticationProvider.h"
+#import "PFCoreDataProvider.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class BFTask;
+@class BFTask PF_GENERIC(__covariant BFGenericType);
 @class PFUser;
 
 @interface PFUserAuthenticationController : NSObject
+
+@property (nonatomic, weak, readonly) id<PFCurrentUserControllerProvider> dataSource;
+
+///--------------------------------------
+/// @name Init
+///--------------------------------------
+
+- (instancetype)init NS_UNAVAILABLE;
++ (instancetype)new NS_UNAVAILABLE;
+
+- (instancetype)initWithDataSource:(id<PFCurrentUserControllerProvider>)dataSource;
++ (instancetype)controllerWithDataSource:(id<PFCurrentUserControllerProvider>)dataSource;
 
 ///--------------------------------------
 /// @name Authentication Providers
 ///--------------------------------------
 
-- (void)registerAuthenticationProvider:(id<PFAuthenticationProvider>)provider;
-- (void)unregisterAuthenticationProvider:(id<PFAuthenticationProvider>)provider;
+- (void)registerAuthenticationDelegate:(id<PFUserAuthenticationDelegate>)delegate forAuthType:(NSString *)authType;
+- (void)unregisterAuthenticationDelegateForAuthType:(NSString *)authType;
 
-- (id<PFAuthenticationProvider>)authenticationProviderForAuthType:(NSString *)authType;
+- (id<PFUserAuthenticationDelegate>)authenticationDelegateForAuthType:(NSString *)authType;
 
 ///--------------------------------------
 /// @name Authentication
 ///--------------------------------------
 
-- (BFTask *)deauthenticateAsyncWithProviderForAuthType:(NSString *)authType;
-
-- (BFTask *)restoreAuthenticationAsyncWithAuthData:(nullable NSDictionary *)authData
-                           forProviderWithAuthType:(NSString *)authType;
+- (BFTask PF_GENERIC(NSNumber *) *)restoreAuthenticationAsyncWithAuthData:(nullable NSDictionary *)authData
+                                                              forAuthType:(NSString *)authType;
+- (BFTask PF_GENERIC(NSNumber *) *)deauthenticateAsyncWithAuthType:(NSString *)authType;
 
 ///--------------------------------------
 /// @name Log In

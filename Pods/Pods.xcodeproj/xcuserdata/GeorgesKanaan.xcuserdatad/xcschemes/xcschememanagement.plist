@@ -4,26 +4,6 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
-		<key>Pods-Dude WatchKit Extension-Bolts.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
-		<key>Pods-Dude WatchKit Extension-Parse.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
-		<key>Pods-Dude WatchKit Extension.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
-		<key>Pods-Dude-APAddressBook.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
 		<key>Pods-Dude-Bolts.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -34,22 +14,37 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>Pods-Dude-Reachability.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
-		<key>Pods-Dude-SDWebImage.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
-		<key>Pods-Dude-SOMotionDetector.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
 		<key>Pods-Dude.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>Pods-Watch Extension-Bolts.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>Pods-Watch Extension-Parse.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>Pods-Watch Extension.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>Reachability.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>SDWebImage.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>SOMotionDetector.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
@@ -57,52 +52,47 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>09EF17A3EE3BCE629F79D0CB</key>
+		<key>2D2D905C45285B077B6F25BABE28C209</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>66271BBED12C6017F8182F75</key>
+		<key>353051DF9EF2DDF30FCAEED8E51DA3FA</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>6A45FEEB099A570F63458A6F</key>
+		<key>426A7531791E21B7525E5A4DABA2FC1C</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>811EEE6029EB8DE1E584E091</key>
+		<key>7934BBB3628E803272DD6D3B5101BEFB</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>CAA7B4D6DF863B57A5FFA8D3</key>
+		<key>8CF3F4808D7134592E943E394F303360</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>D45B3184FADAC8EE5E27B29D</key>
+		<key>8DF227F81D0903E1E1C37BEEB3317FC7</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>DB521411F1C13055F5812C72</key>
+		<key>C0537291D567CA222A6C061601E6570C</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>F9EE32B2D5734D3D7348C9E6</key>
+		<key>DC4C9F67F3D989D945DE02DE214D0F91</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>FB828D4C1058D1F28B0455CA</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>FE93C8393907BECFF4EAF200</key>
+		<key>E8AB0BD91C5EEA4488962763669FE62B</key>
 		<dict>
 			<key>primary</key>
 			<true/>

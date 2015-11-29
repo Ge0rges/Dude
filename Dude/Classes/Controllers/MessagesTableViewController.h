@@ -9,9 +9,6 @@
 // Frameworks
 #import <UIKit/UIKit.h>
 
-// Constants
-#import "Constants.h"
-
 @interface MessagesTableViewController : UITableViewController
 
 @property (strong, nonatomic) NSArray *selectedUsers;

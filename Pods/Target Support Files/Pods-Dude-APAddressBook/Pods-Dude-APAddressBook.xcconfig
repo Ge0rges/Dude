@@ -1,1 +1,0 @@
-PODS_DUDE_APADDRESSBOOK_OTHER_LDFLAGS = -framework "AddressBook"

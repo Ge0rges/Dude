@@ -8,10 +8,17 @@
 
 #import "ContactsManager.h"
 
+// Frameworks
+#import <Social/Social.h>
+#import <Contacts/Contacts.h>
+#import <UIKit/UIKit.h>
+
+// Constants
+#import "Constants.h"
+
 // Pods
 #import <SDWebImage/SDWebImageManager.h>
-#import <APAddressBook/APAddressBook.h>
-#import <APAddressBook/APContact.h>
+#import <SOMotionDetector/SOMotionDetector.h>
 
 // Managers
 #import "MessagesManager.h"
@@ -146,49 +153,47 @@
   Reachability *reachability = [Reachability reachabilityForInternetConnection];
   if (![reachability isReachableViaWiFi]) return;
   
-  APAddressBook *addressBook = [APAddressBook new];
-  addressBook.fieldsMask = APContactFieldEmails;
+  CNContactStore *contactStore = [CNContactStore new];
   
-  [addressBook loadContactsOnQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0) completion:^(NSArray *contacts, NSError *error) {
-    if (!error && contacts.count > 0) {
-      NSMutableSet *contactEmails = [NSMutableSet new];
-      
-      for (APContact *contact in contacts) {
-        for (NSString *email in contact.emails) {
-          if (![email.lowercaseString isEqualToString:[DUser currentUser].email.lowercaseString]) {
-            [contactEmails addObject:email];
-          }
-        }
+#warning temporary request perm where apppropriate
+  [contactStore requestAccessForEntityType:CNEntityTypeContacts completionHandler:^(BOOL granted, NSError * _Nullable error){}];
+  
+  [contactStore enumerateContactsWithFetchRequest:[[CNContactFetchRequest alloc] initWithKeysToFetch:@[CNContactEmailAddressesKey]] error:nil usingBlock:^(CNContact * _Nonnull contact, BOOL * _Nonnull stop) {
+    NSMutableSet *contactEmails = [NSMutableSet new];
+    
+    for (NSString *email in contact.emailAddresses) {
+      if (![email.lowercaseString isEqualToString:[DUser currentUser].email.lowercaseString]) {
+        [contactEmails addObject:email];
       }
+    }
+    
+    PFQuery *userQuery = [DUser query];
+    [userQuery whereKey:@"email" containedIn:[contactEmails allObjects]];
+    
+    NSArray *users = [userQuery findObjects];
+    
+    NSMutableSet *currentUserContacts = [[DUser currentUser].contactsEmails mutableCopy];
+    
+    for (DUser *user in users) {
+      [currentUserContacts addObject:user.email];
+    }
+    
+    [[DUser currentUser] setContactsEmails:currentUserContacts];
+    
+    [[DUser currentUser] saveInBackgroundWithBlock:^(BOOL success, NSError *error) {
+      AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+      UIViewController *vc = appDelegate.visibleViewController;
       
-      PFQuery *userQuery = [DUser query];
-      [userQuery whereKey:@"email" containedIn:[contactEmails allObjects]];
-      
-      NSArray *users = [userQuery findObjects];
-      
-      NSMutableSet *currentUserContacts = [[DUser currentUser].contactsEmails mutableCopy];
+      if ([vc isKindOfClass:[UsersTableViewController class]]) {
+        UsersTableViewController *userTableVC = (UsersTableViewController*)vc;
+        [userTableVC reloadData:nil];
+      }
       
       for (DUser *user in users) {
-        [currentUserContacts addObject:user.email];
+        [self sendAddedNotificationToContact:user];
       }
       
-      [[DUser currentUser] setContactsEmails:currentUserContacts];
-      
-      [[DUser currentUser] saveInBackgroundWithBlock:^(BOOL success, NSError *error) {
-        AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-        UIViewController *vc = appDelegate.visibleViewController;
-        
-        if ([vc isKindOfClass:[UsersTableViewController class]]) {
-          UsersTableViewController *userTableVC = (UsersTableViewController*)vc;
-          [userTableVC reloadData:nil];
-        }
-        
-        for (DUser *user in users) {
-          [self sendAddedNotificationToContact:user];
-        }
-        
-      }];
-    }
+    }];
   }];
 }
 

@@ -12,6 +12,9 @@
 // Constants
 #import "Constants.h"
 
+// Models
+#import "DUser.h"
+
 @interface ProfileViewController : UIViewController
 
 @property (strong, nonatomic) DUser *profileUser;

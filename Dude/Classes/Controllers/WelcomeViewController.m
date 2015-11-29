@@ -14,6 +14,12 @@
 // Classes
 #import "SlidingSegues.h"
 
+//Models
+#import "DUser.h"
+
+// Constants
+#import "Constants.h"
+
 @interface WelcomeViewController ()
 
 @end

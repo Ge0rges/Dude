@@ -9,9 +9,6 @@
 // Frameworks
 #import <UIKit/UIKit.h>
 
-// Constants
-#import "Constants.h"
-
 @interface UsersTableViewController : UIViewController
 
 - (IBAction)reloadData:(UISegmentedControl*)segmentedControl;

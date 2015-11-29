@@ -6,10 +6,8 @@
 //
 //
 
-#import "UIImageExtensions.h"
 #import "NSStringExtensions.h"
-
-#import "DUser.h"
+#import "QNSURLConnection.h"
 
 #define WatchRequestsKey @"request"// Key for requests
 #define WatchRequestContacts @"requestContacts"// value of WatchRequestsKey

@@ -6,20 +6,12 @@
 //  Copyright (c) 2015 Georges Kanaan. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
-
-// Frameworks
-#import <Social/Social.h>
-#import <AddressBook/AddressBook.h>
-
-// Pods
-#import <SOMotionDetector/SOMotionDetector.h>
-
-// Constants
-#import "Constants.h"
-
 // Models
 #import "DMessage.h"
+#import "DUser.h"
+
+//Pods
+#import <Parse/Parse.h>
 
 typedef void (^LocationCompletionBlock)(NSError *error);
 typedef void (^MessageCompletionBlock)(BOOL success, NSError *error);

@@ -17,6 +17,9 @@
 // Pods
 #import <Reachability/Reachability.h>
 
+// Models
+#import "DUser.h"
+
 @interface RedirectionViewController ()
 
 @end

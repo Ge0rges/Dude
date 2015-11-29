@@ -8,9 +8,6 @@
 
 #import "DUser.h"
 
-// Classes
-#import "AppDelegate.h"
-
 // Pods
 #import <Parse/PFObject+Subclass.h>
 
@@ -213,7 +210,6 @@ NSString* const FullNameKey = @"fullName";
 }
 
 - (void)showSelectionAlertControllerWithAccount:(NSArray*)accounts andCompletionHandler:(AccountCompletionBlock)completion forTwitter:(BOOL)twitter {
-#ifndef TARGET_IS_EXTENSION
   dispatch_async(dispatch_get_main_queue(), ^{
     NSString *title = (twitter) ? @"Which Twitter account would you like to use?" : @"Which Facebook account would you like to use?" ;
     
@@ -232,12 +228,10 @@ NSString* const FullNameKey = @"fullName";
     AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     [appDelegate.visibleViewController presentViewController:ac animated:YES completion:nil];
   });
-#endif
 }
 
 #pragma mark - Other helpers
 + (void)showSocialServicesAlert {
-#ifndef TARGET_IS_EXTENSION
   dispatch_async(dispatch_get_main_queue(), ^{
     UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"Error" message:@"You must be logged in to either Twitter or Facebook and allow access to social accounts to be able to use them within the app." preferredStyle:UIAlertControllerStyleAlert];
     
@@ -253,7 +247,6 @@ NSString* const FullNameKey = @"fullName";
     AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     [appDelegate.visibleViewController presentViewController:ac animated:YES completion:nil];
   });
-#endif
 }
 
 @end

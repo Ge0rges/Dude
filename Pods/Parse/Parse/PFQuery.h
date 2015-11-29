@@ -103,7 +103,7 @@ typedef void (^PFQueryArrayResultBlock)(NSArray PF_GENERIC(PFGenericObject) * PF
 
  @returns The same instance of `PFQuery` as the receiver. This allows method chaining.
  */
-- (instancetype)selectKeys:(NSArray *)keys;
+- (instancetype)selectKeys:(NSArray PF_GENERIC(NSString *) *)keys;
 
 /*!
  @abstract Add a constraint that requires a particular key exists.
@@ -379,7 +379,7 @@ typedef void (^PFQueryArrayResultBlock)(NSArray PF_GENERIC(PFGenericObject) * PF
 
  @returns An instance of `PFQuery` that is the `or` of the passed in queries.
  */
-+ (instancetype)orQueryWithSubqueries:(NSArray *)queries;
++ (instancetype)orQueryWithSubqueries:(NSArray PF_GENERIC(PFQuery *) *)queries;
 
 /*!
  @abstract Adds a constraint that requires that a key's value matches a value in another key
@@ -493,7 +493,7 @@ typedef void (^PFQueryArrayResultBlock)(NSArray PF_GENERIC(PFGenericObject) * PF
 
  @returns The same instance of `PFQuery` as the receiver. This allows method chaining.
  */
-- (instancetype)orderBySortDescriptors:(PF_NULLABLE NSArray *)sortDescriptors;
+- (instancetype)orderBySortDescriptors:(PF_NULLABLE NSArray PF_GENERIC(NSSortDescriptor *) *)sortDescriptors;
 
 ///--------------------------------------
 /// @name Getting Objects by ID
@@ -558,7 +558,7 @@ typedef void (^PFQueryArrayResultBlock)(NSArray PF_GENERIC(PFGenericObject) * PF
 
  @returns The task, that encapsulates the work being done.
  */
-- (BFTask *)getObjectInBackgroundWithId:(NSString *)objectId;
+- (BFTask PF_GENERIC(PFGenericObject) *)getObjectInBackgroundWithId:(NSString *)objectId;
 
 /*!
  @abstract Gets a <PFObject> asynchronously and calls the given block with the result.
@@ -607,8 +607,7 @@ typedef void (^PFQueryArrayResultBlock)(NSArray PF_GENERIC(PFGenericObject) * PF
  @param error Pointer to an NSError that will be set if necessary.
  @result The PFUser if found. Returns nil if the object isn't found, or if there was an error.
  */
-+ (PF_NULLABLE PFUser *)getUserObjectWithId:(NSString *)objectId
-                                      error:(NSError **)error;
++ (PF_NULLABLE PFUser *)getUserObjectWithId:(NSString *)objectId error:(NSError **)error;
 
 /*!
  @deprecated Please use [PFUser query] instead.
@@ -640,7 +639,7 @@ typedef void (^PFQueryArrayResultBlock)(NSArray PF_GENERIC(PFGenericObject) * PF
 
  @returns The task, that encapsulates the work being done.
  */
-- (BFTask *)findObjectsInBackground;
+- (BFTask PF_GENERIC(NSArray<PFGenericObject> *)*)findObjectsInBackground;
 
 /*!
  @abstract Finds objects *asynchronously* and calls the given block with the results.
@@ -691,7 +690,7 @@ typedef void (^PFQueryArrayResultBlock)(NSArray PF_GENERIC(PFGenericObject) * PF
 
  @returns The task, that encapsulates the work being done.
  */
-- (BFTask *)getFirstObjectInBackground;
+- (BFTask PF_GENERIC(PFGenericObject) *)getFirstObjectInBackground;
 
 /*!
  @abstract Gets an object *asynchronously* and calls the given block with the result.
@@ -743,7 +742,7 @@ typedef void (^PFQueryArrayResultBlock)(NSArray PF_GENERIC(PFGenericObject) * PF
 
  @returns The task, that encapsulates the work being done.
  */
-- (BFTask *)countObjectsInBackground;
+- (BFTask PF_GENERIC(NSNumber *)*)countObjectsInBackground;
 
 /*!
  @abstract Counts objects *asynchronously* and calls the given block with the counts.
@@ -801,12 +800,12 @@ typedef void (^PFQueryArrayResultBlock)(NSArray PF_GENERIC(PFGenericObject) * PF
  @see fromPin
  @see fromPinWithName:
  */
-@property (assign, readwrite) PFCachePolicy cachePolicy;
+@property (nonatomic, assign) PFCachePolicy cachePolicy;
 
 /*!
  @abstract The age after which a cached value will be ignored
  */
-@property (assign, readwrite) NSTimeInterval maxCacheAge;
+@property (nonatomic, assign) NSTimeInterval maxCacheAge;
 
 /*!
  @abstract Returns whether there is a cached result for this query.

@@ -24,6 +24,12 @@
 #import "MessagesTableViewController.h"
 #import "ProfileViewController.h"
 
+// Extensions & Categories
+#import "UIImageExtensions.h"
+
+// Constants
+#import "Constants.h"
+
 @interface UsersTableViewController () <UITableViewDataSource, UITableViewDelegate> {
   NSArray *contacts;
 

@@ -9,6 +9,9 @@
 // Pods
 #import <Parse/Parse.h>
 
+// Classes
+#import "AppDelegate.h"
+
 // Frameworks
 #import <Accounts/Accounts.h>
 
@@ -17,9 +20,6 @@ typedef void (^AccountCompletionBlock)(BOOL success, ACAccount *account, NSError
 @interface DUser : PFUser <PFSubclassing>
 
 @property (strong, nonatomic) PFFile *profileImage;
-
-@property (strong, nonatomic, readonly) NSString *facebookUsername;
-@property (strong, nonatomic, readonly) NSString *twitterUsername;
 
 @property (strong, nonatomic) NSString *fullName;
 
@@ -32,6 +32,9 @@ typedef void (^AccountCompletionBlock)(BOOL success, ACAccount *account, NSError
 
 + (instancetype)currentUser;
 + (instancetype)object;
+
+@property (strong, nonatomic, readonly) NSString *facebookUsername;
+@property (strong, nonatomic, readonly) NSString *twitterUsername;
 
 - (void)selectTwitterAccountWithCompletion:(AccountCompletionBlock)completion;
 - (void)selectFacebookAccountWithCompletion:(AccountCompletionBlock)completion;

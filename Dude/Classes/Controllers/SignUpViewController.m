@@ -11,11 +11,23 @@
 // Classes
 #import "AppDelegate.h"
 
+// Frameworks
+#import <Accounts/Accounts.h>
+
+// Pods
+#import <Parse/Parse.h>
+
+// Models
+#import "DUser.h"
+
+// Extensions & Categories
+#import "UIImageExtensions.h"
+
 // Utils
 #import "Constants.h"
 
 
-@interface SignUpViewController () <UIImagePickerControllerDelegate, UIActionSheetDelegate, UINavigationControllerDelegate, UITextFieldDelegate> {
+@interface SignUpViewController () <UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDelegate> {
   
   PFQuery *emailTakenQuery;
   
@@ -424,7 +436,7 @@
     }
       
     case 4: {
-      self.confirmButton.enabled = (selectedImageFile);
+      self.confirmButton.enabled = (selectedImageFile) ? YES : NO;
       
       break;
     }
@@ -491,36 +503,31 @@
   [self checkConfirmButton];
 }
 
-#pragma mark - UIActionSheet Delegate
-- (void)actionSheet:(UIActionSheet*)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
-  UIImagePickerController *picker = [UIImagePickerController new];
-  picker.delegate = self;
-  picker.allowsEditing = YES;
-  
-  switch (buttonIndex) {
-    case 0:
-      picker.sourceType = UIImagePickerControllerSourceTypeCamera;
-      [self presentViewController:picker animated:YES completion:nil];
-      break;
-      
-    case 1:
-      picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-      [self presentViewController:picker animated:YES completion:nil];
-      break;
-      
-    default:
-      break;
-  }
-}
-
 #pragma mark - UIImagePickerController
 - (void)selectPicture {
-  UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@"Now, choose a profile picture from"
-                                                           delegate:self
-                                                  cancelButtonTitle:nil
-                                             destructiveButtonTitle:nil
-                                                  otherButtonTitles:@"Camera", @"Library", nil];
-  [actionSheet showInView:self.view];
+  UIAlertController *actionSheet = [UIAlertController alertControllerWithTitle:@"Now, choose a profile picture from" message:@"" preferredStyle:UIAlertControllerStyleActionSheet];
+  
+  [actionSheet addAction:[UIAlertAction actionWithTitle:@"Camera" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+    UIImagePickerController *picker = [UIImagePickerController new];
+    picker.delegate = self;
+    picker.allowsEditing = YES;
+    
+    picker.sourceType = UIImagePickerControllerSourceTypeCamera;
+    [self presentViewController:picker animated:YES completion:nil];
+    
+  }]];
+  
+  [actionSheet addAction:[UIAlertAction actionWithTitle:@"Library" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+    UIImagePickerController *picker = [UIImagePickerController new];
+    picker.delegate = self;
+    picker.allowsEditing = YES;
+    
+    picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+    [self presentViewController:picker animated:YES completion:nil];
+    
+  }]];
+  
+  [self presentViewController:actionSheet animated:YES completion:nil];
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController*)picker {

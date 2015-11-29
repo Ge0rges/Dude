@@ -7,10 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		785C91B1399C65BD9D713311 /* libPods-Watch Extension.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A07BB0034BDBACA7E700CAA8 /* libPods-Watch Extension.a */; };
 		8D8D5F4A1732FB4AFE56C405 /* libPods-Dude.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F673BF28C1C27641C653380 /* libPods-Dude.a */; };
 		DA19B0A41A374CB300ADDAF1 /* RedirectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DA19B0A31A374CB300ADDAF1 /* RedirectionViewController.m */; };
 		DA4262921B1EE4B100560925 /* UsersTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DA4262911B1EE4B100560925 /* UsersTableViewController.m */; };
-		DA53ED061B28E38700C0A0A7 /* DUser.m in Sources */ = {isa = PBXBuildFile; fileRef = DAB605F01B2002FA00341828 /* DUser.m */; };
 		DA6EB62B1B2351EC00362033 /* MessagesTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DA6EB62A1B2351EC00362033 /* MessagesTableViewController.m */; };
 		DA6F4C4E1A1E439800D40186 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = DA6F4C4D1A1E439800D40186 /* main.m */; };
 		DA6F4C511A1E439800D40186 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = DA6F4C501A1E439800D40186 /* AppDelegate.m */; };
@@ -20,58 +20,76 @@
 		DA8E11CB1AD6A3DD005F9CF2 /* UIImage+Resize.m in Sources */ = {isa = PBXBuildFile; fileRef = DA8E11C61AD6A3DD005F9CF2 /* UIImage+Resize.m */; };
 		DA8E11CD1AD6A3DD005F9CF2 /* UIImage+RoundedCorner.m in Sources */ = {isa = PBXBuildFile; fileRef = DA8E11C81AD6A3DD005F9CF2 /* UIImage+RoundedCorner.m */; };
 		DAB5FCAD1AC69314003D8062 /* NSStringExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = DAB5FCAC1AC69314003D8062 /* NSStringExtensions.m */; };
-		DAB5FCAE1AC69314003D8062 /* NSStringExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = DAB5FCAC1AC69314003D8062 /* NSStringExtensions.m */; };
 		DAB605F11B2002FA00341828 /* DUser.m in Sources */ = {isa = PBXBuildFile; fileRef = DAB605F01B2002FA00341828 /* DUser.m */; };
 		DAC3B8271B21B67200C303CD /* SignUpViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DAC3B8261B21B67200C303CD /* SignUpViewController.m */; };
 		DACEE7CF1AAF67BD00B958F0 /* MessagesManager.m in Sources */ = {isa = PBXBuildFile; fileRef = DACEE7CE1AAF67BD00B958F0 /* MessagesManager.m */; };
 		DACEE7D31AAF67E200B958F0 /* ContactsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = DACEE7D21AAF67E200B958F0 /* ContactsManager.m */; };
 		DACEE7D71AB02DB200B958F0 /* UIImageExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = DACEE7D61AB02DB200B958F0 /* UIImageExtensions.m */; };
-		DACFF3D71A8F8FCD00E3A784 /* InterfaceController.m in Sources */ = {isa = PBXBuildFile; fileRef = DACFF3D61A8F8FCD00E3A784 /* InterfaceController.m */; };
-		DACFF3DA1A8F8FCD00E3A784 /* NotificationController.m in Sources */ = {isa = PBXBuildFile; fileRef = DACFF3D91A8F8FCD00E3A784 /* NotificationController.m */; };
-		DACFF3DF1A8F8FCD00E3A784 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DACFF3DE1A8F8FCD00E3A784 /* Images.xcassets */; };
-		DACFF3E31A8F8FCD00E3A784 /* Dude WatchKit App.app in Resources */ = {isa = PBXBuildFile; fileRef = DACFF3E21A8F8FCD00E3A784 /* Dude WatchKit App.app */; };
-		DACFF3EB1A8F8FCD00E3A784 /* Interface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DACFF3E91A8F8FCD00E3A784 /* Interface.storyboard */; };
-		DACFF3ED1A8F8FCD00E3A784 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DACFF3EC1A8F8FCD00E3A784 /* Images.xcassets */; };
-		DACFF3F01A8F8FCD00E3A784 /* Dude WatchKit Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = DACFF3D01A8F8FCD00E3A784 /* Dude WatchKit Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		DAD223471A9A348D00AE81B0 /* RowController.m in Sources */ = {isa = PBXBuildFile; fileRef = DAD223461A9A348D00AE81B0 /* RowController.m */; };
-		DAD2234A1A9A36BA00AE81B0 /* MessageInterfaceController.m in Sources */ = {isa = PBXBuildFile; fileRef = DAD223491A9A36BA00AE81B0 /* MessageInterfaceController.m */; };
 		DAEF37671B1E1A2100391DD0 /* ProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DAEF37661B1E1A2100391DD0 /* ProfileViewController.m */; };
 		DAF7FC4C1B31FECE008F7A96 /* DMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = DAF7FC4B1B31FECE008F7A96 /* DMessage.m */; };
-		DAF7FC4D1B31FECE008F7A96 /* DMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = DAF7FC4B1B31FECE008F7A96 /* DMessage.m */; };
-		F912672043AC2C92004FCA65 /* libPods-Dude WatchKit Extension.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9D20CD04C45B6488B4BD606 /* libPods-Dude WatchKit Extension.a */; };
+		FB02EF581C0B3E8F0010B916 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB02EF571C0B3E8F0010B916 /* UIKit.framework */; };
+		FB02EF5A1C0B3EA20010B916 /* Accounts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB02EF591C0B3EA20010B916 /* Accounts.framework */; };
+		FB02EF5C1C0B3EC10010B916 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB02EF5B1C0B3EC10010B916 /* CoreLocation.framework */; };
+		FB02EF5E1C0B3EC70010B916 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB02EF5D1C0B3EC70010B916 /* Foundation.framework */; };
+		FB02EF601C0B3EE20010B916 /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB02EF5F1C0B3EE20010B916 /* Social.framework */; };
+		FB02EF621C0B3EED0010B916 /* Contacts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB02EF611C0B3EED0010B916 /* Contacts.framework */; };
+		FB02EF6B1C0B53650010B916 /* DUserWatch.m in Sources */ = {isa = PBXBuildFile; fileRef = FB02EF6A1C0B53650010B916 /* DUserWatch.m */; };
+		FB0CBF881C0762CD0043F89E /* WatchConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB0CBF871C0762CD0043F89E /* WatchConnectivity.framework */; };
 		FB1FF5691B8A2119001831D9 /* WelcomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FB1FF5681B8A2119001831D9 /* WelcomeViewController.m */; };
 		FB2FAF701B514FE70055018B /* Launch Screen.xib in Resources */ = {isa = PBXBuildFile; fileRef = FB2FAF6F1B514FE70055018B /* Launch Screen.xib */; };
+		FB4C5D951BF5EFA8002B5A58 /* Interface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FB4C5D931BF5EFA8002B5A58 /* Interface.storyboard */; };
+		FB4C5D971BF5EFA8002B5A58 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FB4C5D961BF5EFA8002B5A58 /* Assets.xcassets */; };
+		FB4C5D9E1BF5EFA8002B5A58 /* Watch Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = FB4C5D9D1BF5EFA8002B5A58 /* Watch Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		FB4C5DA61BF5EFA8002B5A58 /* InterfaceController.m in Sources */ = {isa = PBXBuildFile; fileRef = FB4C5DA51BF5EFA8002B5A58 /* InterfaceController.m */; };
+		FB4C5DA91BF5EFA8002B5A58 /* ExtensionDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FB4C5DA81BF5EFA8002B5A58 /* ExtensionDelegate.m */; };
+		FB4C5DAC1BF5EFA8002B5A58 /* NotificationController.m in Sources */ = {isa = PBXBuildFile; fileRef = FB4C5DAB1BF5EFA8002B5A58 /* NotificationController.m */; };
+		FB4C5DAE1BF5EFA8002B5A58 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FB4C5DAD1BF5EFA8002B5A58 /* Assets.xcassets */; };
+		FB4C5DB21BF5EFA8002B5A58 /* Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = FB4C5D911BF5EFA8002B5A58 /* Watch App.app */; };
+		FB4C5DBC1BF5F0AE002B5A58 /* MessageInterfaceController.m in Sources */ = {isa = PBXBuildFile; fileRef = FB4C5DBB1BF5F0AE002B5A58 /* MessageInterfaceController.m */; };
+		FB4C5DBF1BF5F0BA002B5A58 /* RowController.m in Sources */ = {isa = PBXBuildFile; fileRef = FB4C5DBE1BF5F0BA002B5A58 /* RowController.m */; };
+		FB4FC3C71BAD938900FC5F01 /* QNSURLConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = FB4FC3C61BAD938900FC5F01 /* QNSURLConnection.m */; };
 		FBDB73821BA809C300C7D452 /* MainNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = FBDB73811BA809C300C7D452 /* MainNavigationController.m */; };
 		FBDE26D71B81E0B5006485D0 /* SlidingSegues.m in Sources */ = {isa = PBXBuildFile; fileRef = FBDE26D61B81E0B5006485D0 /* SlidingSegues.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		DACFF3E41A8F8FCD00E3A784 /* PBXContainerItemProxy */ = {
+		FB4C5D9F1BF5EFA8002B5A58 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = DA6F4C401A1E439800D40186 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = DACFF3E11A8F8FCD00E3A784;
-			remoteInfo = "Dude WatchKit App";
+			remoteGlobalIDString = FB4C5D9C1BF5EFA8002B5A58;
+			remoteInfo = "watchkitapp Extension";
 		};
-		DACFF3EE1A8F8FCD00E3A784 /* PBXContainerItemProxy */ = {
+		FB4C5DB01BF5EFA8002B5A58 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = DA6F4C401A1E439800D40186 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = DACFF3CF1A8F8FCC00E3A784;
-			remoteInfo = "Dude WatchKit Extension";
+			remoteGlobalIDString = FB4C5D901BF5EFA8002B5A58;
+			remoteInfo = watchkitapp;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		DAAA01551A2B79D800BA70AC /* Embed App Extensions */ = {
+		FB4C5DB61BF5EFA8002B5A58 /* Embed App Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				DACFF3F01A8F8FCD00E3A784 /* Dude WatchKit Extension.appex in Embed App Extensions */,
+				FB4C5D9E1BF5EFA8002B5A58 /* Watch Extension.appex in Embed App Extensions */,
 			);
 			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FB4FC3C41BAD90AB00FC5F01 /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolderSpec = 16;
+			files = (
+				FB4C5DB21BF5EFA8002B5A58 /* Watch App.app in Embed Watch Content */,
+			);
+			name = "Embed Watch Content";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -80,11 +98,14 @@
 		0F673BF28C1C27641C653380 /* libPods-Dude.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Dude.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		23B478C0D797D16066E2FF6E /* Pods-Dude WatchKit Extension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Dude WatchKit Extension.release.xcconfig"; path = "Pods/Target Support Files/Pods-Dude WatchKit Extension/Pods-Dude WatchKit Extension.release.xcconfig"; sourceTree = "<group>"; };
 		36FE9D7EADA7F3FC5FE9C82C /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		6385CC7AFC34B2E9DF045186 /* Pods-Watch Extension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Watch Extension.release.xcconfig"; path = "Pods/Target Support Files/Pods-Watch Extension/Pods-Watch Extension.release.xcconfig"; sourceTree = "<group>"; };
 		6B2E942D159655935D14FDBD /* Pods-Dude WatchKit Extension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Dude WatchKit Extension.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Dude WatchKit Extension/Pods-Dude WatchKit Extension.debug.xcconfig"; sourceTree = "<group>"; };
 		75B3C97C9D72622B3B5366A4 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		9AAA7A7751B1484B7654D2CB /* Pods-Dude.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Dude.release.xcconfig"; path = "Pods/Target Support Files/Pods-Dude/Pods-Dude.release.xcconfig"; sourceTree = "<group>"; };
+		A07BB0034BDBACA7E700CAA8 /* libPods-Watch Extension.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Watch Extension.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ACE3606FD64BC1D0EE808FD3 /* Pods-Dude.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Dude.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Dude/Pods-Dude.debug.xcconfig"; sourceTree = "<group>"; };
 		B9D20CD04C45B6488B4BD606 /* libPods-Dude WatchKit Extension.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Dude WatchKit Extension.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		BB967A64F79CD5027FF2DFFD /* Pods-Watch Extension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Watch Extension.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Watch Extension/Pods-Watch Extension.debug.xcconfig"; sourceTree = "<group>"; };
 		C3802F3F759C4315D42B1EB8 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 		DA19B0A21A374CB300ADDAF1 /* RedirectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RedirectionViewController.h; path = Classes/Controllers/RedirectionViewController.h; sourceTree = "<group>"; };
 		DA19B0A31A374CB300ADDAF1 /* RedirectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RedirectionViewController.m; path = Classes/Controllers/RedirectionViewController.m; sourceTree = "<group>"; };
@@ -110,7 +131,6 @@
 		DAB605EF1B2002FA00341828 /* DUser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DUser.h; sourceTree = "<group>"; };
 		DAB605F01B2002FA00341828 /* DUser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DUser.m; sourceTree = "<group>"; };
 		DAB605FA1B20D22500341828 /* Dude.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Dude.entitlements; sourceTree = "<group>"; };
-		DAB605FB1B20D22F00341828 /* Dude WatchKit Extension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = "Dude WatchKit Extension.entitlements"; path = "../../Dude WatchKit Extension.entitlements"; sourceTree = "<group>"; };
 		DAC01B491B1DD6C80008FFF4 /* Constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Constants.h; path = Utils/Constants.h; sourceTree = "<group>"; };
 		DAC3B8251B21B67200C303CD /* SignUpViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SignUpViewController.h; path = Classes/Controllers/SignUpViewController.h; sourceTree = "<group>"; };
 		DAC3B8261B21B67200C303CD /* SignUpViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SignUpViewController.m; path = Classes/Controllers/SignUpViewController.m; sourceTree = "<group>"; };
@@ -120,29 +140,44 @@
 		DACEE7D21AAF67E200B958F0 /* ContactsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ContactsManager.m; path = "Classes/Managers/Contacts Manager/ContactsManager.m"; sourceTree = "<group>"; };
 		DACEE7D51AB02DB200B958F0 /* UIImageExtensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIImageExtensions.h; sourceTree = "<group>"; };
 		DACEE7D61AB02DB200B958F0 /* UIImageExtensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIImageExtensions.m; sourceTree = "<group>"; };
-		DACFF3D01A8F8FCD00E3A784 /* Dude WatchKit Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Dude WatchKit Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
-		DACFF3D31A8F8FCD00E3A784 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		DACFF3D41A8F8FCD00E3A784 /* PushNotificationPayload.apns */ = {isa = PBXFileReference; lastKnownFileType = text; path = PushNotificationPayload.apns; sourceTree = "<group>"; };
-		DACFF3D51A8F8FCD00E3A784 /* InterfaceController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = InterfaceController.h; sourceTree = "<group>"; };
-		DACFF3D61A8F8FCD00E3A784 /* InterfaceController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = InterfaceController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		DACFF3D81A8F8FCD00E3A784 /* NotificationController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NotificationController.h; sourceTree = "<group>"; };
-		DACFF3D91A8F8FCD00E3A784 /* NotificationController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NotificationController.m; sourceTree = "<group>"; };
-		DACFF3DE1A8F8FCD00E3A784 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
-		DACFF3E21A8F8FCD00E3A784 /* Dude WatchKit App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Dude WatchKit App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		DACFF3E81A8F8FCD00E3A784 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		DACFF3EA1A8F8FCD00E3A784 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Interface.storyboard; sourceTree = "<group>"; };
-		DACFF3EC1A8F8FCD00E3A784 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
-		DAD223451A9A348D00AE81B0 /* RowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RowController.h; sourceTree = "<group>"; };
-		DAD223461A9A348D00AE81B0 /* RowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RowController.m; sourceTree = "<group>"; };
-		DAD223481A9A36BA00AE81B0 /* MessageInterfaceController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MessageInterfaceController.h; sourceTree = "<group>"; };
-		DAD223491A9A36BA00AE81B0 /* MessageInterfaceController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MessageInterfaceController.m; sourceTree = "<group>"; };
 		DAEF37651B1E1A2100391DD0 /* ProfileViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ProfileViewController.h; path = Classes/Controllers/ProfileViewController.h; sourceTree = "<group>"; };
 		DAEF37661B1E1A2100391DD0 /* ProfileViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ProfileViewController.m; path = Classes/Controllers/ProfileViewController.m; sourceTree = "<group>"; };
 		DAF7FC4A1B31FECE008F7A96 /* DMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMessage.h; sourceTree = "<group>"; };
 		DAF7FC4B1B31FECE008F7A96 /* DMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DMessage.m; sourceTree = "<group>"; };
+		FB02EF551C0B3E890010B916 /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
+		FB02EF571C0B3E8F0010B916 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		FB02EF591C0B3EA20010B916 /* Accounts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accounts.framework; path = System/Library/Frameworks/Accounts.framework; sourceTree = SDKROOT; };
+		FB02EF5B1C0B3EC10010B916 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
+		FB02EF5D1C0B3EC70010B916 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		FB02EF5F1C0B3EE20010B916 /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
+		FB02EF611C0B3EED0010B916 /* Contacts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Contacts.framework; path = System/Library/Frameworks/Contacts.framework; sourceTree = SDKROOT; };
+		FB02EF691C0B53650010B916 /* DUserWatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DUserWatch.h; sourceTree = "<group>"; };
+		FB02EF6A1C0B53650010B916 /* DUserWatch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DUserWatch.m; sourceTree = "<group>"; };
+		FB0CBF871C0762CD0043F89E /* WatchConnectivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WatchConnectivity.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS2.0.sdk/System/Library/Frameworks/WatchConnectivity.framework; sourceTree = DEVELOPER_DIR; };
 		FB1FF5671B8A2119001831D9 /* WelcomeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WelcomeViewController.h; path = Classes/Controllers/WelcomeViewController.h; sourceTree = "<group>"; };
 		FB1FF5681B8A2119001831D9 /* WelcomeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = WelcomeViewController.m; path = Classes/Controllers/WelcomeViewController.m; sourceTree = "<group>"; };
 		FB2FAF6F1B514FE70055018B /* Launch Screen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = "Launch Screen.xib"; path = "Base.lproj/Launch Screen.xib"; sourceTree = "<group>"; };
+		FB4C5D911BF5EFA8002B5A58 /* Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		FB4C5D941BF5EFA8002B5A58 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Interface.storyboard; sourceTree = "<group>"; };
+		FB4C5D961BF5EFA8002B5A58 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		FB4C5D981BF5EFA8002B5A58 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		FB4C5D9D1BF5EFA8002B5A58 /* Watch Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Watch Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		FB4C5DA31BF5EFA8002B5A58 /* PushNotificationPayload.apns */ = {isa = PBXFileReference; lastKnownFileType = text; path = PushNotificationPayload.apns; sourceTree = "<group>"; };
+		FB4C5DA41BF5EFA8002B5A58 /* InterfaceController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = InterfaceController.h; sourceTree = "<group>"; };
+		FB4C5DA51BF5EFA8002B5A58 /* InterfaceController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = InterfaceController.m; sourceTree = "<group>"; };
+		FB4C5DA71BF5EFA8002B5A58 /* ExtensionDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ExtensionDelegate.h; sourceTree = "<group>"; };
+		FB4C5DA81BF5EFA8002B5A58 /* ExtensionDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ExtensionDelegate.m; sourceTree = "<group>"; };
+		FB4C5DAA1BF5EFA8002B5A58 /* NotificationController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NotificationController.h; sourceTree = "<group>"; };
+		FB4C5DAB1BF5EFA8002B5A58 /* NotificationController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NotificationController.m; sourceTree = "<group>"; };
+		FB4C5DAD1BF5EFA8002B5A58 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		FB4C5DAF1BF5EFA8002B5A58 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		FB4C5DBA1BF5F0AE002B5A58 /* MessageInterfaceController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MessageInterfaceController.h; sourceTree = "<group>"; };
+		FB4C5DBB1BF5F0AE002B5A58 /* MessageInterfaceController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MessageInterfaceController.m; sourceTree = "<group>"; };
+		FB4C5DBD1BF5F0BA002B5A58 /* RowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RowController.h; sourceTree = "<group>"; };
+		FB4C5DBE1BF5F0BA002B5A58 /* RowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RowController.m; sourceTree = "<group>"; };
+		FB4FC3C51BAD938900FC5F01 /* QNSURLConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = QNSURLConnection.h; path = QNSURLConnection/QNSURLConnection.h; sourceTree = "<group>"; };
+		FB4FC3C61BAD938900FC5F01 /* QNSURLConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = QNSURLConnection.m; path = QNSURLConnection/QNSURLConnection.m; sourceTree = "<group>"; };
+		FB4FC3C91BAD976200FC5F01 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		FBDB73801BA809C300C7D452 /* MainNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MainNavigationController.h; path = Classes/Controllers/MainNavigationController.h; sourceTree = "<group>"; };
 		FBDB73811BA809C300C7D452 /* MainNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MainNavigationController.m; path = Classes/Controllers/MainNavigationController.m; sourceTree = "<group>"; };
 		FBDE26D51B81E0B5006485D0 /* SlidingSegues.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SlidingSegues.h; sourceTree = "<group>"; };
@@ -154,15 +189,22 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FB02EF621C0B3EED0010B916 /* Contacts.framework in Frameworks */,
+				FB02EF601C0B3EE20010B916 /* Social.framework in Frameworks */,
+				FB02EF5E1C0B3EC70010B916 /* Foundation.framework in Frameworks */,
+				FB02EF5C1C0B3EC10010B916 /* CoreLocation.framework in Frameworks */,
+				FB02EF5A1C0B3EA20010B916 /* Accounts.framework in Frameworks */,
+				FB02EF581C0B3E8F0010B916 /* UIKit.framework in Frameworks */,
 				8D8D5F4A1732FB4AFE56C405 /* libPods-Dude.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		DACFF3CD1A8F8FCC00E3A784 /* Frameworks */ = {
+		FB4C5D9A1BF5EFA8002B5A58 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F912672043AC2C92004FCA65 /* libPods-Dude WatchKit Extension.a in Frameworks */,
+				FB0CBF881C0762CD0043F89E /* WatchConnectivity.framework in Frameworks */,
+				785C91B1399C65BD9D713311 /* libPods-Watch Extension.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -178,6 +220,8 @@
 				9AAA7A7751B1484B7654D2CB /* Pods-Dude.release.xcconfig */,
 				6B2E942D159655935D14FDBD /* Pods-Dude WatchKit Extension.debug.xcconfig */,
 				23B478C0D797D16066E2FF6E /* Pods-Dude WatchKit Extension.release.xcconfig */,
+				BB967A64F79CD5027FF2DFFD /* Pods-Watch Extension.debug.xcconfig */,
+				6385CC7AFC34B2E9DF045186 /* Pods-Watch Extension.release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -186,7 +230,8 @@
 			isa = PBXGroup;
 			children = (
 				DA6F4C4A1A1E439800D40186 /* Dude */,
-				DAEF376A1B1E1C8D00391DD0 /* Watch App */,
+				FB4C5D921BF5EFA8002B5A58 /* Watch App */,
+				FB4C5DA11BF5EFA8002B5A58 /* Watch Extension */,
 				DA6F4C491A1E439800D40186 /* Products */,
 				8FA94C52D42A3F43AC752D63 /* Pods */,
 				F569341E6D59A1D0A110C94E /* Frameworks */,
@@ -197,8 +242,8 @@
 			isa = PBXGroup;
 			children = (
 				DA6F4C481A1E439800D40186 /* Dude.app */,
-				DACFF3D01A8F8FCD00E3A784 /* Dude WatchKit Extension.appex */,
-				DACFF3E21A8F8FCD00E3A784 /* Dude WatchKit App.app */,
+				FB4C5D911BF5EFA8002B5A58 /* Watch App.app */,
+				FB4C5D9D1BF5EFA8002B5A58 /* Watch Extension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -302,37 +347,6 @@
 			name = Storyboards;
 			sourceTree = "<group>";
 		};
-		DAC01B501B1DD8360008FFF4 /* Classes */ = {
-			isa = PBXGroup;
-			children = (
-				DAC01B511B1DD83D0008FFF4 /* Controllers */,
-				DAC01B521B1DD8430008FFF4 /* Models */,
-			);
-			name = Classes;
-			sourceTree = "<group>";
-		};
-		DAC01B511B1DD83D0008FFF4 /* Controllers */ = {
-			isa = PBXGroup;
-			children = (
-				DACFF3D51A8F8FCD00E3A784 /* InterfaceController.h */,
-				DACFF3D61A8F8FCD00E3A784 /* InterfaceController.m */,
-				DAD223481A9A36BA00AE81B0 /* MessageInterfaceController.h */,
-				DAD223491A9A36BA00AE81B0 /* MessageInterfaceController.m */,
-				DACFF3D81A8F8FCD00E3A784 /* NotificationController.h */,
-				DACFF3D91A8F8FCD00E3A784 /* NotificationController.m */,
-			);
-			name = Controllers;
-			sourceTree = "<group>";
-		};
-		DAC01B521B1DD8430008FFF4 /* Models */ = {
-			isa = PBXGroup;
-			children = (
-				DAD223451A9A348D00AE81B0 /* RowController.h */,
-				DAD223461A9A348D00AE81B0 /* RowController.m */,
-			);
-			name = Models;
-			sourceTree = "<group>";
-		};
 		DACEE7D01AAF67CC00B958F0 /* Messages Manager */ = {
 			isa = PBXGroup;
 			children = (
@@ -367,44 +381,6 @@
 			path = UIImageExtensions;
 			sourceTree = "<group>";
 		};
-		DACFF3D11A8F8FCD00E3A784 /* Dude WatchKit Extension */ = {
-			isa = PBXGroup;
-			children = (
-				DAC01B501B1DD8360008FFF4 /* Classes */,
-				DACFF3DE1A8F8FCD00E3A784 /* Images.xcassets */,
-				DACFF3D21A8F8FCD00E3A784 /* Supporting Files */,
-			);
-			path = "Dude WatchKit Extension";
-			sourceTree = "<group>";
-		};
-		DACFF3D21A8F8FCD00E3A784 /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				DAB605FB1B20D22F00341828 /* Dude WatchKit Extension.entitlements */,
-				DACFF3D31A8F8FCD00E3A784 /* Info.plist */,
-				DACFF3D41A8F8FCD00E3A784 /* PushNotificationPayload.apns */,
-			);
-			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
-		DACFF3E61A8F8FCD00E3A784 /* Dude WatchKit App */ = {
-			isa = PBXGroup;
-			children = (
-				DACFF3E91A8F8FCD00E3A784 /* Interface.storyboard */,
-				DACFF3EC1A8F8FCD00E3A784 /* Images.xcassets */,
-				DACFF3E71A8F8FCD00E3A784 /* Supporting Files */,
-			);
-			path = "Dude WatchKit App";
-			sourceTree = "<group>";
-		};
-		DACFF3E71A8F8FCD00E3A784 /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				DACFF3E81A8F8FCD00E3A784 /* Info.plist */,
-			);
-			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
 		DAEF37681B1E1C5300391DD0 /* Managers */ = {
 			isa = PBXGroup;
 			children = (
@@ -423,18 +399,10 @@
 			name = Models;
 			sourceTree = "<group>";
 		};
-		DAEF376A1B1E1C8D00391DD0 /* Watch App */ = {
-			isa = PBXGroup;
-			children = (
-				DACFF3D11A8F8FCD00E3A784 /* Dude WatchKit Extension */,
-				DACFF3E61A8F8FCD00E3A784 /* Dude WatchKit App */,
-			);
-			path = "Watch App";
-			sourceTree = "<group>";
-		};
 		DAEF376B1B1E1D3300391DD0 /* Extensions & Categories */ = {
 			isa = PBXGroup;
 			children = (
+				FB4FC3C81BAD939900FC5F01 /* QNSURLConnection */,
 				FBDE26D81B81E0C3006485D0 /* Custom Segues */,
 				DAB5FCAF1AC69449003D8062 /* NSString Extensions */,
 				DACEE7D81AB02DF000B958F0 /* UIImage Extensions */,
@@ -466,11 +434,104 @@
 		F569341E6D59A1D0A110C94E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				FB02EF611C0B3EED0010B916 /* Contacts.framework */,
+				FB02EF5F1C0B3EE20010B916 /* Social.framework */,
+				FB02EF5D1C0B3EC70010B916 /* Foundation.framework */,
+				FB02EF5B1C0B3EC10010B916 /* CoreLocation.framework */,
+				FB02EF591C0B3EA20010B916 /* Accounts.framework */,
+				FB02EF571C0B3E8F0010B916 /* UIKit.framework */,
+				FB02EF551C0B3E890010B916 /* AddressBook.framework */,
+				FB0CBF871C0762CD0043F89E /* WatchConnectivity.framework */,
+				FB4FC3C91BAD976200FC5F01 /* StoreKit.framework */,
 				36FE9D7EADA7F3FC5FE9C82C /* libPods.a */,
 				0F673BF28C1C27641C653380 /* libPods-Dude.a */,
 				B9D20CD04C45B6488B4BD606 /* libPods-Dude WatchKit Extension.a */,
+				A07BB0034BDBACA7E700CAA8 /* libPods-Watch Extension.a */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		FB02EF651C0B53400010B916 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				FB4C5DA71BF5EFA8002B5A58 /* ExtensionDelegate.h */,
+				FB4C5DA81BF5EFA8002B5A58 /* ExtensionDelegate.m */,
+				FB4C5DA41BF5EFA8002B5A58 /* InterfaceController.h */,
+				FB4C5DA51BF5EFA8002B5A58 /* InterfaceController.m */,
+				FB4C5DBA1BF5F0AE002B5A58 /* MessageInterfaceController.h */,
+				FB4C5DBB1BF5F0AE002B5A58 /* MessageInterfaceController.m */,
+				FB4C5DBD1BF5F0BA002B5A58 /* RowController.h */,
+				FB4C5DBE1BF5F0BA002B5A58 /* RowController.m */,
+				FB4C5DAA1BF5EFA8002B5A58 /* NotificationController.h */,
+				FB4C5DAB1BF5EFA8002B5A58 /* NotificationController.m */,
+			);
+			name = Controllers;
+			sourceTree = "<group>";
+		};
+		FB02EF6C1C0B53690010B916 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				FB02EF691C0B53650010B916 /* DUserWatch.h */,
+				FB02EF6A1C0B53650010B916 /* DUserWatch.m */,
+			);
+			name = Models;
+			sourceTree = "<group>";
+		};
+		FB02EF6D1C0B53720010B916 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				FB02EF6C1C0B53690010B916 /* Models */,
+				FB02EF651C0B53400010B916 /* Controllers */,
+			);
+			name = Classes;
+			sourceTree = "<group>";
+		};
+		FB02EF6E1C0B537A0010B916 /* Assets */ = {
+			isa = PBXGroup;
+			children = (
+				FB4C5DAD1BF5EFA8002B5A58 /* Assets.xcassets */,
+			);
+			name = Assets;
+			sourceTree = "<group>";
+		};
+		FB4C5D921BF5EFA8002B5A58 /* Watch App */ = {
+			isa = PBXGroup;
+			children = (
+				FB4C5D931BF5EFA8002B5A58 /* Interface.storyboard */,
+				FB4C5D961BF5EFA8002B5A58 /* Assets.xcassets */,
+				FB4C5D981BF5EFA8002B5A58 /* Info.plist */,
+			);
+			name = "Watch App";
+			path = watchkitapp;
+			sourceTree = "<group>";
+		};
+		FB4C5DA11BF5EFA8002B5A58 /* Watch Extension */ = {
+			isa = PBXGroup;
+			children = (
+				FB02EF6D1C0B53720010B916 /* Classes */,
+				FB02EF6E1C0B537A0010B916 /* Assets */,
+				FB4C5DA21BF5EFA8002B5A58 /* Supporting Files */,
+			);
+			name = "Watch Extension";
+			path = "watchkitapp Extension";
+			sourceTree = "<group>";
+		};
+		FB4C5DA21BF5EFA8002B5A58 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				FB4C5DAF1BF5EFA8002B5A58 /* Info.plist */,
+				FB4C5DA31BF5EFA8002B5A58 /* PushNotificationPayload.apns */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		FB4FC3C81BAD939900FC5F01 /* QNSURLConnection */ = {
+			isa = PBXGroup;
+			children = (
+				FB4FC3C51BAD938900FC5F01 /* QNSURLConnection.h */,
+				FB4FC3C61BAD938900FC5F01 /* QNSURLConnection.m */,
+			);
+			name = QNSURLConnection;
 			sourceTree = "<group>";
 		};
 		FBDE26D81B81E0C3006485D0 /* Custom Segues */ = {
@@ -494,54 +555,56 @@
 				DA3061721AD7F79300144521 /* ShellScript */,
 				DA6F4C451A1E439800D40186 /* Frameworks */,
 				DA6F4C461A1E439800D40186 /* Resources */,
-				DAAA01551A2B79D800BA70AC /* Embed App Extensions */,
 				86E84E083F81776A86D109A5 /* Copy Pods Resources */,
+				FB4FC3C41BAD90AB00FC5F01 /* Embed Watch Content */,
+				DD427EDEE0D2E5C08456A586 /* Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				DACFF3EF1A8F8FCD00E3A784 /* PBXTargetDependency */,
+				FB4C5DB11BF5EFA8002B5A58 /* PBXTargetDependency */,
 			);
 			name = Dude;
 			productName = Dude;
 			productReference = DA6F4C481A1E439800D40186 /* Dude.app */;
 			productType = "com.apple.product-type.application";
 		};
-		DACFF3CF1A8F8FCC00E3A784 /* Dude WatchKit Extension */ = {
+		FB4C5D901BF5EFA8002B5A58 /* Watch App */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = DACFF3F61A8F8FCD00E3A784 /* Build configuration list for PBXNativeTarget "Dude WatchKit Extension" */;
+			buildConfigurationList = FB4C5DB71BF5EFA8002B5A58 /* Build configuration list for PBXNativeTarget "Watch App" */;
 			buildPhases = (
-				EB713770E68B7D05ED02E81F /* Check Pods Manifest.lock */,
-				DACFF3CC1A8F8FCC00E3A784 /* Sources */,
-				DA3061731AD7F7AC00144521 /* ShellScript */,
-				DACFF3CD1A8F8FCC00E3A784 /* Frameworks */,
-				DACFF3CE1A8F8FCC00E3A784 /* Resources */,
-				606C9A71CE3827101F61F5B8 /* Copy Pods Resources */,
+				FB4C5D8F1BF5EFA8002B5A58 /* Resources */,
+				FB4C5DB61BF5EFA8002B5A58 /* Embed App Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				DACFF3E51A8F8FCD00E3A784 /* PBXTargetDependency */,
+				FB4C5DA01BF5EFA8002B5A58 /* PBXTargetDependency */,
 			);
-			name = "Dude WatchKit Extension";
-			productName = "Dude WatchKit Extension";
-			productReference = DACFF3D01A8F8FCD00E3A784 /* Dude WatchKit Extension.appex */;
-			productType = "com.apple.product-type.watchkit-extension";
+			name = "Watch App";
+			productName = watchkitapp;
+			productReference = FB4C5D911BF5EFA8002B5A58 /* Watch App.app */;
+			productType = "com.apple.product-type.application.watchapp2";
 		};
-		DACFF3E11A8F8FCD00E3A784 /* Dude WatchKit App */ = {
+		FB4C5D9C1BF5EFA8002B5A58 /* Watch Extension */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = DACFF3F51A8F8FCD00E3A784 /* Build configuration list for PBXNativeTarget "Dude WatchKit App" */;
+			buildConfigurationList = FB4C5DB31BF5EFA8002B5A58 /* Build configuration list for PBXNativeTarget "Watch Extension" */;
 			buildPhases = (
-				DACFF3E01A8F8FCD00E3A784 /* Resources */,
+				29BD6CE19D004630BAFC9D6D /* Check Pods Manifest.lock */,
+				FB4C5D991BF5EFA8002B5A58 /* Sources */,
+				FB4C5D9A1BF5EFA8002B5A58 /* Frameworks */,
+				FB4C5D9B1BF5EFA8002B5A58 /* Resources */,
+				1B227EB3E6BBDBE114A43129 /* Copy Pods Resources */,
+				A41802495F1CE268BE13D5F2 /* Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
-			name = "Dude WatchKit App";
-			productName = "Dude WatchKit App";
-			productReference = DACFF3E21A8F8FCD00E3A784 /* Dude WatchKit App.app */;
-			productType = "com.apple.product-type.application.watchapp";
+			name = "Watch Extension";
+			productName = "watchkitapp Extension";
+			productReference = FB4C5D9D1BF5EFA8002B5A58 /* Watch Extension.appex */;
+			productType = "com.apple.product-type.watchkit2-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -557,31 +620,22 @@
 						DevelopmentTeam = 7DTJP5N92F;
 						SystemCapabilities = {
 							com.apple.ApplicationGroups.iOS = {
-								enabled = 1;
+								enabled = 0;
 							};
 							com.apple.InAppPurchase = {
 								enabled = 0;
 							};
 							com.apple.Keychain = {
-								enabled = 1;
+								enabled = 0;
 							};
 						};
 					};
-					DACFF3CF1A8F8FCC00E3A784 = {
-						CreatedOnToolsVersion = 6.2;
+					FB4C5D901BF5EFA8002B5A58 = {
+						CreatedOnToolsVersion = 7.1.1;
 						DevelopmentTeam = 7DTJP5N92F;
-						SystemCapabilities = {
-							com.apple.ApplicationGroups.iOS = {
-								enabled = 1;
-							};
-							com.apple.Keychain = {
-								enabled = 1;
-							};
-						};
 					};
-					DACFF3E11A8F8FCD00E3A784 = {
-						CreatedOnToolsVersion = 6.2;
-						DevelopmentTeam = 7DTJP5N92F;
+					FB4C5D9C1BF5EFA8002B5A58 = {
+						CreatedOnToolsVersion = 7.1.1;
 					};
 				};
 			};
@@ -599,8 +653,8 @@
 			projectRoot = "";
 			targets = (
 				DA6F4C471A1E439800D40186 /* Dude */,
-				DACFF3CF1A8F8FCC00E3A784 /* Dude WatchKit Extension */,
-				DACFF3E11A8F8FCD00E3A784 /* Dude WatchKit App */,
+				FB4C5D901BF5EFA8002B5A58 /* Watch App */,
+				FB4C5D9C1BF5EFA8002B5A58 /* Watch Extension */,
 			);
 		};
 /* End PBXProject section */
@@ -616,28 +670,42 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		DACFF3CE1A8F8FCC00E3A784 /* Resources */ = {
+		FB4C5D8F1BF5EFA8002B5A58 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DACFF3E31A8F8FCD00E3A784 /* Dude WatchKit App.app in Resources */,
-				DACFF3DF1A8F8FCD00E3A784 /* Images.xcassets in Resources */,
+				FB4C5D971BF5EFA8002B5A58 /* Assets.xcassets in Resources */,
+				FB4C5D951BF5EFA8002B5A58 /* Interface.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		DACFF3E01A8F8FCD00E3A784 /* Resources */ = {
+		FB4C5D9B1BF5EFA8002B5A58 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DACFF3EB1A8F8FCD00E3A784 /* Interface.storyboard in Resources */,
-				DACFF3ED1A8F8FCD00E3A784 /* Images.xcassets in Resources */,
+				FB4C5DAE1BF5EFA8002B5A58 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		2E2D69A0D1D673D6218D8317 /* Check Pods Manifest.lock */ = {
+		1B227EB3E6BBDBE114A43129 /* Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Watch Extension/Pods-Watch Extension-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		29BD6CE19D004630BAFC9D6D /* Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -652,19 +720,19 @@
 			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
-		606C9A71CE3827101F61F5B8 /* Copy Pods Resources */ = {
+		2E2D69A0D1D673D6218D8317 /* Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Copy Pods Resources";
+			name = "Check Pods Manifest.lock";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Dude WatchKit Extension/Pods-Dude WatchKit Extension-resources.sh\"\n";
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		86E84E083F81776A86D109A5 /* Copy Pods Resources */ = {
@@ -682,6 +750,21 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Dude/Pods-Dude-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
+		A41802495F1CE268BE13D5F2 /* Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Watch Extension/Pods-Watch Extension-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		DA3061721AD7F79300144521 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -695,32 +778,19 @@
 			shellPath = /bin/sh;
 			shellScript = "";
 		};
-		DA3061731AD7F7AC00144521 /* ShellScript */ = {
+		DD427EDEE0D2E5C08456A586 /* Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
+			name = "Embed Pods Frameworks";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "";
-		};
-		EB713770E68B7D05ED02E81F /* Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Check Pods Manifest.lock";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Dude/Pods-Dude-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -744,6 +814,7 @@
 				DAB5FCAD1AC69314003D8062 /* NSStringExtensions.m in Sources */,
 				FBDB73821BA809C300C7D452 /* MainNavigationController.m in Sources */,
 				DACEE7D71AB02DB200B958F0 /* UIImageExtensions.m in Sources */,
+				FB4FC3C71BAD938900FC5F01 /* QNSURLConnection.m in Sources */,
 				DA19B0A41A374CB300ADDAF1 /* RedirectionViewController.m in Sources */,
 				FBDE26D71B81E0B5006485D0 /* SlidingSegues.m in Sources */,
 				DA8E11CD1AD6A3DD005F9CF2 /* UIImage+RoundedCorner.m in Sources */,
@@ -752,32 +823,31 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		DACFF3CC1A8F8FCC00E3A784 /* Sources */ = {
+		FB4C5D991BF5EFA8002B5A58 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DAB5FCAE1AC69314003D8062 /* NSStringExtensions.m in Sources */,
-				DA53ED061B28E38700C0A0A7 /* DUser.m in Sources */,
-				DAD223471A9A348D00AE81B0 /* RowController.m in Sources */,
-				DAD2234A1A9A36BA00AE81B0 /* MessageInterfaceController.m in Sources */,
-				DACFF3DA1A8F8FCD00E3A784 /* NotificationController.m in Sources */,
-				DACFF3D71A8F8FCD00E3A784 /* InterfaceController.m in Sources */,
-				DAF7FC4D1B31FECE008F7A96 /* DMessage.m in Sources */,
+				FB4C5DA91BF5EFA8002B5A58 /* ExtensionDelegate.m in Sources */,
+				FB4C5DBC1BF5F0AE002B5A58 /* MessageInterfaceController.m in Sources */,
+				FB4C5DBF1BF5F0BA002B5A58 /* RowController.m in Sources */,
+				FB02EF6B1C0B53650010B916 /* DUserWatch.m in Sources */,
+				FB4C5DA61BF5EFA8002B5A58 /* InterfaceController.m in Sources */,
+				FB4C5DAC1BF5EFA8002B5A58 /* NotificationController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		DACFF3E51A8F8FCD00E3A784 /* PBXTargetDependency */ = {
+		FB4C5DA01BF5EFA8002B5A58 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = DACFF3E11A8F8FCD00E3A784 /* Dude WatchKit App */;
-			targetProxy = DACFF3E41A8F8FCD00E3A784 /* PBXContainerItemProxy */;
+			target = FB4C5D9C1BF5EFA8002B5A58 /* Watch Extension */;
+			targetProxy = FB4C5D9F1BF5EFA8002B5A58 /* PBXContainerItemProxy */;
 		};
-		DACFF3EF1A8F8FCD00E3A784 /* PBXTargetDependency */ = {
+		FB4C5DB11BF5EFA8002B5A58 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = DACFF3CF1A8F8FCC00E3A784 /* Dude WatchKit Extension */;
-			targetProxy = DACFF3EE1A8F8FCD00E3A784 /* PBXContainerItemProxy */;
+			target = FB4C5D901BF5EFA8002B5A58 /* Watch App */;
+			targetProxy = FB4C5DB01BF5EFA8002B5A58 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -790,10 +860,10 @@
 			name = Main.storyboard;
 			sourceTree = "<group>";
 		};
-		DACFF3E91A8F8FCD00E3A784 /* Interface.storyboard */ = {
+		FB4C5D931BF5EFA8002B5A58 /* Interface.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
-				DACFF3EA1A8F8FCD00E3A784 /* Base */,
+				FB4C5D941BF5EFA8002B5A58 /* Base */,
 			);
 			name = Interface.storyboard;
 			sourceTree = "<group>";
@@ -805,6 +875,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				APPLICATION_EXTENSION_API_ONLY = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -818,8 +889,8 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Ilyas Kanaan (H457J2HWER)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				ENABLE_BITCODE = NO;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -832,12 +903,14 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				ONLY_ACTIVE_ARCH = YES;
-				PROVISIONING_PROFILE = "94c488e7-839a-4356-b378-c0bc2eec29bc";
+				PROVISIONING_PROFILE = "";
+				SCAN_ALL_SOURCE_FILES_FOR_INCLUDES = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
+				WATCHOS_DEPLOYMENT_TARGET = 2.0;
 			};
 			name = Debug;
 		};
@@ -850,60 +923,16 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 2.0;
+				ENABLE_BITCODE = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = Dude/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "$(inherited)";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.ge0rges.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = Dude;
 				PROVISIONING_PROFILE = "";
-				VERSIONING_SYSTEM = "apple-generic";
-			};
-			name = Debug;
-		};
-		DAB605F81B20495800341828 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6B2E942D159655935D14FDBD /* Pods-Dude WatchKit Extension.debug.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = "Dude WatchKit Extension.entitlements";
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 2.0;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"$(inherited)",
-					"COCOAPODS=1",
-					TARGET_IS_EXTENSION,
-				);
-				INFOPLIST_FILE = "Watch App/Dude WatchKit Extension/Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				ONLY_ACTIVE_ARCH = YES;
-				OTHER_LDFLAGS = "$(inherited)";
-				PRODUCT_NAME = "${TARGET_NAME}";
-				PROVISIONING_PROFILE = "";
-				SKIP_INSTALL = YES;
-				VERSIONING_SYSTEM = "apple-generic";
-			};
-			name = Debug;
-		};
-		DAB605F91B20495800341828 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Ilyas Kanaan (H457J2HWER)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Ilyas Kanaan (H457J2HWER)";
-				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 2.0;
-				GCC_PREPROCESSOR_DEFINITIONS = TARGET_IS_EXTENSION;
-				IBSC_MODULE = Dude_WatchKit_Extension;
-				INFOPLIST_FILE = "Watch App/Dude WatchKit App/Info.plist";
-				ONLY_ACTIVE_ARCH = YES;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "41e0e264-ae48-45a2-b553-530fbe84ad41";
-				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = 4;
-				"TARGETED_DEVICE_FAMILY[sdk=iphonesimulator*]" = "1,4";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
@@ -912,6 +941,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				APPLICATION_EXTENSION_API_ONLY = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -925,8 +955,8 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Ilyas Kanaan (H457J2HWER)";
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				COPY_PHASE_STRIP = NO;
 				ENABLE_BITCODE = NO;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -938,11 +968,13 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
-				PROVISIONING_PROFILE = "94c488e7-839a-4356-b378-c0bc2eec29bc";
+				PROVISIONING_PROFILE = "";
+				SCAN_ALL_SOURCE_FILES_FOR_INCLUDES = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
+				WATCHOS_DEPLOYMENT_TARGET = 2.0;
 			};
 			name = Release;
 		};
@@ -955,58 +987,102 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 2.0;
+				ENABLE_BITCODE = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = Dude/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = "$(inherited)";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.ge0rges.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = Dude;
 				PROVISIONING_PROFILE = "";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;
 		};
-		DAE3B3A61B290D6F00ADE09A /* Release */ = {
+		FB4C5DB41BF5EFA8002B5A58 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 23B478C0D797D16066E2FF6E /* Pods-Dude WatchKit Extension.release.xcconfig */;
+			baseConfigurationReference = BB967A64F79CD5027FF2DFFD /* Pods-Watch Extension.debug.xcconfig */;
 			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = "Dude WatchKit Extension.entitlements";
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 2.0;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
 					"$(inherited)",
-					"COCOAPODS=1",
-					TARGET_IS_EXTENSION,
 				);
-				INFOPLIST_FILE = "Watch App/Dude WatchKit Extension/Info.plist";
+				INFOPLIST_FILE = "watchkitapp Extension/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				OTHER_LDFLAGS = "$(inherited)";
+				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ge0rges.Dude.watchkitapp.watchkitextension;
 				PRODUCT_NAME = "${TARGET_NAME}";
-				PROVISIONING_PROFILE = "";
+				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
-				VERSIONING_SYSTEM = "apple-generic";
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 2.0;
+			};
+			name = Debug;
+		};
+		FB4C5DB51BF5EFA8002B5A58 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6385CC7AFC34B2E9DF045186 /* Pods-Watch Extension.release.xcconfig */;
+			buildSettings = {
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_NO_COMMON_BLOCKS = YES;
+				INFOPLIST_FILE = "watchkitapp Extension/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.ge0rges.Dude.watchkitapp.watchkitextension;
+				PRODUCT_NAME = "${TARGET_NAME}";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 2.0;
 			};
 			name = Release;
 		};
-		DAE3B3A71B290D6F00ADE09A /* Release */ = {
+		FB4C5DB81BF5EFA8002B5A58 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Ilyas Kanaan (H457J2HWER)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Ilyas Kanaan (H457J2HWER)";
-				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 2.0;
-				GCC_PREPROCESSOR_DEFINITIONS = TARGET_IS_EXTENSION;
-				IBSC_MODULE = Dude_WatchKit_Extension;
-				INFOPLIST_FILE = "Watch App/Dude WatchKit App/Info.plist";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				IBSC_MODULE = watchkitapp_Extension;
+				INFOPLIST_FILE = watchkitapp/Info.plist;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ge0rges.Dude.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "41e0e264-ae48-45a2-b553-530fbe84ad41";
+				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = 4;
-				"TARGETED_DEVICE_FAMILY[sdk=iphonesimulator*]" = "1,4";
-				VERSIONING_SYSTEM = "apple-generic";
+				WATCHOS_DEPLOYMENT_TARGET = 2.0;
+			};
+			name = Debug;
+		};
+		FB4C5DB91BF5EFA8002B5A58 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_NO_COMMON_BLOCKS = YES;
+				IBSC_MODULE = watchkitapp_Extension;
+				INFOPLIST_FILE = watchkitapp/Info.plist;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ge0rges.Dude.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 2.0;
 			};
 			name = Release;
 		};
@@ -1031,20 +1107,20 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
-		DACFF3F51A8F8FCD00E3A784 /* Build configuration list for PBXNativeTarget "Dude WatchKit App" */ = {
+		FB4C5DB31BF5EFA8002B5A58 /* Build configuration list for PBXNativeTarget "Watch Extension" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				DAB605F91B20495800341828 /* Debug */,
-				DAE3B3A71B290D6F00ADE09A /* Release */,
+				FB4C5DB41BF5EFA8002B5A58 /* Debug */,
+				FB4C5DB51BF5EFA8002B5A58 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
-		DACFF3F61A8F8FCD00E3A784 /* Build configuration list for PBXNativeTarget "Dude WatchKit Extension" */ = {
+		FB4C5DB71BF5EFA8002B5A58 /* Build configuration list for PBXNativeTarget "Watch App" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				DAB605F81B20495800341828 /* Debug */,
-				DAE3B3A61B290D6F00ADE09A /* Release */,
+				FB4C5DB81BF5EFA8002B5A58 /* Debug */,
+				FB4C5DB91BF5EFA8002B5A58 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

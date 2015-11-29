@@ -1,20 +1,20 @@
 source 'https://github.com/CocoaPods/Specs.git'
-platform :ios, '8.0'
-
-link_with 'Dude', 'Dude WatchKit Extension'
+platform :ios, '9.0'
+link_with 'Dude', 'Watch Extension'
 
 def shared_pods
-  pod 'Parse'
+  pod 'Parse', :git => 'git@github.com:ParsePlatform/Parse-SDK-iOS-OSX.git', :branch => 'nlutsenko.watchOS'
 end
 
-target :'Dude WatchKit Extension' do
+target :'Watch Extension' do
+  platform :watchos, '2.0'
   shared_pods
 end
 
 target :'Dude' do
+  platform :ios, '9.0'
   shared_pods
+  pod 'SDWebImage'
   pod 'Reachability'
   pod 'SOMotionDetector'
-  pod 'SDWebImage'
-  pod 'APAddressBook'
 end

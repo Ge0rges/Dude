@@ -9,13 +9,14 @@
 // Frameworks
 #import <Foundation/Foundation.h>
 #import <Reachability/Reachability.h>
-#import <AddressBook/AddressBook.h>
+#import <Contacts/Contacts.h>
 
 // Constants
 #import "Constants.h"
 
 // Models
 #import "DMessage.h"
+#import "DUser.h"
 
 @interface ContactsManager : NSObject
 
