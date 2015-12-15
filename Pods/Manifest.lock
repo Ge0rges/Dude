@@ -1,7 +1,7 @@
 PODS:
   - Bolts/Tasks (1.5.0)
-  - Parse (1.9.0):
-    - Bolts/Tasks (>= 1.3.0)
+  - Parse (1.11.0):
+    - Bolts/Tasks (~> 1.5)
   - Reachability (3.2)
   - SDWebImage (3.7.3):
     - SDWebImage/Core (= 3.7.3)
@@ -9,24 +9,14 @@ PODS:
   - SOMotionDetector (1.0.1)
 
 DEPENDENCIES:
-  - Parse (from `git@github.com:ParsePlatform/Parse-SDK-iOS-OSX.git`, branch `nlutsenko.watchOS`)
+  - Parse
   - Reachability
   - SDWebImage
   - SOMotionDetector
 
-EXTERNAL SOURCES:
-  Parse:
-    :branch: nlutsenko.watchOS
-    :git: git@github.com:ParsePlatform/Parse-SDK-iOS-OSX.git
-
-CHECKOUT OPTIONS:
-  Parse:
-    :commit: c7181f105fe83159cdcd9f3fc759400ab0f62242
-    :git: git@github.com:ParsePlatform/Parse-SDK-iOS-OSX.git
-
 SPEC CHECKSUMS:
   Bolts: 722ab9a4f8b50fc4ed1b9998a5a7a2b3f16d80b4
-  Parse: 4ab4c30330b19384b878c484ad577ee88dad08db
+  Parse: 886af46a0a677402f6374bb97ac212e795f70afe
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SDWebImage: 1d2b1a1efda1ade1b00b6f8498865f8ddedc8a84
   SOMotionDetector: 9e7975e25ccdaa3f108db510153f92ef433767da

@@ -354,7 +354,7 @@
                       @"sound": @"default",
                       @"category": @"mainCategory"
                       },
-#warning toggle on composing sheet
+#warning toggle location sending on composing sheet
                   //@"long": [NSNumber numberWithDouble:message.location.coordinate.longitude],
                   //@"lat": [NSNumber numberWithDouble:message.location.coordinate.latitude],
                   

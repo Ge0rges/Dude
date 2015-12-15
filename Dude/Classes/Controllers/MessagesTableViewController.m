@@ -17,10 +17,11 @@
 // Pods
 #import <SDWebImage/UIImageView+WebCache.h>
 
-// Constants
-#warning investigate
-#import "Constants.h"
+// Extensions & Categories
 #import "UIImageExtensions.h"
+
+// Constants
+#import "Constants.h"
 
 @interface MessagesTableViewController () {
   NSArray *messages;

@@ -53,7 +53,7 @@
  **/
 + (id)traverseObject:(id)object usingBlock:(id (^)(id object))block;
 
-/*!
+/**
  This method will split an array into multiple arrays, each with up to maximum components count.
 
  @param array      Array to split.
@@ -64,13 +64,5 @@
 + (NSArray *)arrayBySplittingArray:(NSArray *)array withMaximumComponentsPerSegment:(NSUInteger)components;
 
 + (id)_stringWithFormat:(NSString *)format arguments:(NSArray *)arguments;
-@end
-
-@interface PFJSONCacheItem : NSObject
-
-@property (nonatomic, copy, readonly) NSString *hashValue;
-
-- (instancetype)initWithObject:(id)object;
-+ (PFJSONCacheItem *)cacheFromObject:(id)object;
 
 @end

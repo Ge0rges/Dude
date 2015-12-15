@@ -3,7 +3,7 @@ platform :ios, '9.0'
 link_with 'Dude', 'Watch Extension'
 
 def shared_pods
-  pod 'Parse', :git => 'git@github.com:ParsePlatform/Parse-SDK-iOS-OSX.git', :branch => 'nlutsenko.watchOS'
+  pod 'Parse'
 end
 
 target :'Watch Extension' do

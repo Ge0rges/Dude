@@ -9,25 +9,19 @@
 
 #import <Foundation/Foundation.h>
 
-#import <Parse/PFObject.h>
-#import <Parse/PFSubclassing.h>
+#import "PFPersistenceGroup.h"
 
-extern NSString *const PFPinKeyName;
-extern NSString *const PFPinKeyObjects;
+@interface PFUserDefaultsPersistenceGroup : NSObject <PFPersistenceGroup>
 
-/**
- PFPin represent internal pin implementation of PFObject's `pin`.
- */
-@interface PFPin : PFObject<PFSubclassing>
-
-@property (nonatomic, copy) NSString *name;
-@property (nonatomic, strong) NSMutableArray *objects;
+@property (nonatomic, copy, readonly) NSString *key;
+@property (nonatomic, strong, readonly) NSUserDefaults *userDefaults;
 
 ///--------------------------------------
 /// @name Init
 ///--------------------------------------
 
-- (instancetype)initWithName:(NSString *)name;
-+ (instancetype)pinWithName:(NSString *)name;
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithKey:(NSString *)key;
+- (instancetype)initWithKey:(NSString *)key userDefaults:(NSUserDefaults *)userDefaults NS_DESIGNATED_INITIALIZER;
 
 @end

@@ -21,8 +21,11 @@
 #import "PFLogging.h"
 #import "PFMacros.h"
 #import "PFRESTCommand.h"
-#import "PFReachability.h"
 #import "PFTaskQueue.h"
+
+#if !TARGET_OS_WATCH
+#import "PFReachability.h"
+#endif
 
 NSUInteger const PFEventuallyQueueDefaultMaxAttemptsCount = 5;
 NSTimeInterval const PFEventuallyQueueDefaultTimeoutRetryInterval = 600.0f;
@@ -395,7 +398,7 @@ NSTimeInterval const PFEventuallyQueueDefaultTimeoutRetryInterval = 600.0f;
 #pragma mark - Accessors
 ///--------------------------------------
 
-/*! Manually sets the network connection status. */
+/** Manually sets the network connection status. */
 - (void)setConnected:(BOOL)connected {
     BFTaskCompletionSource *barrier = [BFTaskCompletionSource taskCompletionSource];
     dispatch_async(_processingQueue, ^{
@@ -423,7 +426,7 @@ NSTimeInterval const PFEventuallyQueueDefaultTimeoutRetryInterval = 600.0f;
 #pragma mark - Test Helper Method
 ///--------------------------------------
 
-/*! Makes this command cache forget all the state it keeps during a single run of the app. */
+/** Makes this command cache forget all the state it keeps during a single run of the app. */
 - (void)_simulateReboot {
     // Make sure there is no command pending enqueuing
     [[[[_commandEnqueueTaskQueue enqueue:^BFTask *(BFTask *toAwait) {
@@ -438,12 +441,12 @@ NSTimeInterval const PFEventuallyQueueDefaultTimeoutRetryInterval = 600.0f;
     }] waitUntilFinished];
 }
 
-/*! Test helper to return how many commands are being retained in memory by the cache. */
+/** Test helper to return how many commands are being retained in memory by the cache. */
 - (int)_commandsInMemory {
     return (int)[_taskCompletionSources count];
 }
 
-/*! Called by PFObject whenever an object has been updated after a saveEventually. */
+/** Called by PFObject whenever an object has been updated after a saveEventually. */
 - (void)_notifyTestHelperObjectUpdated {
     [self.testHelper notify:PFEventuallyQueueEventObjectUpdated];
 }
