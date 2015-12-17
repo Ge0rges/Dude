@@ -31,7 +31,9 @@
 #import "Constants.h"
 
 @interface UsersTableViewController () <UITableViewDataSource, UITableViewDelegate> {
-  NSArray *contacts;
+  NSArray *activeContacts;
+  NSArray *favoriteContacts;
+  NSArray *allContacts;
 
   UIImageView *leftBarButtonitemImageView;
   
@@ -68,9 +70,6 @@
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-  
-  // Initialize the arrays
-  contacts = [NSArray new];
 
   // Set controller properties
   self.favoritesOnly = NO;
@@ -85,7 +84,9 @@
   [NSTimer timerWithTimeInterval:300 target:self selector:@selector(reloadData:) userInfo:nil repeats:YES];
   
   // Add device contacts
-  [[ContactsManager sharedInstance] addDeviceContactsAndSendNotification:YES];
+  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+    [[ContactsManager sharedInstance] addDeviceContactsAndSendNotification:YES];
+  });
   
   // Add + to nav bar
   leftBarButtonitemImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"Add Button"]];
@@ -141,10 +142,24 @@
   }
   
   ContactsManager *contactsManager = [ContactsManager sharedInstance];
-  contacts = [contactsManager getContactsRefreshedNecessary:YES favourites:self.favoritesOnly];
+  if (segmentedController) {
+    activeContacts = (self.favoritesOnly) ? favoriteContacts : allContacts;
   
-  if (self.searchFriendsView) {
-    if (self.favoritesOnly && contacts.count == 0) {
+  } else {
+    if (self.favoritesOnly) {
+      favoriteContacts = [contactsManager getContactsRefreshedNecessary:YES favourites:YES];
+      activeContacts = favoriteContacts;
+    
+    } else {
+      allContacts = [contactsManager getContactsRefreshedNecessary:YES favourites:NO];
+      activeContacts = allContacts;
+
+    }
+  }
+  
+  if (activeContacts.count == 0) {
+    if (self.favoritesOnly) {
+      // Show no favorites
       [self.view bringSubviewToFront:self.nofavoritesView];
       
       self.nofavoritesView.alpha = 0.0;
@@ -154,37 +169,56 @@
         self.nofavoritesView.alpha = 1.0;
       }];
       
-    } else {
-      if (!self.nofavoritesView.hidden) {
-        [UIView animateWithDuration:0.3 animations:^{
-          self.nofavoritesView.alpha = 0.0;
-          
-        } completion:^(BOOL finished) {
-          self.nofavoritesView.hidden = YES;
-          [self.view sendSubviewToBack:self.nofavoritesView];
-        }];
-      }
-      
-      if (!self.favoritesOnly && contacts.count == 0) {
-        [self.view bringSubviewToFront:self.noFriendsView];
-        
+      // Hide no friends
+      [UIView animateWithDuration:0.3 animations:^{
         self.noFriendsView.alpha = 0.0;
-        self.noFriendsView.hidden = NO;
         
-        [UIView animateWithDuration:0.3 animations:^{
-          self.noFriendsView.alpha = 1.0;
-        }];
+      } completion:^(BOOL finished) {
+        self.noFriendsView.hidden = YES;
+        [self.view sendSubviewToBack:self.noFriendsView];
+      }];
+      
+    } else {
+      // Show no friends
+      [self.view bringSubviewToFront:self.noFriendsView];
+
+      self.noFriendsView.alpha = 0.0;
+      self.noFriendsView.hidden = NO;
+      
+      [UIView animateWithDuration:0.3 animations:^{
+        self.noFriendsView.alpha = 1.0;
+      }];
+      
+      // Hide no favorites
+      [UIView animateWithDuration:0.3 animations:^{
+        self.nofavoritesView.alpha = 0.0;
         
-      } else if (!self.noFriendsView.hidden) {
-        [UIView animateWithDuration:0.3 animations:^{
-          self.noFriendsView.alpha = 0.0;
-          
-        } completion:^(BOOL finished) {
-          self.noFriendsView.hidden = YES;
-          [self.view sendSubviewToBack:self.noFriendsView];
-        }];
-      }
+      } completion:^(BOOL finished) {
+        self.nofavoritesView.hidden = YES;
+        [self.view sendSubviewToBack:self.nofavoritesView];
+      }];
     }
+
+  } else {
+    // Hide all
+    
+    // Hide no favorites
+    [UIView animateWithDuration:0.3 animations:^{
+      self.nofavoritesView.alpha = 0.0;
+      
+    } completion:^(BOOL finished) {
+      self.nofavoritesView.hidden = YES;
+      [self.view sendSubviewToBack:self.nofavoritesView];
+    }];
+  
+    // Hide no friends
+    [UIView animateWithDuration:0.3 animations:^{
+      self.noFriendsView.alpha = 0.0;
+      
+    } completion:^(BOOL finished) {
+      self.noFriendsView.hidden = YES;
+      [self.view sendSubviewToBack:self.noFriendsView];
+    }];
   }
   
   // UI must be on main thread
@@ -195,7 +229,7 @@
 #warning support recent section
 - (NSInteger)tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section {
   // Return the number of rows in the section.
-  return contacts.count;
+  return activeContacts.count;
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView*)tableView {
@@ -214,7 +248,7 @@
   [cell.detailTextLabel setText:nil];
   [cell.imageView setImage:nil];
   
-  DUser *user = contacts[indexPath.row];
+  DUser *user = activeContacts[indexPath.row];
   
   // Populate the cell
   cell.textLabel.text = user.fullName;
@@ -230,8 +264,8 @@
 }
 
 - (void)tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
-  if (contacts && contacts.count > 0) {
-    [self performSegueWithIdentifier:@"showProfile" sender:contacts[indexPath.row]];
+  if (activeContacts && activeContacts.count > 0) {
+    [self performSegueWithIdentifier:@"showProfile" sender:activeContacts[indexPath.row]];
   }
   
   [tableView deselectRowAtIndexPath:indexPath animated:YES];

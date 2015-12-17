@@ -178,6 +178,8 @@
 		FB4FC3C51BAD938900FC5F01 /* QNSURLConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = QNSURLConnection.h; path = QNSURLConnection/QNSURLConnection.h; sourceTree = "<group>"; };
 		FB4FC3C61BAD938900FC5F01 /* QNSURLConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = QNSURLConnection.m; path = QNSURLConnection/QNSURLConnection.m; sourceTree = "<group>"; };
 		FB4FC3C91BAD976200FC5F01 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		FBA0019D1C23217E00E9A263 /* Watch Extension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Watch Extension.entitlements"; sourceTree = SOURCE_ROOT; };
+		FBA0019E1C23218600E9A263 /* Watch App.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Watch App.entitlements"; sourceTree = SOURCE_ROOT; };
 		FBDB73801BA809C300C7D452 /* MainNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MainNavigationController.h; path = Classes/Controllers/MainNavigationController.h; sourceTree = "<group>"; };
 		FBDB73811BA809C300C7D452 /* MainNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MainNavigationController.m; path = Classes/Controllers/MainNavigationController.m; sourceTree = "<group>"; };
 		FBDE26D51B81E0B5006485D0 /* SlidingSegues.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SlidingSegues.h; sourceTree = "<group>"; };
@@ -497,6 +499,7 @@
 		FB4C5D921BF5EFA8002B5A58 /* Watch App */ = {
 			isa = PBXGroup;
 			children = (
+				FBA0019E1C23218600E9A263 /* Watch App.entitlements */,
 				FB4C5D931BF5EFA8002B5A58 /* Interface.storyboard */,
 				FB4C5D961BF5EFA8002B5A58 /* Assets.xcassets */,
 				FB4C5D981BF5EFA8002B5A58 /* Info.plist */,
@@ -508,6 +511,7 @@
 		FB4C5DA11BF5EFA8002B5A58 /* Watch Extension */ = {
 			isa = PBXGroup;
 			children = (
+				FBA0019D1C23217E00E9A263 /* Watch Extension.entitlements */,
 				FB02EF6D1C0B53720010B916 /* Classes */,
 				FB02EF6E1C0B537A0010B916 /* Assets */,
 				FB4C5DA21BF5EFA8002B5A58 /* Supporting Files */,
@@ -620,7 +624,7 @@
 						DevelopmentTeam = 7DTJP5N92F;
 						SystemCapabilities = {
 							com.apple.ApplicationGroups.iOS = {
-								enabled = 0;
+								enabled = 1;
 							};
 							com.apple.InAppPurchase = {
 								enabled = 0;
@@ -633,9 +637,20 @@
 					FB4C5D901BF5EFA8002B5A58 = {
 						CreatedOnToolsVersion = 7.1.1;
 						DevelopmentTeam = 7DTJP5N92F;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
+							};
+						};
 					};
 					FB4C5D9C1BF5EFA8002B5A58 = {
 						CreatedOnToolsVersion = 7.1.1;
+						DevelopmentTeam = 7DTJP5N92F;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -1004,7 +1019,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = BB967A64F79CD5027FF2DFFD /* Pods-Watch Extension.debug.xcconfig */;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "Watch Extension.entitlements";
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_BITCODE = YES;
+				ENABLE_ON_DEMAND_RESOURCES = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -1028,7 +1046,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 6385CC7AFC34B2E9DF045186 /* Pods-Watch Extension.release.xcconfig */;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "Watch Extension.entitlements";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_BITCODE = YES;
+				ENABLE_ON_DEMAND_RESOURCES = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
 				INFOPLIST_FILE = "watchkitapp Extension/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
@@ -1045,9 +1066,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "Watch App.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "iPhone Developer";
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_BITCODE = YES;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -1060,6 +1084,7 @@
 				MTL_ENABLE_DEBUG_INFO = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.ge0rges.Dude.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = 4;
@@ -1071,14 +1096,18 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "Watch App.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "iPhone Developer";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_BITCODE = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
 				IBSC_MODULE = watchkitapp_Extension;
 				INFOPLIST_FILE = watchkitapp/Info.plist;
 				PRODUCT_BUNDLE_IDENTIFIER = com.ge0rges.Dude.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = 4;

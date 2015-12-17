@@ -29,7 +29,7 @@
 
 @end
 
-#warning redo, make sure any fully public messages are put in lastSeen under currentUser email
+#warning make composing sheet, make sure any fully public messages are put in lastSeen under currentUser email
 
 @implementation MessagesTableViewController
 
@@ -177,7 +177,9 @@
       MessagesManager *messagesManager = [MessagesManager sharedInstance];
 
       messages = [messagesManager generateMessages:20];
-
+      
+      NSLog(@"messages: %@", messages);
+      
       [self.tableView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];
       [self.refreshControl performSelectorOnMainThread:@selector(endRefreshing) withObject:nil waitUntilDone:NO];
     }

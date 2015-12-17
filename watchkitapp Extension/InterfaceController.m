@@ -41,12 +41,6 @@
 - (void)awakeWithContext:(NSArray*)context {
   [super awakeWithContext:context];
   
-  // Enable data sharing in app extensions for localDatastore
-  //[Parse enableDataSharingWithApplicationGroupIdentifier:@"group.com.ge0rges.Dude" containingApplication:@"com.ge0rges.Dude"];
-  
-  // Setup Parse
-  [Parse setApplicationId:@"Lwdk0Qnb9755omfrz9Jt1462lzCyzBSTU4lSs37S" clientKey:@"bqhjVGFBHTtfjyoRG8WlYBrjqkulOjcilhtQursd"];
-  
   // Configure interface objects here.
   PFQuery *contactsQuery = [DUserWatch query];
   [contactsQuery fromPinWithName:WatchRequestContacts];

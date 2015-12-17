@@ -90,7 +90,9 @@
         user.email = self.textField.text.lowercaseString;
         user.username = self.textField.text.lowercaseString;
         
+        [self animateToNextStepWithInitialScreenshot:[self screenshot] fromRight:YES];
         [self proceedToPassword];
+        
         break;
       }
         
@@ -154,7 +156,7 @@
       case 5: {
         [user selectFacebookAccountWithCompletion:^(BOOL success, ACAccount *account, NSError *error) {
           [user selectTwitterAccountWithCompletion:^(BOOL success, ACAccount *account, NSError *error) {
-            [user signUpInBackgroundWithBlock:^(BOOL succeeded, NSError *PF_NULLABLE_S error) {
+            [user signUpInBackgroundWithBlock:^(BOOL succeeded, NSError * _Nullable error) {
               if (!succeeded) {
                 [self dismissViewControllerAnimated:YES completion:nil];
                 
@@ -198,7 +200,7 @@
   
   [self.stepImageView removeGestureRecognizer:self.stepImageView.gestureRecognizers[0]];
   
-  [self.textField performSelector:@selector(becomeFirstResponder) withObject:nil afterDelay:0.35];//.05 seconds after animation
+  [self.textField performSelector:@selector(becomeFirstResponder) withObject:nil afterDelay:0.4];//.15 seconds after animation
   
   [retakeImageView removeFromSuperview];
   retakeImageView = nil;
@@ -210,10 +212,17 @@
 - (void)proceedToPassword {
   // Update UI
   [self.stepImageView setImage:[UIImage imageNamed:@"Password"]];
-  [self.stepLabel setText:@"Choose a super secret password. (Pssst, don't share it)"];
   [self.titleStepLabel setText:@"Password"];
   
-  [self.textField setPlaceholder:@"At least six characters, security!"];
+  if (self.logIn) {
+    [self.stepLabel setText:@"Enter your super secret password. (Make sure nobody's looking!)"];
+    [self.textField setPlaceholder:@"Yay! Security!"];
+
+  } else {
+    [self.stepLabel setText:@"Choose a super secret password. (Pssst, don't share it)"];
+    [self.textField setPlaceholder:@"Min. 6 characters, security!"];
+  }
+  
   [self.textField setText:@""];
   [self.textField setHidden:NO];
   [self.textField setKeyboardType:UIKeyboardTypeDefault];
@@ -224,7 +233,7 @@
   
   self.confirmButton.tag++;
   
-  [self.textField becomeFirstResponder];
+  [self.textField performSelector:@selector(becomeFirstResponder) withObject:nil afterDelay:0.4];//.15 seconds after animation
   
   [retakeImageView removeFromSuperview];
   retakeImageView = nil;
@@ -260,10 +269,17 @@
 - (void)proceedToEmail {
   // Update UI
   [self.stepImageView setImage:[UIImage imageNamed:@"Mail"]];
-  [self.stepLabel setText:@"We never share your email address, and we only contact you about your account."];
   [self.titleStepLabel setText:@"Email Address"];
   
-  [self.textField setPlaceholder:@"thedude@is.awesome"];
+  if (self.logIn) {
+    [self.stepLabel setText:@"Enter the email you used to sign up."];
+    [self.textField setPlaceholder:@"thedude@is.awesome"];
+    
+  } else {
+    [self.stepLabel setText:@"Your email is private! We'll only contact you about your account."];
+    [self.textField setPlaceholder:@"thedude@is.awesome"];
+  }
+  
   [self.textField setText:@""];
   [self.textField setHidden:NO];
   [self.textField setKeyboardType:UIKeyboardTypeEmailAddress];
@@ -276,7 +292,7 @@
   
   [self.stepImageView removeGestureRecognizer:self.stepImageView.gestureRecognizers[0]];
   
-  [self.textField performSelector:@selector(becomeFirstResponder) withObject:nil afterDelay:0.35];//.05 seconds after animation
+  [self.textField performSelector:@selector(becomeFirstResponder) withObject:nil afterDelay:0.4];//.15 seconds after animation
   
   [retakeImageView removeFromSuperview];
   retakeImageView = nil;
@@ -457,19 +473,33 @@
 - (IBAction)back {
   switch (self.confirmButton.tag) {
     case 1: {
-      [self performSegueWithIdentifier:@"unwindWelcome" sender:nil];
+      [self.textField resignFirstResponder];
+      [self performSegueWithIdentifier:@"unwindToWelcomeViewController" sender:self];
+      
       break;
     }
       
     case 2: {
       [self animateToNextStepWithInitialScreenshot:[self screenshot] fromRight:NO];
-      [self proceedToName];
+      if (self.logIn) {
+        [self proceedToEmail];
+     
+      } else {
+        [self proceedToName];
+      }
+      
       break;
     }
       
     case 3: {
       [self animateToNextStepWithInitialScreenshot:[self screenshot] fromRight:NO];
-      [self proceedToEmail];
+      if (self.logIn) {
+        [self proceedToPassword];
+        
+      } else {
+        [self proceedToEmail];
+      }
+      
       break;
     }
       
@@ -483,12 +513,14 @@
     case 5: {
       [self animateToNextStepWithInitialScreenshot:[self screenshot] fromRight:NO];
       [self proceedToPhoto];
+      
       break;
     }
       
     case 6: {
       [self animateToNextStepWithInitialScreenshot:[self screenshot] fromRight:NO];
       [self proceedToSocial];
+      
       break;
     }
       

@@ -155,13 +155,13 @@
   
   CNContactStore *contactStore = [CNContactStore new];
   
-#warning temporary request perm where apppropriate
   [contactStore requestAccessForEntityType:CNEntityTypeContacts completionHandler:^(BOOL granted, NSError * _Nullable error){}];
-  
+
   [contactStore enumerateContactsWithFetchRequest:[[CNContactFetchRequest alloc] initWithKeysToFetch:@[CNContactEmailAddressesKey]] error:nil usingBlock:^(CNContact * _Nonnull contact, BOOL * _Nonnull stop) {
     NSMutableSet *contactEmails = [NSMutableSet new];
     
-    for (NSString *email in contact.emailAddresses) {
+    for (CNLabeledValue *emailLabeledValue in contact.emailAddresses) {
+      NSString *email = emailLabeledValue.value;
       if (![email.lowercaseString isEqualToString:[DUser currentUser].email.lowercaseString]) {
         [contactEmails addObject:email];
       }

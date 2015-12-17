@@ -417,13 +417,14 @@
   
   [push sendPushInBackgroundWithBlock:handler];
   
-#warning TO DO: Implement cloud code for last seens
   [PFCloud callFunctionInBackground:@"updateLastSeen" withParameters:payload block:^(id result, NSError *error) {
     if (!error) {
       // Save the last seen if we got a message
-    
+      //wut? ^
+      
     } else {
-     // We're screwed for now.
+#warning Implement a correct failsafe system
+      NSLog(@"This shouldn't happen. If it does I don't know what to do.");
     }
   }];
 }

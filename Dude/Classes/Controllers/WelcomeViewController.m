@@ -35,9 +35,6 @@
 
 #pragma mark - Navigation
 - (IBAction)unwindToWelcomeViewController:(UIStoryboardSegue *)segue {}
-- (UIStoryboardSegue*)segueForUnwindingToViewController:(UIViewController *)toViewController fromViewController:(UIViewController *)fromViewController identifier:(NSString *)identifier {
-  return [SlidingSegueRL segueWithIdentifier:identifier source:fromViewController destination:toViewController performHandler:^{}];
-}
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
   SignUpViewController *signUpViewController = (SignUpViewController*)[segue destinationViewController];
