@@ -17,7 +17,7 @@
 PF_TV_UNAVAILABLE_WARNING
 PF_WATCH_UNAVAILABLE_WARNING
 
-@class PFQuery PF_GENERIC(PFGenericObject : PFObject *);
+@class PFQuery PF_GENERIC(PFGenericObject : PFObject*);
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -45,7 +45,7 @@ PF_TV_UNAVAILABLE PF_WATCH_UNAVAILABLE @interface PFPush : NSObject <NSCopying>
  @param channel The channel to set for this push.
  The channel name must start with a letter and contain only letters, numbers, dashes, and underscores.
  */
-- (void)setChannel:(nullable NSString *)channel;
+- (void)setChannel:(nullable NSString*)channel;
 
 /**
  Sets the array of channels on which this push notification will be sent.
@@ -53,7 +53,7 @@ PF_TV_UNAVAILABLE PF_WATCH_UNAVAILABLE @interface PFPush : NSObject <NSCopying>
  @param channels The array of channels to set for this push.
  Each channel name must start with a letter and contain only letters, numbers, dashes, and underscores.
  */
-- (void)setChannels:(nullable NSArray PF_GENERIC(NSString *)*)channels;
+- (void)setChannels:(nullable NSArray PF_GENERIC(NSString*)*)channels;
 
 /**
  Sets an installation query to which this push notification will be sent.
@@ -62,7 +62,7 @@ PF_TV_UNAVAILABLE PF_WATCH_UNAVAILABLE @interface PFPush : NSObject <NSCopying>
 
  @param query The installation query to set for this push.
  */
-- (void)setQuery:(nullable PFQuery PF_GENERIC(PFInstallation *)*)query;
+- (void)setQuery:(nullable PFQuery PF_GENERIC(PFInstallation*)*)query;
 
 /**
  Sets an alert message for this push notification.
@@ -71,7 +71,7 @@ PF_TV_UNAVAILABLE PF_WATCH_UNAVAILABLE @interface PFPush : NSObject <NSCopying>
 
  @param message The message to send in this push.
  */
-- (void)setMessage:(nullable NSString *)message;
+- (void)setMessage:(nullable NSString*)message;
 
 /**
  Sets an arbitrary data payload for this push notification.
@@ -82,7 +82,7 @@ PF_TV_UNAVAILABLE PF_WATCH_UNAVAILABLE @interface PFPush : NSObject <NSCopying>
 
  @param data The data to send in this push.
  */
-- (void)setData:(nullable NSDictionary *)data;
+- (void)setData:(nullable NSDictionary*)data;
 
 /**
  Sets whether this push will go to Android devices.
@@ -114,7 +114,7 @@ PF_TV_UNAVAILABLE PF_WATCH_UNAVAILABLE @interface PFPush : NSObject <NSCopying>
 
  @param date The time at which the notification should expire.
  */
-- (void)expireAtDate:(nullable NSDate *)date;
+- (void)expireAtDate:(nullable NSDate*)date;
 
 /**
  Sets the time interval after which this notification should expire.
@@ -157,8 +157,8 @@ PF_TV_UNAVAILABLE PF_WATCH_UNAVAILABLE @interface PFPush : NSObject <NSCopying>
 
  @return Returns whether the send succeeded.
  */
-+ (BOOL)sendPushMessageToChannel:(NSString *)channel
-                     withMessage:(NSString *)message
++ (BOOL)sendPushMessageToChannel:(NSString*)channel
+                     withMessage:(NSString*)message
                            error:(NSError **)error;
 
 /**
@@ -170,8 +170,8 @@ PF_TV_UNAVAILABLE PF_WATCH_UNAVAILABLE @interface PFPush : NSObject <NSCopying>
 
  @return The task, that encapsulates the work being done.
  */
-+ (BFTask PF_GENERIC(NSNumber *)*)sendPushMessageToChannelInBackground:(NSString *)channel
-                                                           withMessage:(NSString *)message;
++ (BFTask PF_GENERIC(NSNumber*)*)sendPushMessageToChannelInBackground:(NSString*)channel
+                                                           withMessage:(NSString*)message;
 
 /**
  *Asynchronously* sends a push message to a channel and calls the given block.
@@ -182,8 +182,8 @@ PF_TV_UNAVAILABLE PF_WATCH_UNAVAILABLE @interface PFPush : NSObject <NSCopying>
  @param block The block to execute.
  It should have the following argument signature: `^(BOOL succeeded, NSError *error)`
  */
-+ (void)sendPushMessageToChannelInBackground:(NSString *)channel
-                                 withMessage:(NSString *)message
++ (void)sendPushMessageToChannelInBackground:(NSString*)channel
+                                 withMessage:(NSString*)message
                                        block:(nullable PFBooleanResultBlock)block;
 
 /*
@@ -194,12 +194,12 @@ PF_TV_UNAVAILABLE PF_WATCH_UNAVAILABLE @interface PFPush : NSObject <NSCopying>
  @param message The message to send.
  @param target The object to call selector on.
  @param selector The selector to call.
- It should have the following signature: `(void)callbackWithResult:(NSNumber *)result error:(NSError *)error`.
+ It should have the following signature: `(void)callbackWithResult:(NSNumber*)result error:(NSError*)error`.
  `error` will be `nil` on success and set if there was an error.
  `[result boolValue]` will tell you whether the call succeeded or not.
  */
-+ (void)sendPushMessageToChannelInBackground:(NSString *)channel
-                                 withMessage:(NSString *)message
++ (void)sendPushMessageToChannelInBackground:(NSString*)channel
+                                 withMessage:(NSString*)message
                                       target:(__nullable id)target
                                     selector:(__nullable SEL)selector;
 
@@ -212,8 +212,8 @@ PF_TV_UNAVAILABLE PF_WATCH_UNAVAILABLE @interface PFPush : NSObject <NSCopying>
 
  @return Returns whether the send succeeded.
  */
-+ (BOOL)sendPushMessageToQuery:(PFQuery PF_GENERIC(PFInstallation *)*)query
-                   withMessage:(NSString *)message
++ (BOOL)sendPushMessageToQuery:(PFQuery PF_GENERIC(PFInstallation*)*)query
+                   withMessage:(NSString*)message
                          error:(NSError **)error;
 
 /**
@@ -224,8 +224,8 @@ PF_TV_UNAVAILABLE PF_WATCH_UNAVAILABLE @interface PFPush : NSObject <NSCopying>
 
  @return The task, that encapsulates the work being done.
  */
-+ (BFTask PF_GENERIC(NSNumber *)*)sendPushMessageToQueryInBackground:(PFQuery PF_GENERIC(PFInstallation *)*)query
-                                                         withMessage:(NSString *)message;
++ (BFTask PF_GENERIC(NSNumber*)*)sendPushMessageToQueryInBackground:(PFQuery PF_GENERIC(PFInstallation*)*)query
+                                                         withMessage:(NSString*)message;
 
 /**
  *Asynchronously* sends a push message to a query and calls the given block.
@@ -236,8 +236,8 @@ PF_TV_UNAVAILABLE PF_WATCH_UNAVAILABLE @interface PFPush : NSObject <NSCopying>
  @param block The block to execute.
  It should have the following argument signature: `^(BOOL succeeded, NSError *error)`
  */
-+ (void)sendPushMessageToQueryInBackground:(PFQuery PF_GENERIC(PFInstallation *)*)query
-                               withMessage:(NSString *)message
++ (void)sendPushMessageToQueryInBackground:(PFQuery PF_GENERIC(PFInstallation*)*)query
+                               withMessage:(NSString*)message
                                      block:(nullable PFBooleanResultBlock)block;
 
 /**
@@ -253,7 +253,7 @@ PF_TV_UNAVAILABLE PF_WATCH_UNAVAILABLE @interface PFPush : NSObject <NSCopying>
  *Asynchronously* send this push message.
  @return The task, that encapsulates the work being done.
  */
-- (BFTask PF_GENERIC(NSNumber *)*)sendPushInBackground;
+- (BFTask PF_GENERIC(NSNumber*)*)sendPushInBackground;
 
 /**
  *Asynchronously* send this push message and executes the given callback block.
@@ -268,7 +268,7 @@ PF_TV_UNAVAILABLE PF_WATCH_UNAVAILABLE @interface PFPush : NSObject <NSCopying>
 
  @param target The object to call selector on.
  @param selector The selector to call.
- It should have the following signature: `(void)callbackWithResult:(NSNumber *)result error:(NSError *)error`.
+ It should have the following signature: `(void)callbackWithResult:(NSNumber*)result error:(NSError*)error`.
  `error` will be `nil` on success and set if there was an error.
  `[result boolValue]` will tell you whether the call succeeded or not.
  */
@@ -286,8 +286,8 @@ PF_TV_UNAVAILABLE PF_WATCH_UNAVAILABLE @interface PFPush : NSObject <NSCopying>
 
  @return Returns whether the send succeeded.
  */
-+ (BOOL)sendPushDataToChannel:(NSString *)channel
-                     withData:(NSDictionary *)data
++ (BOOL)sendPushDataToChannel:(NSString*)channel
+                     withData:(NSDictionary*)data
                         error:(NSError **)error;
 
 /**
@@ -301,8 +301,8 @@ PF_TV_UNAVAILABLE PF_WATCH_UNAVAILABLE @interface PFPush : NSObject <NSCopying>
 
  @return The task, that encapsulates the work being done.
  */
-+ (BFTask PF_GENERIC(NSNumber *)*)sendPushDataToChannelInBackground:(NSString *)channel
-                                                           withData:(NSDictionary *)data;
++ (BFTask PF_GENERIC(NSNumber*)*)sendPushDataToChannelInBackground:(NSString*)channel
+                                                           withData:(NSDictionary*)data;
 
 /**
  Asynchronously sends a push message with arbitrary data to a channel and calls the given block.
@@ -315,8 +315,8 @@ PF_TV_UNAVAILABLE PF_WATCH_UNAVAILABLE @interface PFPush : NSObject <NSCopying>
  @param block The block to execute.
  It should have the following argument signature: `^(BOOL succeeded, NSError *error)`.
  */
-+ (void)sendPushDataToChannelInBackground:(NSString *)channel
-                                 withData:(NSDictionary *)data
++ (void)sendPushDataToChannelInBackground:(NSString*)channel
+                                 withData:(NSDictionary*)data
                                     block:(nullable PFBooleanResultBlock)block;
 
 /*
@@ -329,12 +329,12 @@ PF_TV_UNAVAILABLE PF_WATCH_UNAVAILABLE @interface PFPush : NSObject <NSCopying>
  @param data The data to send.
  @param target The object to call selector on.
  @param selector The selector to call.
- It should have the following signature: `(void)callbackWithResult:(NSNumber *)result error:(NSError *)error`.
+ It should have the following signature: `(void)callbackWithResult:(NSNumber*)result error:(NSError*)error`.
  `error` will be `nil` on success and set if there was an error.
  `[result boolValue]` will tell you whether the call succeeded or not.
  */
-+ (void)sendPushDataToChannelInBackground:(NSString *)channel
-                                 withData:(NSDictionary *)data
++ (void)sendPushDataToChannelInBackground:(NSString*)channel
+                                 withData:(NSDictionary*)data
                                    target:(__nullable id)target
                                  selector:(__nullable SEL)selector;
 
@@ -350,8 +350,8 @@ PF_TV_UNAVAILABLE PF_WATCH_UNAVAILABLE @interface PFPush : NSObject <NSCopying>
 
  @return Returns whether the send succeeded.
  */
-+ (BOOL)sendPushDataToQuery:(PFQuery PF_GENERIC(PFInstallation *)*)query
-                   withData:(NSDictionary *)data
++ (BOOL)sendPushDataToQuery:(PFQuery PF_GENERIC(PFInstallation*)*)query
+                   withData:(NSDictionary*)data
                       error:(NSError **)error;
 
 /**
@@ -365,8 +365,8 @@ PF_TV_UNAVAILABLE PF_WATCH_UNAVAILABLE @interface PFPush : NSObject <NSCopying>
 
  @return The task, that encapsulates the work being done.
  */
-+ (BFTask PF_GENERIC(NSNumber *)*)sendPushDataToQueryInBackground:(PFQuery PF_GENERIC(PFInstallation *)*)query
-                                                         withData:(NSDictionary *)data;
++ (BFTask PF_GENERIC(NSNumber*)*)sendPushDataToQueryInBackground:(PFQuery PF_GENERIC(PFInstallation*)*)query
+                                                         withData:(NSDictionary*)data;
 
 /**
  *Asynchronously* sends a push message with arbitrary data to a query and calls the given block.
@@ -379,8 +379,8 @@ PF_TV_UNAVAILABLE PF_WATCH_UNAVAILABLE @interface PFPush : NSObject <NSCopying>
  @param block The block to execute.
  It should have the following argument signature: `^(BOOL succeeded, NSError *error)`.
  */
-+ (void)sendPushDataToQueryInBackground:(PFQuery PF_GENERIC(PFInstallation *)*)query
-                               withData:(NSDictionary *)data
++ (void)sendPushDataToQueryInBackground:(PFQuery PF_GENERIC(PFInstallation*)*)query
+                               withData:(NSDictionary*)data
                                   block:(nullable PFBooleanResultBlock)block;
 
 ///--------------------------------------
@@ -399,7 +399,7 @@ PF_TV_UNAVAILABLE PF_WATCH_UNAVAILABLE @interface PFPush : NSObject <NSCopying>
 
  @param userInfo The userInfo dictionary you get in `appplication:didReceiveRemoteNotification:`.
  */
-+ (void)handlePush:(nullable NSDictionary *)userInfo NS_AVAILABLE_IOS(3_0) PF_EXTENSION_UNAVAILABLE("");
++ (void)handlePush:(nullable NSDictionary*)userInfo NS_AVAILABLE_IOS(3_0) PF_EXTENSION_UNAVAILABLE("");
 
 ///--------------------------------------
 /// @name Managing Channel Subscriptions
@@ -422,14 +422,14 @@ PF_TV_UNAVAILABLE PF_WATCH_UNAVAILABLE @interface PFPush : NSObject <NSCopying>
 
  @return Returns an `NSSet` containing all the channel names this device is subscribed to.
  */
-+ (nullable NSSet PF_GENERIC(NSString *)*)getSubscribedChannels:(NSError **)error;
++ (nullable NSSet PF_GENERIC(NSString*)*)getSubscribedChannels:(NSError **)error;
 
 /**
  *Asynchronously* get all the channels that this device is subscribed to.
 
  @return The task, that encapsulates the work being done.
  */
-+ (BFTask PF_GENERIC(NSSet<NSString *> *)*)getSubscribedChannelsInBackground;
++ (BFTask PF_GENERIC(NSSet<NSString *>*)*)getSubscribedChannelsInBackground;
 
 /**
  *Asynchronously* get all the channels that this device is subscribed to.
@@ -443,7 +443,7 @@ PF_TV_UNAVAILABLE PF_WATCH_UNAVAILABLE @interface PFPush : NSObject <NSCopying>
 
  @param target The object to call selector on.
  @param selector The selector to call.
- It should have the following signature: `(void)callbackWithResult:(NSSet *)result error:(NSError *)error`.
+ It should have the following signature: `(void)callbackWithResult:(NSSet*)result error:(NSError*)error`.
  `error` will be `nil` on success and set if there was an error.
  */
 + (void)getSubscribedChannelsInBackgroundWithTarget:(id)target selector:(SEL)selector;
@@ -457,7 +457,7 @@ PF_TV_UNAVAILABLE PF_WATCH_UNAVAILABLE @interface PFPush : NSObject <NSCopying>
 
  @return Returns whether the subscribe succeeded.
  */
-+ (BOOL)subscribeToChannel:(NSString *)channel error:(NSError **)error;
++ (BOOL)subscribeToChannel:(NSString*)channel error:(NSError **)error;
 
 /**
  *Asynchronously* subscribes the device to a channel of push notifications.
@@ -467,7 +467,7 @@ PF_TV_UNAVAILABLE PF_WATCH_UNAVAILABLE @interface PFPush : NSObject <NSCopying>
 
  @return The task, that encapsulates the work being done.
  */
-+ (BFTask PF_GENERIC(NSNumber *)*)subscribeToChannelInBackground:(NSString *)channel;
++ (BFTask PF_GENERIC(NSNumber*)*)subscribeToChannelInBackground:(NSString*)channel;
 
 /**
  *Asynchronously* subscribes the device to a channel of push notifications and calls the given block.
@@ -477,7 +477,7 @@ PF_TV_UNAVAILABLE PF_WATCH_UNAVAILABLE @interface PFPush : NSObject <NSCopying>
  @param block The block to execute.
  It should have the following argument signature: `^(BOOL succeeded, NSError *error)`
  */
-+ (void)subscribeToChannelInBackground:(NSString *)channel
++ (void)subscribeToChannelInBackground:(NSString*)channel
                                  block:(nullable PFBooleanResultBlock)block;
 
 /*
@@ -487,11 +487,11 @@ PF_TV_UNAVAILABLE PF_WATCH_UNAVAILABLE @interface PFPush : NSObject <NSCopying>
  a letter and contain only letters, numbers, dashes, and underscores.
  @param target The object to call selector on.
  @param selector The selector to call.
- It should have the following signature: `(void)callbackWithResult:(NSNumber *)result error:(NSError *)error`.
+ It should have the following signature: `(void)callbackWithResult:(NSNumber*)result error:(NSError*)error`.
  `error` will be `nil` on success and set if there was an error.
  `[result boolValue]` will tell you whether the call succeeded or not.
  */
-+ (void)subscribeToChannelInBackground:(NSString *)channel
++ (void)subscribeToChannelInBackground:(NSString*)channel
                                 target:(nullable id)target
                               selector:(nullable SEL)selector;
 
@@ -503,7 +503,7 @@ PF_TV_UNAVAILABLE PF_WATCH_UNAVAILABLE @interface PFPush : NSObject <NSCopying>
 
  @return Returns whether the unsubscribe succeeded.
  */
-+ (BOOL)unsubscribeFromChannel:(NSString *)channel error:(NSError **)error;
++ (BOOL)unsubscribeFromChannel:(NSString*)channel error:(NSError **)error;
 
 /**
  *Asynchronously* unsubscribes the device from a channel of push notifications.
@@ -512,7 +512,7 @@ PF_TV_UNAVAILABLE PF_WATCH_UNAVAILABLE @interface PFPush : NSObject <NSCopying>
 
  @return The task, that encapsulates the work being done.
  */
-+ (BFTask PF_GENERIC(NSNumber *)*)unsubscribeFromChannelInBackground:(NSString *)channel;
++ (BFTask PF_GENERIC(NSNumber*)*)unsubscribeFromChannelInBackground:(NSString*)channel;
 
 /**
  *Asynchronously* unsubscribes the device from a channel of push notifications and calls the given block.
@@ -521,7 +521,7 @@ PF_TV_UNAVAILABLE PF_WATCH_UNAVAILABLE @interface PFPush : NSObject <NSCopying>
  @param block The block to execute.
  It should have the following argument signature: `^(BOOL succeeded, NSError *error)`.
  */
-+ (void)unsubscribeFromChannelInBackground:(NSString *)channel
++ (void)unsubscribeFromChannelInBackground:(NSString*)channel
                                      block:(nullable PFBooleanResultBlock)block;
 
 /*
@@ -530,11 +530,11 @@ PF_TV_UNAVAILABLE PF_WATCH_UNAVAILABLE @interface PFPush : NSObject <NSCopying>
  @param channel The channel to unsubscribe from.
  @param target The object to call selector on.
  @param selector The selector to call.
- It should have the following signature: `(void)callbackWithResult:(NSNumber *)result error:(NSError *)error`.
+ It should have the following signature: `(void)callbackWithResult:(NSNumber*)result error:(NSError*)error`.
  `error` will be `nil` on success and set if there was an error.
  `[result boolValue]` will tell you whether the call succeeded or not.
  */
-+ (void)unsubscribeFromChannelInBackground:(NSString *)channel
++ (void)unsubscribeFromChannelInBackground:(NSString*)channel
                                     target:(nullable id)target
                                   selector:(nullable SEL)selector;
 

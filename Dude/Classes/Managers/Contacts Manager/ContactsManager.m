@@ -113,7 +113,7 @@
   return users;
 }
 
-- (DMessage*)lastMessageForContact:(DUser *)user {
+- (DMessage*)lastMessageForContact:(DUser*)user {
   return [DUser currentUser].lastSeens[user.email];
 }
 
@@ -181,11 +181,11 @@
     [[DUser currentUser] setContactsEmails:currentUserContacts];
     
     [[DUser currentUser] saveInBackgroundWithBlock:^(BOOL success, NSError *error) {
-      AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-      UIViewController *vc = appDelegate.visibleViewController;
+      AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
+      UIViewController *viewController = appDelegate.visibleViewController;
       
-      if ([vc isKindOfClass:[UsersTableViewController class]]) {
-        UsersTableViewController *userTableVC = (UsersTableViewController*)vc;
+      if ([viewController isKindOfClass:[UsersTableViewController class]]) {
+        UsersTableViewController *userTableVC = (UsersTableViewController*)viewController;
         [userTableVC reloadData:nil];
       }
       

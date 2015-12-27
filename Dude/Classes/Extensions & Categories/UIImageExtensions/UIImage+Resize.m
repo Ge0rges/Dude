@@ -9,7 +9,7 @@
 
 // Private helper methods
 @interface UIImage ()
-- (UIImage *)resizedImage:(CGSize)newSize
+- (UIImage*)resizedImage:(CGSize)newSize
                 transform:(CGAffineTransform)transform
            drawTransposed:(BOOL)transpose
      interpolationQuality:(CGInterpolationQuality)quality;
@@ -21,7 +21,7 @@
 // Returns a copy of this image that is cropped to the given bounds.
 // The bounds will be adjusted using CGRectIntegral.
 // This method ignores the image's imageOrientation setting.
-- (UIImage *)croppedImage:(CGRect)bounds {
+- (UIImage*)croppedImage:(CGRect)bounds {
   CGImageRef imageRef = CGImageCreateWithImageInRect([self CGImage], bounds);
   UIImage *croppedImage = [UIImage imageWithCGImage:imageRef];
   CGImageRelease(imageRef);
@@ -30,7 +30,7 @@
 
 // Returns a copy of this image that is squared to the thumbnail size.
 // If transparentBorder is non-zero, a transparent border of the given size will be added around the edges of the thumbnail. (Adding a transparent border of at least one pixel in size has the side-effect of antialiasing the edges of the image when rotating it using Core Animation.)
-- (UIImage *)thumbnailImage:(NSInteger)thumbnailSize
+- (UIImage*)thumbnailImage:(NSInteger)thumbnailSize
           transparentBorder:(NSUInteger)borderSize
                cornerRadius:(NSUInteger)cornerRadius
        interpolationQuality:(CGInterpolationQuality)quality {
@@ -54,7 +54,7 @@
 
 // Returns a rescaled copy of the image, taking into account its orientation
 // The image will be scaled disproportionately if necessary to fit the bounds specified by the parameter
-- (UIImage *)resizedImage:(CGSize)newSize interpolationQuality:(CGInterpolationQuality)quality {
+- (UIImage*)resizedImage:(CGSize)newSize interpolationQuality:(CGInterpolationQuality)quality {
   BOOL drawTransposed;
   
   switch (self.imageOrientation) {
@@ -76,7 +76,7 @@
 }
 
 // Resizes the image according to the given content mode, taking into account the image's orientation
-- (UIImage *)resizedImageWithContentMode:(UIViewContentMode)contentMode
+- (UIImage*)resizedImageWithContentMode:(UIViewContentMode)contentMode
                                   bounds:(CGSize)bounds
                     interpolationQuality:(CGInterpolationQuality)quality {
   CGFloat horizontalRatio = bounds.width / self.size.width;
@@ -109,7 +109,7 @@
 // If the new size is not integral, it will be rounded up
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wobjc-protocol-method-implementation"
-- (UIImage *)resizedImage:(CGSize)newSize
+- (UIImage*)resizedImage:(CGSize)newSize
                 transform:(CGAffineTransform)transform
            drawTransposed:(BOOL)transpose
      interpolationQuality:(CGInterpolationQuality)quality {
@@ -195,7 +195,7 @@
   return transform;
 }
 
-- (UIImage *)imageByScalingAndCroppingForSize:(CGSize)targetSize
+- (UIImage*)imageByScalingAndCroppingForSize:(CGSize)targetSize
 {
   UIImage *sourceImage = self;
   UIImage *newImage = nil;

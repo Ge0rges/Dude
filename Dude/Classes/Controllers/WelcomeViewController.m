@@ -34,9 +34,9 @@
 }
 
 #pragma mark - Navigation
-- (IBAction)unwindToWelcomeViewController:(UIStoryboardSegue *)segue {}
+- (IBAction)unwindToWelcomeViewController:(UIStoryboardSegue*)segue {}
 
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+- (void)prepareForSegue:(UIStoryboardSegue*)segue sender:(id)sender {
   SignUpViewController *signUpViewController = (SignUpViewController*)[segue destinationViewController];
   signUpViewController.logIn = ([segue.identifier isEqualToString:@"logInSegue"]) ? YES : NO;
 }

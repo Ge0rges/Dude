@@ -49,13 +49,13 @@
 #pragma mark - Get
 ///--------------------------------------
 
-- (BFTask PF_GENERIC(NSSet<NSString *> *)*)getSubscribedChannelsAsync {
+- (BFTask PF_GENERIC(NSSet<NSString *>*)*)getSubscribedChannelsAsync {
     return [[self _getCurrentObjectAsync] continueWithSuccessBlock:^id(BFTask *task) {
         PFInstallation *installation = task.result;
 
         BFTask *installationTask = (installation.objectId
-                                    ? (BFTask *)[installation fetchInBackground]
-                                    : (BFTask *)[installation saveInBackground]);
+                                    ? (BFTask*)[installation fetchInBackground]
+                                    : (BFTask*)[installation saveInBackground]);
 
         return [installationTask continueWithSuccessBlock:^id(BFTask *_) {
             return [NSSet setWithArray:installation.channels];
@@ -67,7 +67,7 @@
 #pragma mark - Subscribe
 ///--------------------------------------
 
-- (BFTask *)subscribeToChannelAsyncWithName:(nonnull NSString *)name {
+- (BFTask*)subscribeToChannelAsyncWithName:(nonnull NSString*)name {
     return [[self _getCurrentObjectAsync] continueWithSuccessBlock:^id(BFTask *task) {
         PFInstallation *installation = task.result;
         if ([installation.channels containsObject:name] &&
@@ -80,7 +80,7 @@
     }];
 }
 
-- (BFTask *)unsubscribeFromChannelAsyncWithName:(nonnull NSString *)name {
+- (BFTask*)unsubscribeFromChannelAsyncWithName:(nonnull NSString*)name {
     return [[self _getCurrentObjectAsync] continueWithSuccessBlock:^id(BFTask *task) {
         PFInstallation *installation = task.result;
         if (name.length != 0 &&
@@ -97,7 +97,7 @@
 #pragma mark - Private
 ///--------------------------------------
 
-- (BFTask *)_getCurrentObjectAsync {
+- (BFTask*)_getCurrentObjectAsync {
     return [[self.currentInstallationController getCurrentObjectAsync] continueWithSuccessBlock:^id(BFTask *task) {
         PFInstallation *installation = task.result;
         if (!installation.deviceToken) {
@@ -114,7 +114,7 @@
 #pragma mark - Accessors
 ///--------------------------------------
 
-- (PFCurrentInstallationController *)currentInstallationController {
+- (PFCurrentInstallationController*)currentInstallationController {
     return self.dataSource.currentInstallationController;
 }
 

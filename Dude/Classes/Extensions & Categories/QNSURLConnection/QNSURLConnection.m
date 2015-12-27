@@ -10,7 +10,7 @@
 
 @implementation QNSURLConnection
 
-+ (NSData *)sendSynchronousRequest:(NSURLRequest *)request
++ (NSData*)sendSynchronousRequest:(NSURLRequest*)request
                  returningResponse:(__autoreleasing NSURLResponse **)responsePtr
                              error:(__autoreleasing NSError **)errorPtr {
   dispatch_semaphore_t    sem;

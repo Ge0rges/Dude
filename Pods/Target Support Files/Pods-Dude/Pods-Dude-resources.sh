@@ -51,7 +51,7 @@ install_resource()
       echo "$1"
       echo "$1" >> "$RESOURCES_TO_COPY"
       ;;
-    *)
+   *)
       echo "${PODS_ROOT}/$1"
       echo "${PODS_ROOT}/$1" >> "$RESOURCES_TO_COPY"
       ;;
@@ -84,7 +84,7 @@ then
     2)
       TARGET_DEVICE_ARGS="--target-device ipad"
       ;;
-    *)
+   *)
       TARGET_DEVICE_ARGS="--target-device mac"
       ;;
   esac

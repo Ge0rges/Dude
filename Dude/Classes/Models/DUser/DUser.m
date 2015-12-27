@@ -56,7 +56,7 @@ NSString* const FullNameKey = @"fullName";
 }
 
 #pragma mark - Support NSSet
-- (void)setObject:(nonnull id)object forKey:(nonnull NSString *)key {
+- (void)setObject:(nonnull id)object forKey:(nonnull NSString*)key {
   if ([object isKindOfClass:[NSSet class]]) {
     NSMutableSet *objectSet = [(NSSet*)object mutableCopy];
     
@@ -72,7 +72,7 @@ NSString* const FullNameKey = @"fullName";
   }
 }
 
-- (id)objectForKey:(nonnull NSString *)key {
+- (id)objectForKey:(nonnull NSString*)key {
   id object = [super objectForKey:key];
   
   if ([object isKindOfClass:[NSSet class]]) {
@@ -225,7 +225,7 @@ NSString* const FullNameKey = @"fullName";
     }
     
     // Present the alert on the visible view controller
-    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
     [appDelegate.visibleViewController presentViewController:ac animated:YES completion:nil];
   });
 }
@@ -244,7 +244,7 @@ NSString* const FullNameKey = @"fullName";
     [ac addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleCancel handler:nil]];
     
     // Present the alert on the visible view controller
-    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
     [appDelegate.visibleViewController presentViewController:ac animated:YES completion:nil];
   });
 }

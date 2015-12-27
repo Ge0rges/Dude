@@ -55,7 +55,7 @@ NSString* const TimestampKey = @"timestamp";
 @synthesize message, notificationMessage, lastSeen, URL, location, locationCity, category, type, notificationTitle, venueName, imageURL, sendDate, timestamp;
 
 #pragma mark - Initilizations
-- (instancetype)initWithCategory:(NSString *)messageCategory location:(CLLocation *)messageLocation venueName:(NSString *)messageVenueName  venueCity:(NSString *)messageLocationCity imageURL:(NSString *)imageURLString {
+- (instancetype)initWithCategory:(NSString*)messageCategory location:(CLLocation*)messageLocation venueName:(NSString*)messageVenueName  venueCity:(NSString*)messageLocationCity imageURL:(NSString*)imageURLString {
   if (self = [super init]) {
     self.category = [messageCategory copy];
     self.location = [messageLocation copy];
@@ -93,7 +93,7 @@ NSString* const TimestampKey = @"timestamp";
   return self;
 }
 
-- (instancetype)initForLocation:(CLLocation *)messageLocation venueCity:(NSString *)messageLocationCity {
+- (instancetype)initForLocation:(CLLocation*)messageLocation venueCity:(NSString*)messageLocationCity {
   if (self = [super init]) {
     self.location = [messageLocation copy];
     self.locationCity = [messageLocationCity copy];
@@ -105,7 +105,7 @@ NSString* const TimestampKey = @"timestamp";
   return self;
 }
 
-- (instancetype)initForPasteboardURLWithLocation:(CLLocation *)messageLocation {
+- (instancetype)initForPasteboardURLWithLocation:(CLLocation*)messageLocation {
   if (self = [super init]) {
     self.location = [messageLocation copy];
     self.type = DMessageTypeURL;
@@ -117,7 +117,7 @@ NSString* const TimestampKey = @"timestamp";
 }
 
 #pragma mark NSCoding
-- (instancetype)initWithCoder:(NSCoder *)aDecoder {
+- (instancetype)initWithCoder:(NSCoder*)aDecoder {
   if (self = [super init]) {
     self.message = [aDecoder decodeObjectForKey:MessageKey];
     self.notificationMessage = [aDecoder decodeObjectForKey:NotificationMessageKey];
@@ -137,7 +137,7 @@ NSString* const TimestampKey = @"timestamp";
   return self;
 }
 
-- (void)encodeWithCoder:(NSCoder *)aCoder {
+- (void)encodeWithCoder:(NSCoder*)aCoder {
   [aCoder encodeObject:self.message forKey:MessageKey];
   [aCoder encodeObject:self.notificationMessage forKey:NotificationMessageKey];
   [aCoder encodeObject:self.notificationTitle forKey:NotificationTitleKey];

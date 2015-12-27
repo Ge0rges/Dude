@@ -49,7 +49,7 @@ PF_TV_UNAVAILABLE PF_WATCH_UNAVAILABLE @interface PFCurrentInstallationControlle
 
 @property (nonatomic, strong, readonly) PFInstallation *memoryCachedCurrentInstallation;
 
-- (BFTask *)clearCurrentInstallationAsync;
-- (BFTask *)clearMemoryCachedCurrentInstallationAsync;
+- (BFTask*)clearCurrentInstallationAsync;
+- (BFTask*)clearMemoryCachedCurrentInstallationAsync;
 
 @end

@@ -41,22 +41,22 @@ PF_OSX_UNAVAILABLE PF_WATCH_UNAVAILABLE @interface PFPurchaseController : NSObje
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithDataSource:(id<PFCommandRunnerProvider, PFFileManagerProvider>)dataSource
-                            bundle:(NSBundle *)bundle NS_DESIGNATED_INITIALIZER;
+                            bundle:(NSBundle*)bundle NS_DESIGNATED_INITIALIZER;
 
 + (instancetype)controllerWithDataSource:(id<PFCommandRunnerProvider, PFFileManagerProvider>)dataSource
-                                  bundle:(NSBundle *)bundle;
+                                  bundle:(NSBundle*)bundle;
 
 ///--------------------------------------
 /// @name Products
 ///--------------------------------------
 
-- (BFTask *)findProductsAsyncWithIdentifiers:(NSSet *)productIdentifiers;
-- (BFTask *)buyProductAsyncWithIdentifier:(NSString *)productIdentifier;
-- (BFTask *)downloadAssetAsyncForTransaction:(SKPaymentTransaction *)transaction
+- (BFTask*)findProductsAsyncWithIdentifiers:(NSSet*)productIdentifiers;
+- (BFTask*)buyProductAsyncWithIdentifier:(NSString*)productIdentifier;
+- (BFTask*)downloadAssetAsyncForTransaction:(SKPaymentTransaction*)transaction
                            withProgressBlock:(PFProgressBlock)progressBlock
-                                sessionToken:(NSString *)sessionToken;
+                                sessionToken:(NSString*)sessionToken;
 
-- (NSString *)assetContentPathForProductWithIdentifier:(NSString *)identifier fileName:(NSString *)fileName;
+- (NSString*)assetContentPathForProductWithIdentifier:(NSString*)identifier fileName:(NSString*)fileName;
 - (BOOL)canPurchase;
 
 @end

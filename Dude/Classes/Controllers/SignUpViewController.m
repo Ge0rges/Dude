@@ -73,7 +73,7 @@
   [super viewDidAppear:animated];
   
   // Tell the delegate we are the visible view
-  AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+  AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
   appDelegate.visibleViewController = self;
 }
 
@@ -332,7 +332,7 @@
 }
 
 #pragma mark - Animation
-- (UIImage *)screenshot {
+- (UIImage*)screenshot {
   CGSize imageSize = CGSizeZero;
   
   UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
@@ -426,7 +426,7 @@
 }
 
 #pragma mark - Other
-- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+- (BOOL)textFieldShouldReturn:(UITextField*)textField {
   if (self.confirmButton.enabled) {
     [self confirmed:self.confirmButton];
   }

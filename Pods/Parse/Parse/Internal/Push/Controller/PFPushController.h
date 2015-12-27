@@ -45,7 +45,7 @@ PF_TV_UNAVAILABLE PF_WATCH_UNAVAILABLE @interface PFPushController : NSObject
 
  @return `BFTask` with result set to `NSNumber` with `BOOL` identifying whether the request succeeded.
  */
-- (BFTask *)sendPushNotificationAsyncWithState:(PFPushState *)state sessionToken:(nullable NSString *)sessionToken;
+- (BFTask*)sendPushNotificationAsyncWithState:(PFPushState*)state sessionToken:(nullable NSString*)sessionToken;
 
 @end
 

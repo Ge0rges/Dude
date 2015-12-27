@@ -19,8 +19,8 @@
 
 @implementation PFRESTPushCommand
 
-+ (instancetype)sendPushCommandWithPushState:(PFPushState *)state
-                                sessionToken:(NSString *)sessionToken {
++ (instancetype)sendPushCommandWithPushState:(PFPushState*)state
+                                sessionToken:(NSString*)sessionToken {
     NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
 
     if (state.queryState) {

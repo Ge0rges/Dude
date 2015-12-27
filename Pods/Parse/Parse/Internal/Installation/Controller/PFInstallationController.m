@@ -39,8 +39,8 @@
 #pragma mark - Fetch
 ///--------------------------------------
 
-- (BFTask *)fetchObjectAsync:(PFObject *)object withSessionToken:(nullable NSString *)sessionToken {
-    PFInstallation *installation = (PFInstallation *)object;
+- (BFTask*)fetchObjectAsync:(PFObject*)object withSessionToken:(nullable NSString*)sessionToken {
+    PFInstallation *installation = (PFInstallation*)object;
     @weakify(self);
     return [[[self.objectController fetchObjectAsync:installation
                                     withSessionToken:sessionToken] continueWithBlock:^id(BFTask *task) {
@@ -68,8 +68,8 @@
     }];
 }
 
-- (BFTask *)processFetchResultAsync:(NSDictionary *)result forObject:(PFObject *)object {
-    PFInstallation *installation = (PFInstallation *)object;
+- (BFTask*)processFetchResultAsync:(NSDictionary*)result forObject:(PFObject*)object {
+    PFInstallation *installation = (PFInstallation*)object;
     @weakify(self);
     return [[self.objectController processFetchResultAsync:result forObject:installation] continueWithBlock:^id(BFTask *task) {
         @strongify(self);
@@ -82,12 +82,12 @@
 #pragma mark - Delete
 ///--------------------------------------
 
-- (BFTask *)deleteObjectAsync:(PFObject *)object withSessionToken:(nullable NSString *)sessionToken {
+- (BFTask*)deleteObjectAsync:(PFObject*)object withSessionToken:(nullable NSString*)sessionToken {
     PFConsistencyAssert(NO, @"Installations cannot be deleted.");
     return nil;
 }
 
-- (BFTask *)processDeleteResultAsync:(nullable NSDictionary *)result forObject:(PFObject *)object {
+- (BFTask*)processDeleteResultAsync:(nullable NSDictionary*)result forObject:(PFObject*)object {
     PFConsistencyAssert(NO, @"Installations cannot be deleted.");
     return nil;
 }
@@ -100,7 +100,7 @@
     return self.dataSource.objectController;
 }
 
-- (PFCurrentInstallationController *)currentInstallationController {
+- (PFCurrentInstallationController*)currentInstallationController {
     return self.dataSource.currentInstallationController;
 }
 

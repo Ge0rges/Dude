@@ -17,7 +17,7 @@
 }
 
 // Returns a copy of the given image, adding an alpha channel if it doesn't already have one
-- (UIImage *)imageWithAlpha {
+- (UIImage*)imageWithAlpha {
     if ([self hasAlpha]) {
         return self;
     }
@@ -50,7 +50,7 @@
 
 // Returns a copy of the image with a transparent border of the given size added around its edges.
 // If the image has no alpha layer, one will be added to it.
-- (UIImage *)transparentBorderImage:(NSUInteger)borderSize {
+- (UIImage*)transparentBorderImage:(NSUInteger)borderSize {
     // If the image does not have an alpha layer, add one
     UIImage *image = [self imageWithAlpha];
     CGFloat scale = MAX(self.scale, 1.0f);

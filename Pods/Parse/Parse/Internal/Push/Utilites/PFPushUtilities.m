@@ -28,7 +28,7 @@
 #pragma mark - PFPushInternalUtils
 ///--------------------------------------
 
-+ (NSString *)convertDeviceTokenToString:(id)deviceToken {
++ (NSString*)convertDeviceTokenToString:(id)deviceToken {
     if ([deviceToken isKindOfClass:[NSString class]]) {
         return deviceToken;
     } else {
@@ -41,7 +41,7 @@
     }
 }
 
-+ (NSString *)getDeviceTokenFromKeychain {
++ (NSString*)getDeviceTokenFromKeychain {
     // Used the first time we construct the currentInstallation,
     // for backward compability with older SDKs.
     PFKeychainStore *store = [[PFKeychainStore alloc] initWithService:@"ParsePush"];
@@ -56,7 +56,7 @@
 
 #if TARGET_OS_IOS
 
-+ (void)showAlertViewWithTitle:(nullable NSString *)title message:(nullable NSString *)message NS_EXTENSION_UNAVAILABLE_IOS("") {
++ (void)showAlertViewWithTitle:(nullable NSString*)title message:(nullable NSString*)message NS_EXTENSION_UNAVAILABLE_IOS("") {
     NSString *cancelButtonTitle = NSLocalizedStringFromTableInBundle(@"OK", @"Parse",
                                                                      [NSBundle bundleForClass:[self class]],
                                                                      @"Default alert view cancel button title.");
@@ -67,7 +67,7 @@
                          completion:nil];
 }
 
-+ (void)playAudioWithName:(NSString *)audioFileName {
++ (void)playAudioWithName:(NSString*)audioFileName {
     SystemSoundID soundId = -1;
 
     if (audioFileName) {

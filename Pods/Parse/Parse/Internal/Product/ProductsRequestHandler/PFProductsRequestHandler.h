@@ -22,7 +22,7 @@ PF_OSX_UNAVAILABLE PF_WATCH_UNAVAILABLE @interface PFProductsRequestResult : NSO
 @property (nonatomic, copy, readonly) NSSet *validProducts;
 @property (nonatomic, copy, readonly) NSSet *invalidProductIdentifiers;
 
-- (instancetype)initWithProductsResponse:(SKProductsResponse *)response;
+- (instancetype)initWithProductsResponse:(SKProductsResponse*)response;
 
 @end
 
@@ -33,8 +33,8 @@ PF_OSX_UNAVAILABLE PF_WATCH_UNAVAILABLE @interface PFProductsRequestResult : NSO
  */
 @interface PFProductsRequestHandler : NSObject
 
-- (instancetype)initWithProductsRequest:(SKProductsRequest *)request;
+- (instancetype)initWithProductsRequest:(SKProductsRequest*)request;
 
-- (BFTask *)findProductsAsync;
+- (BFTask*)findProductsAsync;
 
 @end

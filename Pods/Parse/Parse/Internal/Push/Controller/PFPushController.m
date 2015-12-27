@@ -42,8 +42,8 @@
 #pragma mark - Sending Push
 ///--------------------------------------
 
-- (BFTask *)sendPushNotificationAsyncWithState:(PFPushState *)state
-                                  sessionToken:(NSString *)sessionToken {
+- (BFTask*)sendPushNotificationAsyncWithState:(PFPushState*)state
+                                  sessionToken:(NSString*)sessionToken {
     @weakify(self);
     return [[BFTask taskFromExecutor:[BFExecutor defaultPriorityBackgroundExecutor] withBlock:^id{
         @strongify(self);

@@ -33,7 +33,7 @@ static NSTimeInterval const PFNetworkActivityIndicatorVisibilityDelay = 0.17;
 #pragma mark - Init
 ///--------------------------------------
 
-+ (PFNetworkActivityIndicatorManager *)sharedManager {
++ (PFNetworkActivityIndicatorManager*)sharedManager {
     static PFNetworkActivityIndicatorManager *manager;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -152,11 +152,11 @@ static NSTimeInterval const PFNetworkActivityIndicatorVisibilityDelay = 0.17;
 #pragma mark - Command Running
 ///--------------------------------------
 
-- (void)_handleWillSendURLRequestNotification:(NSNotification *)notification {
+- (void)_handleWillSendURLRequestNotification:(NSNotification*)notification {
     [self incrementActivityCount];
 }
 
-- (void)_handleDidReceiveURLResponseNotification:(NSNotification *)notification {
+- (void)_handleDidReceiveURLResponseNotification:(NSNotification*)notification {
     [self decrementActivityCount];
 }
 

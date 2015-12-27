@@ -423,7 +423,6 @@
       //wut? ^
       
     } else {
-#warning Implement a correct failsafe system
       NSLog(@"This shouldn't happen. If it does I don't know what to do.");
     }
   }];
@@ -581,7 +580,7 @@
     
     [ac addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleCancel handler:nil]];
     
-    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
     [appDelegate.visibleViewController presentViewController:ac animated:YES completion:nil];
   });
 }

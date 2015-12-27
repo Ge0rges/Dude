@@ -44,12 +44,12 @@
   // check for internet connection
   [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(checkConnection:) name:kReachabilityChangedNotification object:nil];
   
-  // Redirect the app to the correct VC if we have an internet connection in the first place
+  // Redirect the app to the correct View Controller if we have an internet connection in the first place
   Reachability *networkReachability = [Reachability reachabilityForInternetConnection];
   [networkReachability startNotifier];
   
   // Tell the delegate we are the visible view
-  AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+  AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
   appDelegate.visibleViewController = self;
   
   if ([DUser currentUser].isAuthenticated && [networkReachability isReachable]) {
@@ -74,13 +74,13 @@
 
   if (!networkReachability.isReachable && !internetConnectionViewIsShowing) {
     UIViewController *noInternetVC = [self.storyboard instantiateViewControllerWithIdentifier:@"NoInternetConnectionVC"];
-    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
     [appDelegate.visibleViewController presentViewController:noInternetVC animated:YES completion:^{
       internetConnectionViewIsShowing = YES;
     }];
     
   } else if (internetConnectionViewIsShowing && networkReachability.isReachable){
-    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
     [appDelegate.visibleViewController dismissViewControllerAnimated:YES completion:^{
       internetConnectionViewIsShowing = NO;
     }];

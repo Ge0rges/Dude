@@ -20,7 +20,7 @@
 #pragma mark - PFBaseStateSubclass
 ///--------------------------------------
 
-+ (NSDictionary *)propertyAttributes {
++ (NSDictionary*)propertyAttributes {
     return @{ @"channels": [PFPropertyAttributes attributesWithAssociationType:PFPropertyInfoAssociationTypeCopy],
               @"queryState": [PFPropertyAttributes attributesWithAssociationType:PFPropertyInfoAssociationTypeCopy],
               @"expirationDate": [PFPropertyAttributes attributesWithAssociationType:PFPropertyInfoAssociationTypeStrong],
@@ -33,11 +33,11 @@
 #pragma mark - Init
 ///--------------------------------------
 
-- (instancetype)initWithState:(PFPushState *)state {
+- (instancetype)initWithState:(PFPushState*)state {
     return [super initWithState:state];
 }
 
-+ (instancetype)stateWithState:(PFPushState *)state {
++ (instancetype)stateWithState:(PFPushState*)state {
     return [super stateWithState:state];
 }
 
@@ -45,7 +45,7 @@
 #pragma mark - NSCopying
 ///--------------------------------------
 
-- (void)setPushDate:(NSDate *)pushDate {
+- (void)setPushDate:(NSDate*)pushDate {
     if (self.pushDate != pushDate) {
         NSTimeInterval interval = [pushDate timeIntervalSinceNow];
         PFParameterAssert(interval > 0, @"Can't set the scheduled push time in the past.");
@@ -58,7 +58,7 @@
 #pragma mark - NSCopying
 ///--------------------------------------
 
-- (id)copyWithZone:(NSZone *)zone {
+- (id)copyWithZone:(NSZone*)zone {
     return [[PFPushState allocWithZone:zone] initWithState:self];
 }
 
@@ -66,7 +66,7 @@
 #pragma mark - NSMutableCopying
 ///--------------------------------------
 
-- (id)mutableCopyWithZone:(NSZone *)zone {
+- (id)mutableCopyWithZone:(NSZone*)zone {
     return [[PFMutablePushState allocWithZone:zone] initWithState:self];
 }
 

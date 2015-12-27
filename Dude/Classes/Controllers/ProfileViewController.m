@@ -137,7 +137,7 @@
   [super viewDidAppear:animated];
   
   // Tell the delegate we are the visible view
-  AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+  AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
   appDelegate.visibleViewController = self;
 }
 
@@ -248,7 +248,7 @@
 }
 
 #pragma mark - Navigation
-- (IBAction)unwindToProfileViewController:(UIStoryboardSegue *)segue {}
+- (IBAction)unwindToProfileViewController:(UIStoryboardSegue*)segue {}
 
 #pragma mark - Status Bar
 - (BOOL)prefersStatusBarHidden {return NO;}

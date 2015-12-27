@@ -35,8 +35,8 @@ PF_TV_UNAVAILABLE PF_WATCH_UNAVAILABLE @interface PFPushState : PFBaseState <NSC
 /// @name Init
 ///--------------------------------------
 
-- (instancetype)initWithState:(nullable PFPushState *)state;
-+ (instancetype)stateWithState:(nullable PFPushState *)state;
+- (instancetype)initWithState:(nullable PFPushState*)state;
++ (instancetype)stateWithState:(nullable PFPushState*)state;
 
 @end
 

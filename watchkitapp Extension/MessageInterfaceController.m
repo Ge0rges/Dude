@@ -105,7 +105,7 @@
 }
 
 #pragma mark - WCSessionDelegate
-- (void)session:(WCSession *)session didReceiveMessageData:(nonnull NSData *)messageData {
+- (void)session:(WCSession*)session didReceiveMessageData:(nonnull NSData*)messageData {
   
 }
 
@@ -126,7 +126,7 @@
                              @"senderEmail": selectedUser.email
                              };
   
-#warning handle errors and replies if necessary
+#warning show feedback
   [session sendMessage:payload replyHandler:nil errorHandler:nil];
   
   [self popToRootController];

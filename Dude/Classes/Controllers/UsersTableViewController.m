@@ -110,7 +110,7 @@
   [super viewDidAppear:animated];
   
   // Tell the delegate we are the visible view
-  AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+  AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
   appDelegate.visibleViewController = self;
   
   BOOL shouldRefreshTwitter = [[NSUserDefaults standardUserDefaults] boolForKey:@"askTwitter"];
@@ -226,7 +226,6 @@
 }
 
 #pragma mark - Table View data source
-#warning support recent section
 - (NSInteger)tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section {
   // Return the number of rows in the section.
   return activeContacts.count;
@@ -236,7 +235,7 @@
   return 1;
 }
 
-- (NSString*)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
+- (NSString*)tableView:(UITableView*)tableView titleForHeaderInSection:(NSInteger)section {
   return (self.favoritesOnly) ? @"ALL FAVORITES" : @"ALL FRIENDS";
 }
 
@@ -271,7 +270,7 @@
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
-- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+- (void)tableView:(UITableView*)tableView willDisplayCell:(UITableViewCell*)cell forRowAtIndexPath:(NSIndexPath*)indexPath {
   if ([cell respondsToSelector:@selector(tintColor)]) {
       CGFloat cornerRadius = 7.f;
       cell.backgroundColor = UIColor.clearColor;
@@ -320,7 +319,7 @@
   }
 }
 
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+- (void)prepareForSegue:(UIStoryboardSegue*)segue sender:(id)sender {
   if ([segue.identifier isEqualToString:@"showProfile"]) {
     ProfileViewController *pvc = (ProfileViewController*)[segue destinationViewController];
     pvc.profileUser = sender;
@@ -459,7 +458,7 @@
 }
 
 #pragma mark - Navigation
-- (IBAction)unwindToUsersTableViewController:(UIStoryboardSegue *)segue {}
+- (IBAction)unwindToUsersTableViewController:(UIStoryboardSegue*)segue {}
 
 
 #pragma mark - Email Validation

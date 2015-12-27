@@ -29,7 +29,7 @@ PF_TV_UNAVAILABLE PF_WATCH_UNAVAILABLE @interface PFMutablePushState : PFPushSta
 /// @name Payload
 ///--------------------------------------
 
-- (void)setPayloadWithMessage:(nullable NSString *)message;
+- (void)setPayloadWithMessage:(nullable NSString*)message;
 
 @end
 

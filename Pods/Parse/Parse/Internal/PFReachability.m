@@ -30,7 +30,7 @@
 
 static void _reachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReachabilityFlags flags, void *info) {
     NSCAssert(info != NULL, @"info was NULL in ReachabilityCallback");
-    PFReachability *reachability = (__bridge PFReachability *)info;
+    PFReachability *reachability = (__bridge PFReachability*)info;
     reachability.flags = flags;
 }
 
@@ -87,7 +87,7 @@ static void _reachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReac
     PFNotDesignatedInitializer();
 }
 
-- (instancetype)initWithURL:(NSURL *)url {
+- (instancetype)initWithURL:(NSURL*)url {
     self = [super init];
     if (!self) return nil;
 
@@ -190,7 +190,7 @@ static void _reachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReac
 #pragma mark - Reachability
 ///--------------------------------------
 
-- (void)_startMonitoringReachabilityWithURL:(NSURL *)url {
+- (void)_startMonitoringReachabilityWithURL:(NSURL*)url {
     dispatch_barrier_async(_synchronizationQueue, ^{
         _networkReachability = SCNetworkReachabilityCreateWithName(NULL, [[url host] UTF8String]);
         if (_networkReachability != NULL) {
@@ -200,7 +200,7 @@ static void _reachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReac
             self.flags = flags;
 
             // Set up notification for changes in reachability.
-            SCNetworkReachabilityContext context = {0, (__bridge void *)(self), NULL, NULL, NULL};
+            SCNetworkReachabilityContext context = {0, (__bridge void*)(self), NULL, NULL, NULL};
             if (SCNetworkReachabilitySetCallback(_networkReachability, _reachabilityCallback, &context)) {
                 if (!SCNetworkReachabilitySetDispatchQueue(_networkReachability, _synchronizationQueue)) {
                     PFLogError(PFLoggingTagCommon, @"Unable to start listening for network connectivity status.");

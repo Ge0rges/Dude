@@ -10,6 +10,7 @@
 
 // Classes
 #import "AppDelegate.h"
+#import "ComposeSheetViewController.h"
 
 // Managers
 #import "MessagesManager.h"
@@ -29,8 +30,6 @@
 
 @end
 
-#warning make composing sheet, make sure any fully public messages are put in lastSeen under currentUser email
-
 @implementation MessagesTableViewController
 
 - (void)viewDidLoad {
@@ -44,7 +43,7 @@
   [super viewDidAppear:animated];
   
   // Tell the delegate we are the visible view
-  AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+  AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
   appDelegate.visibleViewController = self;
 
   // Generate Messages
@@ -57,7 +56,7 @@
 }
 
 #pragma mark - Table view data source
-- (NSString*)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
+- (NSString*)tableView:(UITableView*)tableView titleForHeaderInSection:(NSInteger)section {
   return (section == 0) ? @"CHOOSE AN UPDATE TO SEND" : @"";
 }
 
@@ -66,7 +65,7 @@
   return 1;
 }
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+- (NSInteger)numberOfSectionsInTableView:(UITableView*)tableView {
   return messages.count;
 }
 
@@ -91,32 +90,12 @@
 - (void)tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
   
-  MessagesManager *messagesManager = [MessagesManager sharedInstance];
+  DMessage *message = messages[indexPath.row];
   
-  UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
-  
-  MessageCompletionBlock block = ^(BOOL success, NSError *error) {
-    [cell.textLabel setText:(success) ? @"Sent" : @"Error"];
-  };
-  
-  for (DUser *user in self.selectedUsers) {
-    [messagesManager sendMessage:messages[indexPath.row] toContact:user withCompletion:block];
-  }
-  
-  if (self.selectedTwitter) {
-    [messagesManager tweetMessage:messages[indexPath.row] withCompletion:block];
-  }
-  
-  if (self.selectedFacebook) {
-    [messagesManager postMessage:messages[indexPath.row] withCompletion:block];
-  }
-  
-  dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-    [cell.textLabel setText:messages[indexPath.row]];
-  });
+  [self performSegueWithIdentifier:@"composingSheet" sender:message];
 }
 
-- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+- (void)tableView:(UITableView*)tableView willDisplayCell:(UITableViewCell*)cell forRowAtIndexPath:(NSIndexPath*)indexPath {
   if ([cell respondsToSelector:@selector(tintColor)]) {
     CGFloat cornerRadius = 7.f;
     cell.backgroundColor = UIColor.clearColor;
@@ -184,6 +163,15 @@
       [self.refreshControl performSelectorOnMainThread:@selector(endRefreshing) withObject:nil waitUntilDone:NO];
     }
   }];
+}
+
+#pragma mark - Navigation
+- (void)prepareForSegue:(UIStoryboardSegue*)segue sender:(id)sender {
+  // Pass the selected object to the compose view controller.
+  if ([segue.identifier isEqualToString:@"composingSheet"]) {
+    ComposeSheetViewController *composeSheetViewController = (ComposeSheetViewController*)[segue destinationViewController];
+    composeSheetViewController.selectedMessage = (DMessage*)sender;
+  }
 }
 
 #pragma mark - Status Bar

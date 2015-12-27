@@ -10,6 +10,6 @@
 
 @interface QNSURLConnection : NSObject
 
-+ (NSData *)sendSynchronousRequest:(NSURLRequest *)request returningResponse:(__autoreleasing NSURLResponse **)responsePtr error:(__autoreleasing NSError **)errorPtr;
++ (NSData*)sendSynchronousRequest:(NSURLRequest*)request returningResponse:(__autoreleasing NSURLResponse **)responsePtr error:(__autoreleasing NSError **)errorPtr;
 
 @end
