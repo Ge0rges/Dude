@@ -31,9 +31,7 @@
 #import "Constants.h"
 
 @interface UsersTableViewController () <UITableViewDataSource, UITableViewDelegate> {
-  NSArray *activeContacts;
-  NSArray *favoriteContacts;
-  NSArray *allContacts;
+  NSArray *contacts;
   
   UIImageView *leftBarButtonitemImageView;
   
@@ -45,8 +43,6 @@
 @property (nonatomic) BOOL favoritesOnly;
 
 @property (strong, nonatomic) IBOutlet UITableView *tableView;
-
-@property (strong, nonatomic) IBOutlet UIToolbar *toolbar;
 
 @property (strong, nonatomic) IBOutlet UIView *nofavoritesView;
 @property (strong, nonatomic) IBOutlet UIView *noFriendsView;
@@ -100,10 +96,7 @@
   
   leftBarButtonitemImageView.center = addButton.center;
   
-  NSMutableArray *items  = [NSMutableArray arrayWithArray:self.toolbar.items];
-  [items insertObject:[[UIBarButtonItem alloc] initWithCustomView:addButton] atIndex:0];
-  
-  [self.toolbar setItems:items];
+  [self.navigationItem setLeftBarButtonItem:[[UIBarButtonItem alloc] initWithCustomView:addButton]];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -137,83 +130,38 @@
 
 #pragma mark - Public Methods
 - (IBAction)reloadData:(UISegmentedControl*)segmentedController {
+  // Determine if favorites
   if (segmentedController) {
     self.favoritesOnly = segmentedController.selectedSegmentIndex;
   }
   
-  // Update Table
-  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-    ContactsManager *contactsManager = [ContactsManager sharedInstance];
-    if (segmentedController) {
-      activeContacts = (self.favoritesOnly) ? favoriteContacts : allContacts;
-      
-    } else {
-      if (self.favoritesOnly) {
-        favoriteContacts = [contactsManager getContactsRefreshedNecessary:YES favourites:YES];
-        activeContacts = favoriteContacts;
-        
-      } else {
-        allContacts = [contactsManager getContactsRefreshedNecessary:YES favourites:NO];
-        activeContacts = allContacts;
-        
-      }
-    }
+  contacts = [[ContactsManager sharedInstance] getContactsRefreshedNecessary:NO favourites:self.favoritesOnly];
+  [self updateUI];
+
+  // Update Table with new data in the background
+  if (!segmentedController || contacts.count == 0) {
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+      contacts = [[ContactsManager sharedInstance] getContactsRefreshedNecessary:YES favourites:self.favoritesOnly];
+      [self updateUI];
+    });
+  }
+}
+
+- (void)updateUI {
+  // Update UI again on main thread
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [self.tableView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];
     
-    // UI must be on main thread
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [self.tableView reloadData];
-      
-      if (activeContacts.count == 0) {
-        if (self.favoritesOnly) {
-          // Show no favorites
-          [self.view bringSubviewToFront:self.nofavoritesView];
-          
-          self.nofavoritesView.alpha = 0.0;
-          self.nofavoritesView.hidden = NO;
-          
-          [UIView animateWithDuration:0.3 animations:^{
-            self.nofavoritesView.alpha = 1.0;
-          }];
-          
-          // Hide no friends
-          [UIView animateWithDuration:0.3 animations:^{
-            self.noFriendsView.alpha = 0.0;
-            
-          } completion:^(BOOL finished) {
-            self.noFriendsView.hidden = YES;
-            [self.view sendSubviewToBack:self.noFriendsView];
-          }];
-          
-        } else {
-          // Show no friends
-          [self.view bringSubviewToFront:self.noFriendsView];
-          
-          self.noFriendsView.alpha = 0.0;
-          self.noFriendsView.hidden = NO;
-          
-          [UIView animateWithDuration:0.3 animations:^{
-            self.noFriendsView.alpha = 1.0;
-          }];
-          
-          // Hide no favorites
-          [UIView animateWithDuration:0.3 animations:^{
-            self.nofavoritesView.alpha = 0.0;
-            
-          } completion:^(BOOL finished) {
-            self.nofavoritesView.hidden = YES;
-            [self.view sendSubviewToBack:self.nofavoritesView];
-          }];
-        }
+    if (contacts.count == 0) {
+      if (self.favoritesOnly) {
+        // Show no favorites
+        [self.view bringSubviewToFront:self.nofavoritesView];
         
-      } else {
-        // Hide all:
-        // Hide no favorites
+        self.nofavoritesView.alpha = 0.0;
+        self.nofavoritesView.hidden = NO;
+        
         [UIView animateWithDuration:0.3 animations:^{
-          self.nofavoritesView.alpha = 0.0;
-          
-        } completion:^(BOOL finished) {
-          self.nofavoritesView.hidden = YES;
-          [self.view sendSubviewToBack:self.nofavoritesView];
+          self.nofavoritesView.alpha = 1.0;
         }];
         
         // Hide no friends
@@ -224,15 +172,56 @@
           self.noFriendsView.hidden = YES;
           [self.view sendSubviewToBack:self.noFriendsView];
         }];
+        
+      } else {
+        // Show no friends
+        [self.view bringSubviewToFront:self.noFriendsView];
+        
+        self.noFriendsView.alpha = 0.0;
+        self.noFriendsView.hidden = NO;
+        
+        [UIView animateWithDuration:0.3 animations:^{
+          self.noFriendsView.alpha = 1.0;
+        }];
+        
+        // Hide no favorites
+        [UIView animateWithDuration:0.3 animations:^{
+          self.nofavoritesView.alpha = 0.0;
+          
+        } completion:^(BOOL finished) {
+          self.nofavoritesView.hidden = YES;
+          [self.view sendSubviewToBack:self.nofavoritesView];
+        }];
       }
-    });
+      
+    } else {
+      // Hide all:
+      // Hide no favorites
+      [UIView animateWithDuration:0.3 animations:^{
+        self.nofavoritesView.alpha = 0.0;
+        
+      } completion:^(BOOL finished) {
+        self.nofavoritesView.hidden = YES;
+        [self.view sendSubviewToBack:self.nofavoritesView];
+      }];
+      
+      // Hide no friends
+      [UIView animateWithDuration:0.3 animations:^{
+        self.noFriendsView.alpha = 0.0;
+        
+      } completion:^(BOOL finished) {
+        self.noFriendsView.hidden = YES;
+        [self.view sendSubviewToBack:self.noFriendsView];
+      }];
+    }
   });
 }
+
 
 #pragma mark - Table View data source
 - (NSInteger)tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section {
   // Return the number of rows in the section.
-  return activeContacts.count;
+  return contacts.count;
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView*)tableView {
@@ -251,7 +240,7 @@
   [cell.detailTextLabel setText:nil];
   [cell.imageView setImage:nil];
   
-  DUser *user = activeContacts[indexPath.row];
+  DUser *user = contacts[indexPath.row];
   
   // Populate the cell
   cell.textLabel.text = user.fullName;
@@ -267,8 +256,8 @@
 }
 
 - (void)tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
-  if (activeContacts && activeContacts.count > 0) {
-    [self performSegueWithIdentifier:@"showProfile" sender:activeContacts[indexPath.row]];
+  if (contacts && contacts.count > 0) {
+    [self performSegueWithIdentifier:@"showProfile" sender:contacts[indexPath.row]];
   }
   
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
@@ -355,14 +344,14 @@
   // Animate in
   self.searchFriendsView.alpha = 0.0;
   self.searchFriendsView.hidden = NO;
-  self.searchTextfieldView.center = CGPointMake(self.toolbar.center.x, -self.toolbar.center.y);
+  self.searchTextfieldView.center = CGPointMake(self.searchTextfieldView.frame.size.width/2, -self.searchTextfieldView.frame.size.height/2);
   
   [self.view bringSubviewToFront:self.searchFriendsView];
   
   [UIView animateWithDuration:0.3 animations:^{
     leftBarButtonitemImageView.transform = CGAffineTransformMakeRotation(M_PI/4);
     self.searchFriendsView.alpha = 1.0;
-    self.searchTextfieldView.center = CGPointMake(self.toolbar.center.x, self.toolbar.center.y);
+    self.searchTextfieldView.center = CGPointMake(self.searchTextfieldView.frame.size.width/2, self.searchTextfieldView.frame.size.height/2);
     
   } completion:^(BOOL finished) {
     [self.searchTextfield becomeFirstResponder];
@@ -371,6 +360,9 @@
   // Modify the target of the button
   [addButton removeTarget:self action:@selector(beginFriendSearch:) forControlEvents:UIControlEventAllEvents];
   [addButton addTarget:self action:@selector(exitFriendSearch:) forControlEvents:UIControlEventTouchUpInside];
+  
+  // Layout
+  [self.searchFriendsView layoutSubviews];
 }
 
 - (IBAction)textfieldValueChanged:(UITextField*)textfield {
@@ -440,6 +432,7 @@
 - (void)addFriend {
   [[ContactsManager sharedInstance] addContactToContacts:friendSearchedUser sendNotification:YES];
   [self exitFriendSearch:self.searchResultButton];
+  [self performSelectorOnMainThread:@selector(reloadData:) withObject:nil waitUntilDone:NO];
 }
 
 - (void)exitFriendSearch:(UIButton*)sender {
@@ -447,14 +440,13 @@
   [UIView animateWithDuration:0.3 animations:^{
     leftBarButtonitemImageView.transform = CGAffineTransformMakeRotation(0);
     self.searchFriendsView.alpha = 0.0;
-    self.searchTextfieldView.center = CGPointMake(self.toolbar.center.x, -self.toolbar.center.y);
+    [self.searchTextfield resignFirstResponder];
+    self.searchTextfieldView.center = CGPointMake(self.searchTextfieldView.frame.size.width/2, -self.searchTextfieldView.frame.size.height/2);
     
   } completion:^(BOOL finished) {
     self.searchFriendsView.hidden = YES;
     [self.view sendSubviewToBack:self.searchFriendsView];
   }];
-  
-  [self performSelectorOnMainThread:@selector(reloadData:) withObject:nil waitUntilDone:NO];
   
   // Modify the target of the button
   [addButton removeTarget:self action:@selector(exitFriendSearch:) forControlEvents:UIControlEventAllEvents];

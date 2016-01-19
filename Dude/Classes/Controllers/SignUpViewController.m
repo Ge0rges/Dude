@@ -192,6 +192,7 @@
   [self.textField setPlaceholder:@"The Duderino"];
   [self.textField setText:@""];
   [self.textField setHidden:NO];
+  [self.textField resignFirstResponder];
   [self.textField setKeyboardType:UIKeyboardTypeDefault];
   [self.textField setSecureTextEntry:NO];
   
@@ -227,6 +228,7 @@
   
   [self.textField setText:@""];
   [self.textField setHidden:NO];
+  [self.textField resignFirstResponder];
   [self.textField setKeyboardType:UIKeyboardTypeDefault];
   [self.textField setSecureTextEntry:YES];
   
@@ -284,6 +286,7 @@
   
   [self.textField setText:@""];
   [self.textField setHidden:NO];
+  [self.textField resignFirstResponder];
   [self.textField setKeyboardType:UIKeyboardTypeEmailAddress];
   [self.textField setSecureTextEntry:NO];
   

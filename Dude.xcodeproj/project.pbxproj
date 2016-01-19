@@ -49,7 +49,6 @@
 		FB4C5DBF1BF5F0BA002B5A58 /* RowController.m in Sources */ = {isa = PBXBuildFile; fileRef = FB4C5DBE1BF5F0BA002B5A58 /* RowController.m */; };
 		FB4FC3C71BAD938900FC5F01 /* QNSURLConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = FB4FC3C61BAD938900FC5F01 /* QNSURLConnection.m */; };
 		FB6F4E251C2FF2830083DCD8 /* ComposeSheetViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FB6F4E241C2FF2830083DCD8 /* ComposeSheetViewController.m */; };
-		FBDB73821BA809C300C7D452 /* MainNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = FBDB73811BA809C300C7D452 /* MainNavigationController.m */; };
 		FBDE26D71B81E0B5006485D0 /* SlidingSegues.m in Sources */ = {isa = PBXBuildFile; fileRef = FBDE26D61B81E0B5006485D0 /* SlidingSegues.m */; };
 /* End PBXBuildFile section */
 
@@ -183,8 +182,6 @@
 		FB6F4E241C2FF2830083DCD8 /* ComposeSheetViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ComposeSheetViewController.m; path = Classes/Controllers/ComposeSheetViewController.m; sourceTree = "<group>"; };
 		FBA0019D1C23217E00E9A263 /* Watch Extension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Watch Extension.entitlements"; sourceTree = SOURCE_ROOT; };
 		FBA0019E1C23218600E9A263 /* Watch App.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Watch App.entitlements"; sourceTree = SOURCE_ROOT; };
-		FBDB73801BA809C300C7D452 /* MainNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MainNavigationController.h; path = Classes/Controllers/MainNavigationController.h; sourceTree = "<group>"; };
-		FBDB73811BA809C300C7D452 /* MainNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MainNavigationController.m; path = Classes/Controllers/MainNavigationController.m; sourceTree = "<group>"; };
 		FBDE26D51B81E0B5006485D0 /* SlidingSegues.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SlidingSegues.h; sourceTree = "<group>"; };
 		FBDE26D61B81E0B5006485D0 /* SlidingSegues.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SlidingSegues.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -331,8 +328,6 @@
 				FB1FF5681B8A2119001831D9 /* WelcomeViewController.m */,
 				DAC3B8251B21B67200C303CD /* SignUpViewController.h */,
 				DAC3B8261B21B67200C303CD /* SignUpViewController.m */,
-				FBDB73801BA809C300C7D452 /* MainNavigationController.h */,
-				FBDB73811BA809C300C7D452 /* MainNavigationController.m */,
 				DA4262901B1EE4B100560925 /* UsersTableViewController.h */,
 				DA4262911B1EE4B100560925 /* UsersTableViewController.m */,
 				DAEF37651B1E1A2100391DD0 /* ProfileViewController.h */,
@@ -832,7 +827,6 @@
 				DACEE7D31AAF67E200B958F0 /* ContactsManager.m in Sources */,
 				DA6F4C4E1A1E439800D40186 /* main.m in Sources */,
 				DAB5FCAD1AC69314003D8062 /* NSStringExtensions.m in Sources */,
-				FBDB73821BA809C300C7D452 /* MainNavigationController.m in Sources */,
 				DACEE7D71AB02DB200B958F0 /* UIImageExtensions.m in Sources */,
 				FB6F4E251C2FF2830083DCD8 /* ComposeSheetViewController.m in Sources */,
 				FB4FC3C71BAD938900FC5F01 /* QNSURLConnection.m in Sources */,

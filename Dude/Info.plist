@@ -42,7 +42,7 @@
 	<key>NSContactsUsageDescription</key>
 	<string>We only access your contact list to automatically add your friends to Dude.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>We us your location to generate smart context-aware messages, your current city is sent along to your friends with every message.</string>
+	<string>We use your location to generate smart context-aware messages, your current city is sent along to your friends with every message.</string>
 	<key>UILaunchStoryboardName</key>
 	<string>Launch Screen</string>
 	<key>UIMainStoryboardFile</key>

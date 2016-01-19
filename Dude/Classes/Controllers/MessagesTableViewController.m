@@ -37,6 +37,9 @@
   
   // Update status bar
   [self setNeedsStatusBarAppearanceUpdate];
+  
+  // Generate Messages
+  [self reloadData];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -45,9 +48,6 @@
   // Tell the delegate we are the visible view
   AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
   appDelegate.visibleViewController = self;
-
-  // Generate Messages
-  [self reloadData];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -146,7 +146,7 @@
 
 - (IBAction)reloadData {
   [self.refreshControl performSelectorOnMainThread:@selector(beginRefreshing) withObject:nil waitUntilDone:NO];
-  
+
   [[MessagesManager sharedInstance] setLocationForMessageGenerationWithCompletion:^(NSError *error) {
     if (!error) {
       if (error.code == 500 && [error.domain isEqualToString:@"LocationAuthorization"]) {
@@ -159,7 +159,7 @@
       
       NSLog(@"messages: %@", messages);
       
-      [self.tableView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];
+      [self.tableView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:YES];
       [self.refreshControl performSelectorOnMainThread:@selector(endRefreshing) withObject:nil waitUntilDone:NO];
     }
   }];
@@ -174,6 +174,9 @@
   }
 }
 
+- (IBAction)dismissViewController:(id)sender {
+  [self dismissViewControllerAnimated:YES completion:nil];
+}
 
 #pragma mark - Status Bar
 - (BOOL)prefersStatusBarHidden {return NO;}

@@ -31,6 +31,10 @@
   if ([DUser currentUser]) {
     [self dismissViewControllerAnimated:YES completion:nil];
   }
+  
+  // Tell the delegate we are the visible view
+  AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
+  appDelegate.visibleViewController = self;
 }
 
 #pragma mark - Navigation
