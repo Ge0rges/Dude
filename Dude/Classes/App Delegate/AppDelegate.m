@@ -99,19 +99,19 @@
 
 - (void)application:(UIApplication*)application didReceiveRemoteNotification:(NSDictionary*)userInfo {
   // Get the push data
-  NSString *title = userInfo[@"aps"][@"alert"][@"title"];
-  NSString *notificationMessage = userInfo[@"aps"][@"alert"][@"body"];
+  //NSString *title = userInfo[@"aps"][@"alert"][@"title"];
+  //NSString *notificationMessage = userInfo[@"aps"][@"alert"][@"body"];
   NSString *username = userInfo[@"username"];
-  
+  NSString *email = userInfo[@"email"];
+
   url = [NSURL URLWithString:userInfo[@"url"]];
   
   double latitude = [userInfo[@"lat"] doubleValue];
   double longitude = [userInfo[@"long"] doubleValue];
   
-#warning figure out in app handling
+#warning show a notif banner
   // Handle notification
   if (application) {// While in app
-#warning badge tab bar and put the recent intop most recent with badge
     if (url) {
     } else if (latitude && longitude) {
       MKPlacemark *placemark = [[MKPlacemark alloc] initWithCoordinate:CLLocationCoordinate2DMake(latitude, longitude) addressDictionary:nil];
@@ -122,6 +122,13 @@
     } else {
     }
     
+    // Move sender to top most in contacts
+    NSMutableArray *contacts = [[DUser currentUser].contactsEmails mutableCopy];
+    [contacts removeObject:email];
+    [contacts insertObject:email atIndex:0];
+    
+    [[DUser currentUser] setContactsEmails:[NSSet setWithArray:contacts]];
+
     // Reload users list
     if ([self.visibleViewController isKindOfClass:[UsersTableViewController class]]) {
       UsersTableViewController *visibleUsersTableVC = (UsersTableViewController*)self.visibleViewController;

@@ -34,7 +34,7 @@
   NSArray *activeContacts;
   NSArray *favoriteContacts;
   NSArray *allContacts;
-
+  
   UIImageView *leftBarButtonitemImageView;
   
   DUser *friendSearchedUser;
@@ -70,7 +70,7 @@
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-
+  
   // Set controller properties
   self.favoritesOnly = NO;
   
@@ -141,88 +141,92 @@
     self.favoritesOnly = segmentedController.selectedSegmentIndex;
   }
   
-  ContactsManager *contactsManager = [ContactsManager sharedInstance];
-  if (segmentedController) {
-    activeContacts = (self.favoritesOnly) ? favoriteContacts : allContacts;
-  
-  } else {
-    if (self.favoritesOnly) {
-      favoriteContacts = [contactsManager getContactsRefreshedNecessary:YES favourites:YES];
-      activeContacts = favoriteContacts;
-    
-    } else {
-      allContacts = [contactsManager getContactsRefreshedNecessary:YES favourites:NO];
-      activeContacts = allContacts;
-
-    }
-  }
-  
-  if (activeContacts.count == 0) {
-    if (self.favoritesOnly) {
-      // Show no favorites
-      [self.view bringSubviewToFront:self.nofavoritesView];
-      
-      self.nofavoritesView.alpha = 0.0;
-      self.nofavoritesView.hidden = NO;
-      
-      [UIView animateWithDuration:0.3 animations:^{
-        self.nofavoritesView.alpha = 1.0;
-      }];
-      
-      // Hide no friends
-      [UIView animateWithDuration:0.3 animations:^{
-        self.noFriendsView.alpha = 0.0;
-        
-      } completion:^(BOOL finished) {
-        self.noFriendsView.hidden = YES;
-        [self.view sendSubviewToBack:self.noFriendsView];
-      }];
+  // Update Table
+  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+    ContactsManager *contactsManager = [ContactsManager sharedInstance];
+    if (segmentedController) {
+      activeContacts = (self.favoritesOnly) ? favoriteContacts : allContacts;
       
     } else {
-      // Show no friends
-      [self.view bringSubviewToFront:self.noFriendsView];
-
-      self.noFriendsView.alpha = 0.0;
-      self.noFriendsView.hidden = NO;
-      
-      [UIView animateWithDuration:0.3 animations:^{
-        self.noFriendsView.alpha = 1.0;
-      }];
-      
-      // Hide no favorites
-      [UIView animateWithDuration:0.3 animations:^{
-        self.nofavoritesView.alpha = 0.0;
+      if (self.favoritesOnly) {
+        favoriteContacts = [contactsManager getContactsRefreshedNecessary:YES favourites:YES];
+        activeContacts = favoriteContacts;
         
-      } completion:^(BOOL finished) {
-        self.nofavoritesView.hidden = YES;
-        [self.view sendSubviewToBack:self.nofavoritesView];
-      }];
+      } else {
+        allContacts = [contactsManager getContactsRefreshedNecessary:YES favourites:NO];
+        activeContacts = allContacts;
+        
+      }
     }
-
-  } else {
-    // Hide all
     
-    // Hide no favorites
-    [UIView animateWithDuration:0.3 animations:^{
-      self.nofavoritesView.alpha = 0.0;
+    // UI must be on main thread
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [self.tableView reloadData];
       
-    } completion:^(BOOL finished) {
-      self.nofavoritesView.hidden = YES;
-      [self.view sendSubviewToBack:self.nofavoritesView];
-    }];
-  
-    // Hide no friends
-    [UIView animateWithDuration:0.3 animations:^{
-      self.noFriendsView.alpha = 0.0;
-      
-    } completion:^(BOOL finished) {
-      self.noFriendsView.hidden = YES;
-      [self.view sendSubviewToBack:self.noFriendsView];
-    }];
-  }
-  
-  // UI must be on main thread
-  [self.tableView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:YES];
+      if (activeContacts.count == 0) {
+        if (self.favoritesOnly) {
+          // Show no favorites
+          [self.view bringSubviewToFront:self.nofavoritesView];
+          
+          self.nofavoritesView.alpha = 0.0;
+          self.nofavoritesView.hidden = NO;
+          
+          [UIView animateWithDuration:0.3 animations:^{
+            self.nofavoritesView.alpha = 1.0;
+          }];
+          
+          // Hide no friends
+          [UIView animateWithDuration:0.3 animations:^{
+            self.noFriendsView.alpha = 0.0;
+            
+          } completion:^(BOOL finished) {
+            self.noFriendsView.hidden = YES;
+            [self.view sendSubviewToBack:self.noFriendsView];
+          }];
+          
+        } else {
+          // Show no friends
+          [self.view bringSubviewToFront:self.noFriendsView];
+          
+          self.noFriendsView.alpha = 0.0;
+          self.noFriendsView.hidden = NO;
+          
+          [UIView animateWithDuration:0.3 animations:^{
+            self.noFriendsView.alpha = 1.0;
+          }];
+          
+          // Hide no favorites
+          [UIView animateWithDuration:0.3 animations:^{
+            self.nofavoritesView.alpha = 0.0;
+            
+          } completion:^(BOOL finished) {
+            self.nofavoritesView.hidden = YES;
+            [self.view sendSubviewToBack:self.nofavoritesView];
+          }];
+        }
+        
+      } else {
+        // Hide all:
+        // Hide no favorites
+        [UIView animateWithDuration:0.3 animations:^{
+          self.nofavoritesView.alpha = 0.0;
+          
+        } completion:^(BOOL finished) {
+          self.nofavoritesView.hidden = YES;
+          [self.view sendSubviewToBack:self.nofavoritesView];
+        }];
+        
+        // Hide no friends
+        [UIView animateWithDuration:0.3 animations:^{
+          self.noFriendsView.alpha = 0.0;
+          
+        } completion:^(BOOL finished) {
+          self.noFriendsView.hidden = YES;
+          [self.view sendSubviewToBack:self.noFriendsView];
+        }];
+      }
+    });
+  });
 }
 
 #pragma mark - Table View data source
@@ -272,50 +276,50 @@
 
 - (void)tableView:(UITableView*)tableView willDisplayCell:(UITableViewCell*)cell forRowAtIndexPath:(NSIndexPath*)indexPath {
   if ([cell respondsToSelector:@selector(tintColor)]) {
-      CGFloat cornerRadius = 7.f;
-      cell.backgroundColor = UIColor.clearColor;
-      CAShapeLayer *layer = [[CAShapeLayer alloc] init];
-      CGMutablePathRef pathRef = CGPathCreateMutable();
-      CGRect bounds = CGRectInset(cell.bounds, 10, 0);
-      BOOL addLine = NO;
+    CGFloat cornerRadius = 7.f;
+    cell.backgroundColor = UIColor.clearColor;
+    CAShapeLayer *layer = [[CAShapeLayer alloc] init];
+    CGMutablePathRef pathRef = CGPathCreateMutable();
+    CGRect bounds = CGRectInset(cell.bounds, 10, 0);
+    BOOL addLine = NO;
+    
+    if (indexPath.row == 0 && indexPath.row == [tableView numberOfRowsInSection:indexPath.section]-1) {
+      CGPathAddRoundedRect(pathRef, nil, bounds, cornerRadius, cornerRadius);
       
-      if (indexPath.row == 0 && indexPath.row == [tableView numberOfRowsInSection:indexPath.section]-1) {
-        CGPathAddRoundedRect(pathRef, nil, bounds, cornerRadius, cornerRadius);
+    } else if (indexPath.row == 0) {
+      CGPathMoveToPoint(pathRef, nil, CGRectGetMinX(bounds), CGRectGetMaxY(bounds));
+      CGPathAddArcToPoint(pathRef, nil, CGRectGetMinX(bounds), CGRectGetMinY(bounds), CGRectGetMidX(bounds), CGRectGetMinY(bounds), cornerRadius);
+      CGPathAddArcToPoint(pathRef, nil, CGRectGetMaxX(bounds), CGRectGetMinY(bounds), CGRectGetMaxX(bounds), CGRectGetMidY(bounds), cornerRadius);
+      CGPathAddLineToPoint(pathRef, nil, CGRectGetMaxX(bounds), CGRectGetMaxY(bounds));
+      addLine = YES;
       
-      } else if (indexPath.row == 0) {
-        CGPathMoveToPoint(pathRef, nil, CGRectGetMinX(bounds), CGRectGetMaxY(bounds));
-        CGPathAddArcToPoint(pathRef, nil, CGRectGetMinX(bounds), CGRectGetMinY(bounds), CGRectGetMidX(bounds), CGRectGetMinY(bounds), cornerRadius);
-        CGPathAddArcToPoint(pathRef, nil, CGRectGetMaxX(bounds), CGRectGetMinY(bounds), CGRectGetMaxX(bounds), CGRectGetMidY(bounds), cornerRadius);
-        CGPathAddLineToPoint(pathRef, nil, CGRectGetMaxX(bounds), CGRectGetMaxY(bounds));
-        addLine = YES;
+    } else if (indexPath.row == [tableView numberOfRowsInSection:indexPath.section]-1) {
+      CGPathMoveToPoint(pathRef, nil, CGRectGetMinX(bounds), CGRectGetMinY(bounds));
+      CGPathAddArcToPoint(pathRef, nil, CGRectGetMinX(bounds), CGRectGetMaxY(bounds), CGRectGetMidX(bounds), CGRectGetMaxY(bounds), cornerRadius);
+      CGPathAddArcToPoint(pathRef, nil, CGRectGetMaxX(bounds), CGRectGetMaxY(bounds), CGRectGetMaxX(bounds), CGRectGetMidY(bounds), cornerRadius);
+      CGPathAddLineToPoint(pathRef, nil, CGRectGetMaxX(bounds), CGRectGetMinY(bounds));
       
-      } else if (indexPath.row == [tableView numberOfRowsInSection:indexPath.section]-1) {
-        CGPathMoveToPoint(pathRef, nil, CGRectGetMinX(bounds), CGRectGetMinY(bounds));
-        CGPathAddArcToPoint(pathRef, nil, CGRectGetMinX(bounds), CGRectGetMaxY(bounds), CGRectGetMidX(bounds), CGRectGetMaxY(bounds), cornerRadius);
-        CGPathAddArcToPoint(pathRef, nil, CGRectGetMaxX(bounds), CGRectGetMaxY(bounds), CGRectGetMaxX(bounds), CGRectGetMidY(bounds), cornerRadius);
-        CGPathAddLineToPoint(pathRef, nil, CGRectGetMaxX(bounds), CGRectGetMinY(bounds));
-      
-      } else {
-        CGPathAddRect(pathRef, nil, bounds);
-        addLine = YES;
-      }
-      
-      layer.path = pathRef;
-      CFRelease(pathRef);
-      layer.fillColor = [UIColor colorWithWhite:1.f alpha:0.8f].CGColor;
-      
-      if (addLine == YES) {
-        CALayer *lineLayer = [[CALayer alloc] init];
-        CGFloat lineHeight = (1.f / [UIScreen mainScreen].scale);
-        lineLayer.frame = CGRectMake(CGRectGetMinX(bounds)+10, bounds.size.height-lineHeight, bounds.size.width-10, lineHeight);
-        lineLayer.backgroundColor = tableView.separatorColor.CGColor;
-        [layer addSublayer:lineLayer];
-      }
-      
-      UIView *testView = [[UIView alloc] initWithFrame:bounds];
-      [testView.layer insertSublayer:layer atIndex:0];
-      testView.backgroundColor = UIColor.clearColor;
-      cell.backgroundView = testView;
+    } else {
+      CGPathAddRect(pathRef, nil, bounds);
+      addLine = YES;
+    }
+    
+    layer.path = pathRef;
+    CFRelease(pathRef);
+    layer.fillColor = [UIColor colorWithWhite:1.f alpha:0.8f].CGColor;
+    
+    if (addLine == YES) {
+      CALayer *lineLayer = [[CALayer alloc] init];
+      CGFloat lineHeight = (1.f / [UIScreen mainScreen].scale);
+      lineLayer.frame = CGRectMake(CGRectGetMinX(bounds)+10, bounds.size.height-lineHeight, bounds.size.width-10, lineHeight);
+      lineLayer.backgroundColor = tableView.separatorColor.CGColor;
+      [layer addSublayer:lineLayer];
+    }
+    
+    UIView *testView = [[UIView alloc] initWithFrame:bounds];
+    [testView.layer insertSublayer:layer atIndex:0];
+    testView.backgroundColor = UIColor.clearColor;
+    cell.backgroundView = testView;
   }
 }
 
@@ -347,7 +351,7 @@
       [self.view sendSubviewToBack:self.noFriendsView];
     }];
   }
-
+  
   // Animate in
   self.searchFriendsView.alpha = 0.0;
   self.searchFriendsView.hidden = NO;
@@ -363,7 +367,7 @@
   } completion:^(BOOL finished) {
     [self.searchTextfield becomeFirstResponder];
   }];
-
+  
   // Modify the target of the button
   [addButton removeTarget:self action:@selector(beginFriendSearch:) forControlEvents:UIControlEventAllEvents];
   [addButton addTarget:self action:@selector(exitFriendSearch:) forControlEvents:UIControlEventTouchUpInside];

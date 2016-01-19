@@ -100,9 +100,11 @@
         user.password = self.textField.text;
         DUser *loggedInUser = [DUser logInWithUsername:user.username password:user.password];
         if (!loggedInUser) {
-          UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"Dude, we couldn't find you!" message:@"WE couldn't identify you with these credentials. Check for typos and try again." preferredStyle:UIAlertControllerStyleAlert];
-          [ac addAction:[UIAlertAction actionWithTitle:@"Will do!" style:UIAlertActionStyleDefault handler:nil]];
+          UIAlertController *incorrectCredentialsAlertController = [UIAlertController alertControllerWithTitle:@"Dude, we couldn't find you!" message:@"WE couldn't identify you with these credentials. Check for typos and try again." preferredStyle:UIAlertControllerStyleAlert];
+          [incorrectCredentialsAlertController addAction:[UIAlertAction actionWithTitle:@"Will do!" style:UIAlertActionStyleDefault handler:nil]];
         
+          [self presentViewController:incorrectCredentialsAlertController animated:YES completion:nil];
+          
         } else {
           // Go back to the redirection controller
           [self dismissViewControllerAnimated:NO completion:nil];

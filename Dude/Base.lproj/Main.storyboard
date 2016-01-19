@@ -1197,8 +1197,8 @@
         <image name="Tab Person" width="33" height="33"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="SYs-wd-eJK"/>
         <segue reference="Nbs-OA-gvm"/>
+        <segue reference="3Uq-ao-rtd"/>
     </inferredMetricsTieBreakers>
     <color key="tintColor" red="0.23921568627450981" green="0.59215686274509804" blue="0.85882352941176465" alpha="1" colorSpace="calibratedRGB"/>
 </document>
