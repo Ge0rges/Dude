@@ -98,20 +98,27 @@
         
       case 2: {
         user.password = self.textField.text;
+        [self animateToNextStepWithInitialScreenshot:[self screenshot] fromRight:YES];
+        [self proceedToSocial];
+        break;
+      }
+      
+      case 3: {
         DUser *loggedInUser = [DUser logInWithUsername:user.username password:user.password];
         if (!loggedInUser) {
           UIAlertController *incorrectCredentialsAlertController = [UIAlertController alertControllerWithTitle:@"Dude, we couldn't find you!" message:@"WE couldn't identify you with these credentials. Check for typos and try again." preferredStyle:UIAlertControllerStyleAlert];
           [incorrectCredentialsAlertController addAction:[UIAlertAction actionWithTitle:@"Will do!" style:UIAlertActionStyleDefault handler:nil]];
-        
+          
           [self presentViewController:incorrectCredentialsAlertController animated:YES completion:nil];
           
         } else {
           // Go back to the redirection controller
           [self dismissViewControllerAnimated:NO completion:nil];
         }
+
         break;
       }
-        
+    
       default: {
         break;
       }
@@ -201,7 +208,9 @@
   
   self.confirmButton.tag++;
   
-  [self.stepImageView removeGestureRecognizer:self.stepImageView.gestureRecognizers[0]];
+  if (self.stepImageView.gestureRecognizers.count > 0) {
+    [self.stepImageView removeGestureRecognizer:self.stepImageView.gestureRecognizers[0]];
+  }
   
   [self.textField performSelector:@selector(becomeFirstResponder) withObject:nil afterDelay:0.4];//.15 seconds after animation
   
@@ -447,7 +456,19 @@
     }
       
     case 2: {
-      self.confirmButton.enabled = (self.logIn) ? (self.textField.text.length > 5) : [self isValidEmailWithAlert:NO];
+      if (self.logIn) {
+        self.confirmButton.enabled = (self.textField.text.length > 5);
+      
+      } else {
+          dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+            self.confirmButton.enabled = [self isValidEmailWithAlert:NO];
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+              self.confirmButton.backgroundColor = (self.confirmButton.enabled) ? self.confirmButton.tintColor : [UIColor lightGrayColor];
+            });
+          });
+      }
+      
       break;
     }
       
@@ -472,7 +493,15 @@
     }
   }
   
-  self.confirmButton.backgroundColor = (self.confirmButton.enabled) ? self.confirmButton.tintColor : [UIColor lightGrayColor];
+  if (!self.logIn && self.confirmButton.tag == 2) {// Check if we are on the email step for sign up
+    // If so disable the button. real results are being generated asyncly and will be set later
+    self.confirmButton.enabled = NO;
+    self.confirmButton.backgroundColor = [UIColor lightGrayColor];
+  
+  } else {
+    // Otherwise usual color setting according to enabled state.
+    self.confirmButton.backgroundColor = (self.confirmButton.enabled) ? self.confirmButton.tintColor : [UIColor lightGrayColor];
+  }
 }
 
 - (IBAction)back {
@@ -605,6 +634,7 @@
 }
 
 #pragma mark - UITextField
+
 - (BOOL)isValidEmailWithAlert:(BOOL)showAlert {
   BOOL validEmail = [self validateEmailWithRFC:self.textField.text];
   

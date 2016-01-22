@@ -452,17 +452,21 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Name Tag" translatesAutoresizingMaskIntoConstraints="NO" id="ajZ-2b-VcN">
-                                <rect key="frame" x="232" y="50" width="136" height="80"/>
+                                <rect key="frame" x="232" y="50" width="136" height="110"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="65" id="Sv9-ag-CuZ"/>
+                                    <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="110" id="cT0-ei-rzi"/>
+                                </constraints>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Your Name" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bpI-Gx-EGY">
-                                <rect key="frame" x="209" y="138" width="182" height="43"/>
+                                <rect key="frame" x="209" y="168" width="182" height="43"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="36"/>
                                 <color key="textColor" red="0.23921568630000001" green="0.59215686270000001" blue="0.85882352939999995" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Your name will be shown to others along with your  profile photo." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZgH-rG-OFD">
-                                <rect key="frame" x="157" y="189" width="287" height="43"/>
+                                <rect key="frame" x="157" y="219" width="287" height="43"/>
                                 <constraints>
                                     <constraint firstAttribute="width" relation="lessThanOrEqual" constant="300" id="yNa-F3-Vf8"/>
                                 </constraints>
@@ -491,7 +495,7 @@
                                 </connections>
                             </button>
                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="The Dude" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="T1T-0T-RM7">
-                                <rect key="frame" x="54" y="287" width="492" height="30"/>
+                                <rect key="frame" x="54" y="317" width="492" height="30"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" returnKeyType="next" enablesReturnKeyAutomatically="YES"/>
                                 <connections>

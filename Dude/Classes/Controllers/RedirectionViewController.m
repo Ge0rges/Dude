@@ -60,6 +60,9 @@
     }];
     
   } else if ([networkReachability isReachable]) {
+    // Clear keychain to prevent issues
+    [DUser logOut];
+    
     // Show the log/sign in view
     [self performSegueWithIdentifier:@"welcomeSegue" sender:nil];
   
