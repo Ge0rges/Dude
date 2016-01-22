@@ -1,11 +1,11 @@
 PODS:
-  - Bolts/Tasks (1.5.0)
-  - Parse (1.11.0):
+  - Bolts/Tasks (1.6.0)
+  - Parse (1.12.0):
     - Bolts/Tasks (~> 1.5)
   - Reachability (3.2)
-  - SDWebImage (3.7.3):
-    - SDWebImage/Core (= 3.7.3)
-  - SDWebImage/Core (3.7.3)
+  - SDWebImage (3.7.5):
+    - SDWebImage/Core (= 3.7.5)
+  - SDWebImage/Core (3.7.5)
   - SOMotionDetector (1.0.1)
 
 DEPENDENCIES:
@@ -15,10 +15,10 @@ DEPENDENCIES:
   - SOMotionDetector
 
 SPEC CHECKSUMS:
-  Bolts: 722ab9a4f8b50fc4ed1b9998a5a7a2b3f16d80b4
-  Parse: 886af46a0a677402f6374bb97ac212e795f70afe
+  Bolts: f52a250053bb517ca874523c3913776359ab3def
+  Parse: de2c52a9a1421b91ae7594ab8ce191afd184f19b
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
-  SDWebImage: 1d2b1a1efda1ade1b00b6f8498865f8ddedc8a84
+  SDWebImage: 69c6303e3348fba97e03f65d65d4fbc26740f461
   SOMotionDetector: 9e7975e25ccdaa3f108db510153f92ef433767da
 
 COCOAPODS: 0.39.0

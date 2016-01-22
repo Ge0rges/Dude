@@ -25,7 +25,7 @@ typedef NS_ENUM(uint8_t, PFReachabilityState) {
 
 @protocol PFReachabilityListener <NSObject>
 
-- (void)reachability:(PFReachability*)reachability didChangeReachabilityState:(PFReachabilityState)state;
+- (void)reachability:(PFReachability *)reachability didChangeReachabilityState:(PFReachabilityState)state;
 
 @end
 
@@ -34,7 +34,9 @@ PF_WATCH_UNAVAILABLE @interface PFReachability : NSObject
 @property (nonatomic, assign, readonly) PFReachabilityState currentState;
 
 - (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithURL:(NSURL*)url NS_DESIGNATED_INITIALIZER;
++ (instancetype)new NS_UNAVAILABLE;
+
+- (instancetype)initWithURL:(NSURL *)url NS_DESIGNATED_INITIALIZER;
 
 /*
  Returns a shared singleton instance,

@@ -26,7 +26,7 @@ PF_WATCH_UNAVAILABLE_WARNING
  */
 PF_OSX_UNAVAILABLE PF_WATCH_UNAVAILABLE @interface PFPaymentTransactionObserver : NSObject <SKPaymentTransactionObserver>
 
-- (void)handle:(NSString*)productIdentifier block:(void (^)(SKPaymentTransaction*))block;
-- (void)handle:(NSString*)productIdentifier runOnceBlock:(void (^)(NSError*))block;
+- (void)handle:(NSString *)productIdentifier block:(void (^)(SKPaymentTransaction *))block;
+- (void)handle:(NSString *)productIdentifier runOnceBlock:(void (^)(NSError *))block;
 
 @end

@@ -27,12 +27,12 @@
 ///--------------------------------------
 
 // Validates a class name. We override this to only allow the product class name.
-+ (void)_assertValidInstanceClassName:(NSString*)className {
++ (void)_assertValidInstanceClassName:(NSString *)className {
     PFParameterAssert([className isEqualToString:[PFProduct parseClassName]],
                       @"Cannot initialize a PFProduct with a custom class name.");
 }
 
-+ (NSString*)parseClassName {
++ (NSString *)parseClassName {
     return @"_Product";
 }
 

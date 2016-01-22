@@ -29,10 +29,6 @@
 #pragma mark - Init
 ///--------------------------------------
 
-- (instancetype)init {
-    PFNotDesignatedInitializer();
-}
-
 - (instancetype)initWithCommonDataSource:(id<PFCommandRunnerProvider>)commonDataSource
                           coreDataSource:(id<PFCurrentInstallationControllerProvider>)coreDataSource {
     self = [super init];
@@ -54,7 +50,7 @@
 #pragma mark - PushController
 ///--------------------------------------
 
-- (PFPushController*)pushController {
+- (PFPushController *)pushController {
     __block PFPushController *controller;
     dispatch_sync(_controllerAccessQueue, ^{
         if (!_pushController) {
@@ -65,7 +61,7 @@
     return controller;
 }
 
-- (void)setPushController:(PFPushController*)pushController {
+- (void)setPushController:(PFPushController *)pushController {
     dispatch_sync(_controllerAccessQueue, ^{
         _pushController = pushController;
     });
@@ -75,7 +71,7 @@
 #pragma mark - Channels Controller
 ///--------------------------------------
 
-- (PFPushChannelsController*)channelsController {
+- (PFPushChannelsController *)channelsController {
     __block PFPushChannelsController *controller;
     dispatch_sync(_controllerAccessQueue, ^{
         if (!_channelsController) {
@@ -86,7 +82,7 @@
     return controller;
 }
 
-- (void)setChannelsController:(PFPushChannelsController*)channelsController {
+- (void)setChannelsController:(PFPushChannelsController *)channelsController {
     dispatch_sync(_controllerAccessQueue, ^{
         _channelsController = channelsController;
     });

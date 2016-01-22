@@ -52,8 +52,8 @@ static NSSet *protectedKeys;
     [super removeObjectForKey:PFInstallationKeyDeviceToken];
 }
 
-- (BFTask PF_GENERIC(PFVoid)*)_validateDeleteAsync {
-    return [[super _validateDeleteAsync] continueWithSuccessBlock:^id(BFTask PF_GENERIC(PFVoid) *task) {
+- (BFTask<PFVoid> *)_validateDeleteAsync {
+    return [[super _validateDeleteAsync] continueWithSuccessBlock:^id(BFTask<PFVoid> *task) {
         NSError *error = [PFErrorUtilities errorWithCode:kPFErrorCommandUnavailable
                                                  message:@"Installation cannot be deleted"];
         return [BFTask taskWithError:error];
@@ -61,7 +61,7 @@ static NSSet *protectedKeys;
 }
 
 // Validates a class name. We override this to only allow the installation class name.
-+ (void)_assertValidInstanceClassName:(NSString*)className {
++ (void)_assertValidInstanceClassName:(NSString *)className {
     PFParameterAssert([className isEqualToString:[PFInstallation parseClassName]],
                       @"Cannot initialize a PFInstallation with a custom class name.");
 }
@@ -79,7 +79,7 @@ static NSSet *protectedKeys;
     }
 }
 
-- (NSString*)displayClassName {
+- (NSString *)displayClassName {
     return NSStringFromClass([PFInstallation class]);
 }
 
@@ -87,7 +87,7 @@ static NSSet *protectedKeys;
 #pragma mark - Command Handlers
 ///--------------------------------------
 
-- (BFTask*)handleSaveResultAsync:(NSDictionary*)result {
+- (BFTask *)handleSaveResultAsync:(NSDictionary *)result {
     @weakify(self);
     return [[super handleSaveResultAsync:result] continueWithBlock:^id(BFTask *task) {
         @strongify(self);
@@ -100,7 +100,7 @@ static NSSet *protectedKeys;
 #pragma mark - Current Installation Controller
 ///--------------------------------------
 
-+ (PFCurrentInstallationController*)_currentInstallationController {
++ (PFCurrentInstallationController *)_currentInstallationController {
     return [Parse _currentManager].coreManager.currentInstallationController;
 }
 
@@ -119,11 +119,11 @@ static NSSet *protectedKeys;
 #pragma mark - PFSubclassing
 ///--------------------------------------
 
-+ (NSString*)parseClassName {
++ (NSString *)parseClassName {
     return @"_Installation";
 }
 
-+ (PFQuery*)query {
++ (PFQuery *)query {
     return [super query];
 }
 
@@ -140,7 +140,7 @@ static NSSet *protectedKeys;
 #pragma mark - Accessors
 ///--------------------------------------
 
-- (id)objectForKey:(NSString*)key {
+- (id)objectForKey:(NSString *)key {
     if ([key isEqualToString:PFInstallationKeyBadge] && [self _isCurrentInstallation]) {
         // Update the data dictionary badge value from the device.
         [self _updateBadgeFromDevice];
@@ -149,7 +149,7 @@ static NSSet *protectedKeys;
     return [super objectForKey:key];
 }
 
-- (void)setObject:(id)object forKey:(NSString*)key {
+- (void)setObject:(id)object forKey:(NSString *)key {
     PFParameterAssert(![protectedKeys containsObject:key],
                       @"Can't change the '%@' field of a PFInstallation.", key);
 
@@ -165,14 +165,14 @@ static NSSet *protectedKeys;
     [super setObject:object forKey:key];
 }
 
-- (void)incrementKey:(NSString*)key byAmount:(NSNumber*)amount {
+- (void)incrementKey:(NSString *)key byAmount:(NSNumber *)amount {
     PFParameterAssert(![key isEqualToString:PFInstallationKeyBadge],
                       @"Can't atomically increment the 'badge' field of a PFInstallation.");
 
     [super incrementKey:key byAmount:amount];
 }
 
-- (void)removeObjectForKey:(NSString*)key {
+- (void)removeObjectForKey:(NSString *)key {
     PFParameterAssert(![protectedKeys containsObject:key],
                       @"Can't remove the '%@' field of a PFInstallation.", key);
     PFParameterAssert(![key isEqualToString:PFInstallationKeyBadge],
@@ -182,35 +182,35 @@ static NSSet *protectedKeys;
 
 // Internal mutators override the dynamic accessor and use super to avoid
 // read-only checks on automatic fields.
-- (void)setDeviceType:(NSString*)deviceType {
+- (void)setDeviceType:(NSString *)deviceType {
     [self _setObject:deviceType forKey:PFInstallationKeyDeviceType onlyIfDifferent:YES];
 }
 
-- (void)setInstallationId:(NSString*)installationId {
+- (void)setInstallationId:(NSString *)installationId {
     [self _setObject:installationId forKey:PFInstallationKeyInstallationId onlyIfDifferent:YES];
 }
 
-- (void)setDeviceToken:(NSString*)deviceToken {
+- (void)setDeviceToken:(NSString *)deviceToken {
     [self _setObject:deviceToken forKey:PFInstallationKeyDeviceToken onlyIfDifferent:YES];
 }
 
-- (void)setDeviceTokenFromData:(NSData*)deviceTokenData {
+- (void)setDeviceTokenFromData:(NSData *)deviceTokenData {
     [self _setObject:[[PFPush pushInternalUtilClass] convertDeviceTokenToString:deviceTokenData]
               forKey:PFInstallationKeyDeviceToken
      onlyIfDifferent:YES];
 }
 
-- (void)setTimeZone:(NSString*)timeZone {
+- (void)setTimeZone:(NSString *)timeZone {
     [self _setObject:timeZone forKey:PFInstallationKeyTimeZone onlyIfDifferent:YES];
 }
 
-- (void)setLocaleIdentifier:(NSString*)localeIdentifier {
+- (void)setLocaleIdentifier:(NSString *)localeIdentifier {
     [self _setObject:localeIdentifier
               forKey:PFInstallationKeyLocaleIdentifier
      onlyIfDifferent:YES];
 }
 
-- (void)setChannels:(NSArray PF_GENERIC(NSString*)*)channels {
+- (void)setChannels:(NSArray<NSString *> *)channels {
     [self _setObject:channels forKey:PFInstallationKeyChannels onlyIfDifferent:YES];
 }
 
@@ -218,7 +218,7 @@ static NSSet *protectedKeys;
 #pragma mark - PFObject
 ///--------------------------------------
 
-- (BFTask*)saveAsync:(BFTask*)toAwait {
+- (BFTask *)saveAsync:(BFTask *)toAwait {
     return [[super saveAsync:toAwait] continueWithBlock:^id(BFTask *task) {
         // Do not attempt to resave an object if LDS is enabled, since changing objectId is not allowed.
         if ([Parse _currentManager].offlineStoreLoaded) {
@@ -277,9 +277,9 @@ static NSSet *protectedKeys;
 
 - (void)_updateVersionInfoFromDevice {
     NSDictionary *appInfo = [NSBundle mainBundle].infoDictionary;
-    NSString *appName = appInfo[(__bridge NSString*)kCFBundleNameKey];
-    NSString *appVersion = appInfo[(__bridge NSString*)kCFBundleVersionKey];
-    NSString *appIdentifier = appInfo[(__bridge NSString*)kCFBundleIdentifierKey];
+    NSString *appName = appInfo[(__bridge NSString *)kCFBundleNameKey];
+    NSString *appVersion = appInfo[(__bridge NSString *)kCFBundleVersionKey];
+    NSString *appIdentifier = appInfo[(__bridge NSString *)kCFBundleIdentifierKey];
     // It's possible that the app was created without an info.plist and we just
     // cannot get the data we need.
     // Note: it's important to make the possibly nil string the message receptor for

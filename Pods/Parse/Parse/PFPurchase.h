@@ -20,8 +20,8 @@ PF_WATCH_UNAVAILABLE_WARNING
 NS_ASSUME_NONNULL_BEGIN
 
 typedef void (^PFPurchaseProductObservationBlock)(SKPaymentTransaction *transaction);
-typedef void (^PFPurchaseBuyProductResultBlock)(NSError *__nullable error);
-typedef void (^PFPurchaseDownloadAssetResultBlock)(NSString *__nullable filePath, NSError *__nullable error);
+typedef void (^PFPurchaseBuyProductResultBlock)(NSError *_Nullable error);
+typedef void (^PFPurchaseDownloadAssetResultBlock)(NSString *_Nullable filePath, NSError *_Nullable error);
 
 /**
  `PFPurchase` provides a set of APIs for working with in-app purchases.
@@ -41,7 +41,7 @@ PF_OSX_UNAVAILABLE PF_WATCH_UNAVAILABLE @interface PFPurchase : NSObject
  @param productIdentifier the product identifier
  @param block The block to be run when buying a product.
  */
-+ (void)addObserverForProduct:(NSString*)productIdentifier block:(PFPurchaseProductObservationBlock)block;
++ (void)addObserverForProduct:(NSString *)productIdentifier block:(PFPurchaseProductObservationBlock)block;
 
 /**
  *Asynchronously* initiates the purchase for the product.
@@ -49,7 +49,7 @@ PF_OSX_UNAVAILABLE PF_WATCH_UNAVAILABLE @interface PFPurchase : NSObject
  @param productIdentifier the product identifier
  @param block the completion block.
  */
-+ (void)buyProduct:(NSString*)productIdentifier block:(nullable PFPurchaseBuyProductResultBlock)block;
++ (void)buyProduct:(NSString *)productIdentifier block:(nullable PFPurchaseBuyProductResultBlock)block;
 
 /**
  *Asynchronously* download the purchased asset, which is stored on Parse's server.
@@ -59,7 +59,7 @@ PF_OSX_UNAVAILABLE PF_WATCH_UNAVAILABLE @interface PFPurchase : NSObject
  @param transaction the transaction, which contains the receipt.
  @param completion the completion block.
  */
-+ (void)downloadAssetForTransaction:(SKPaymentTransaction*)transaction
++ (void)downloadAssetForTransaction:(SKPaymentTransaction *)transaction
                          completion:(PFPurchaseDownloadAssetResultBlock)completion;
 
 /**
@@ -71,7 +71,7 @@ PF_OSX_UNAVAILABLE PF_WATCH_UNAVAILABLE @interface PFPurchase : NSObject
  @param completion the completion block.
  @param progress the progress block, which is called multiple times to reveal progress of the download.
  */
-+ (void)downloadAssetForTransaction:(SKPaymentTransaction*)transaction
++ (void)downloadAssetForTransaction:(SKPaymentTransaction *)transaction
                          completion:(PFPurchaseDownloadAssetResultBlock)completion
                            progress:(nullable PFProgressBlock)progress;
 
@@ -93,7 +93,7 @@ PF_OSX_UNAVAILABLE PF_WATCH_UNAVAILABLE @interface PFPurchase : NSObject
 
  @warning This method will return `nil`, if the purchase wasn't verified or if the asset was not downloaded.
  */
-+ (nullable NSString*)assetContentPathForProduct:(PFProduct*)product;
++ (nullable NSString *)assetContentPathForProduct:(PFProduct *)product;
 
 @end
 

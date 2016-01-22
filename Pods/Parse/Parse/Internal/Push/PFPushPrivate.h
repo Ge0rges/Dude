@@ -21,15 +21,15 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol PFPushInternalUtils <NSObject>
 
 @optional
-+ (NSString*)convertDeviceTokenToString:(id)deviceToken;
-+ (nullable NSString*)getDeviceTokenFromKeychain;
++ (NSString *)convertDeviceTokenToString:(id)deviceToken;
++ (nullable NSString *)getDeviceTokenFromKeychain;
 + (void)clearDeviceToken;
 
 #if TARGET_OS_IOS
 
-+ (void)showAlertViewWithTitle:(nullable NSString*)title message:(nullable NSString*)message NS_EXTENSION_UNAVAILABLE_IOS("");
++ (void)showAlertViewWithTitle:(nullable NSString *)title message:(nullable NSString *)message NS_EXTENSION_UNAVAILABLE_IOS("");
 + (void)playVibrate;
-+ (void)playAudioWithName:(nullable NSString*)audioName;
++ (void)playAudioWithName:(nullable NSString *)audioName;
 
 #endif
 

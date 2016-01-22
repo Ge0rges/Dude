@@ -24,7 +24,7 @@
 #pragma mark - Public
 ///--------------------------------------
 
-+ (void)addObserverForProduct:(NSString*)productIdentifier block:(PFPurchaseProductObservationBlock)block {
++ (void)addObserverForProduct:(NSString *)productIdentifier block:(PFPurchaseProductObservationBlock)block {
     // We require the following method to run on the main thread because we want to add the observer
     // *after* all products handlers have been added. Developers might be calling this method multiple
     // times; and if the observer is added after the first call, the observer might not know how to
@@ -37,7 +37,7 @@
     [[Parse _currentManager].purchaseController.transactionObserver handle:productIdentifier block:block];
 }
 
-+ (void)buyProduct:(NSString*)productIdentifier block:(PFPurchaseBuyProductResultBlock)completion {
++ (void)buyProduct:(NSString *)productIdentifier block:(PFPurchaseBuyProductResultBlock)completion {
     [[[self _purchaseController] buyProductAsyncWithIdentifier:productIdentifier] continueWithBlock:^id(BFTask *task) {
         if (completion) {
             completion(task.error);
@@ -50,12 +50,12 @@
     [[self _purchaseController].paymentQueue restoreCompletedTransactions];
 }
 
-+ (void)downloadAssetForTransaction:(SKPaymentTransaction*)transaction
++ (void)downloadAssetForTransaction:(SKPaymentTransaction *)transaction
                          completion:(PFPurchaseDownloadAssetResultBlock)completion {
     [self downloadAssetForTransaction:transaction completion:completion progress:nil];
 }
 
-+ (void)downloadAssetForTransaction:(SKPaymentTransaction*)transaction
++ (void)downloadAssetForTransaction:(SKPaymentTransaction *)transaction
                          completion:(PFPurchaseDownloadAssetResultBlock)completion
                            progress:(PFProgressBlock)progress {
     @weakify(self);
@@ -68,7 +68,7 @@
     }] continueWithMainThreadResultBlock:completion executeIfCancelled:YES];
 }
 
-+ (NSString*)assetContentPathForProduct:(PFProduct*)product {
++ (NSString *)assetContentPathForProduct:(PFProduct *)product {
     NSString *path = [[self _purchaseController] assetContentPathForProductWithIdentifier:product.productIdentifier
                                                                                  fileName:product.downloadName];
     if ([[NSFileManager defaultManager] fileExistsAtPath:path]) {
@@ -82,7 +82,7 @@
 #pragma mark - Purchase Controller
 ///--------------------------------------
 
-+ (PFPurchaseController*)_purchaseController {
++ (PFPurchaseController *)_purchaseController {
     return [Parse _currentManager].purchaseController;
 }
 

@@ -38,7 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
 PF_TV_UNAVAILABLE PF_WATCH_UNAVAILABLE @interface PFInstallation : PFObject<PFSubclassing>
 
 ///--------------------------------------
-/// @name Accessing the Current Installation
+#pragma mark - Accessing the Current Installation
 ///--------------------------------------
 
 /**
@@ -53,7 +53,7 @@ PF_TV_UNAVAILABLE PF_WATCH_UNAVAILABLE @interface PFInstallation : PFObject<PFSu
 + (instancetype)currentInstallation;
 
 ///--------------------------------------
-/// @name Installation Properties
+#pragma mark - Installation Properties
 ///--------------------------------------
 
 /**
@@ -84,17 +84,17 @@ PF_TV_UNAVAILABLE PF_WATCH_UNAVAILABLE @interface PFInstallation : PFObject<PFSu
 /**
  The channels for the `PFInstallation`.
  */
-@property (nullable, nonatomic, copy) NSArray PF_GENERIC(NSString*)*channels;
+@property (nullable, nonatomic, copy) NSArray<NSString *> *channels;
 
 /**
  Sets the device token string property from an `NSData`-encoded token.
 
  @param deviceTokenData A token that identifies the device.
  */
-- (void)setDeviceTokenFromData:(nullable NSData*)deviceTokenData;
+- (void)setDeviceTokenFromData:(nullable NSData *)deviceTokenData;
 
 ///--------------------------------------
-/// @name Querying for Installations
+#pragma mark - Querying for Installations
 ///--------------------------------------
 
 /**
@@ -108,7 +108,7 @@ PF_TV_UNAVAILABLE PF_WATCH_UNAVAILABLE @interface PFInstallation : PFObject<PFSu
 
  You can add additional query conditions, but one of the above must appear as a top-level `AND` clause in the query.
  */
-+ (nullable PFQuery*)query;
++ (nullable PFQuery *)query;
 
 @end
 

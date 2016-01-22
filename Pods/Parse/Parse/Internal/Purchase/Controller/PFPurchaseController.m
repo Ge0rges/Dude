@@ -43,7 +43,7 @@
 ///--------------------------------------
 
 - (instancetype)initWithDataSource:(id<PFCommandRunnerProvider, PFFileManagerProvider>)dataSource
-                            bundle:(NSBundle*)bundle {
+                            bundle:(NSBundle *)bundle {
     self = [super init];
     if (!self) return nil;
 
@@ -54,7 +54,7 @@
 }
 
 + (instancetype)controllerWithDataSource:(id<PFCommandRunnerProvider, PFFileManagerProvider>)dataSource
-                                  bundle:(NSBundle*)bundle {
+                                  bundle:(NSBundle *)bundle {
     return [[self alloc] initWithDataSource:dataSource bundle:bundle];
 }
 
@@ -72,7 +72,7 @@
 #pragma mark - Products
 ///--------------------------------------
 
-- (BFTask*)findProductsAsyncWithIdentifiers:(NSSet*)productIdentifiers {
+- (BFTask *)findProductsAsyncWithIdentifiers:(NSSet *)productIdentifiers {
     @weakify(self);
     return [[BFTask taskFromExecutor:[BFExecutor defaultPriorityBackgroundExecutor] withBlock:^id {
         @strongify(self);
@@ -86,7 +86,7 @@
     }];
 }
 
-- (BFTask*)buyProductAsyncWithIdentifier:(NSString*)productIdentifier {
+- (BFTask *)buyProductAsyncWithIdentifier:(NSString *)productIdentifier {
     PFParameterAssert(productIdentifier, @"You must pass in a valid product identifier.");
 
     if (![self canPurchase]) {
@@ -131,11 +131,11 @@
     }];
 }
 
-- (BFTask*)downloadAssetAsyncForTransaction:(SKPaymentTransaction*)transaction
+- (BFTask *)downloadAssetAsyncForTransaction:(SKPaymentTransaction *)transaction
                            withProgressBlock:(PFProgressBlock)progressBlock
-                                sessionToken:(NSString*)sessionToken {
+                                sessionToken:(NSString *)sessionToken {
     NSString *productIdentifier = transaction.payment.productIdentifier;
-    NSURL *appStoreReceiptURL = [self.bundle appStoreReceiptURL];
+    NSURL *appStoreReceiptURL = self.bundle.appStoreReceiptURL;
     if (!productIdentifier || !appStoreReceiptURL) {
         return [BFTask taskWithError:[NSError errorWithDomain:PFParseErrorDomain
                                                          code:kPFErrorReceiptMissing
@@ -177,7 +177,7 @@
 
         NSString *finalFilePath = [self assetContentPathForProductWithIdentifier:transaction.payment.productIdentifier
                                                                         fileName:file.name];
-        NSString *directoryPath = [finalFilePath stringByDeletingLastPathComponent];
+        NSString *directoryPath = finalFilePath.stringByDeletingLastPathComponent;
         return [[[[[PFFileManager createDirectoryIfNeededAsyncAtPath:directoryPath] continueWithBlock:^id(BFTask *task) {
             if (task.faulted) {
                 return [BFTask taskWithError:[NSError errorWithDomain:PFParseErrorDomain
@@ -201,7 +201,7 @@
     }];
 }
 
-- (NSString*)assetContentPathForProductWithIdentifier:(NSString*)identifier fileName:(NSString*)fileName {
+- (NSString *)assetContentPathForProductWithIdentifier:(NSString *)identifier fileName:(NSString *)fileName {
     // We store files locally at (ParsePrivateDir)/(ProductIdentifier)/filename
     NSString *filePath = [self.dataSource.fileManager parseDataItemPathForPathComponent:identifier];
     filePath = [filePath stringByAppendingPathComponent:fileName];
@@ -216,14 +216,14 @@
 #pragma mark - Accessors
 ///--------------------------------------
 
-- (SKPaymentQueue*)paymentQueue {
+- (SKPaymentQueue *)paymentQueue {
     if (!_paymentQueue) {
         _paymentQueue = [SKPaymentQueue defaultQueue];
     }
     return _paymentQueue;
 }
 
-- (PFPaymentTransactionObserver*)transactionObserver {
+- (PFPaymentTransactionObserver *)transactionObserver {
     if (!_transactionObserver) {
         _transactionObserver = [[PFPaymentTransactionObserver alloc] init];
         [self.paymentQueue addTransactionObserver:_transactionObserver];

@@ -74,7 +74,7 @@ NSString *const PFCurrentInstallationPinName = @"_currentInstallation";
 #pragma mark - PFCurrentObjectControlling
 ///--------------------------------------
 
-- (BFTask*)getCurrentObjectAsync {
+- (BFTask *)getCurrentObjectAsync {
     @weakify(self);
     return [_dataTaskQueue enqueue:^BFTask *(BFTask *unused) {
         return [[[BFTask taskFromExecutor:[BFExecutor defaultExecutor] withBlock:^id {
@@ -107,7 +107,7 @@ NSString *const PFCurrentInstallationPinName = @"_currentInstallation";
             PFInstallation *installation = task.result;
             //TODO: (nlutsenko) Make it not terrible aka actually use task chaining here.
             NSString *installationId = [[self.installationIdentifierStore getInstallationIdentifierAsync] waitForResult:nil];
-            installationId = [installationId  lowercaseString];
+            installationId = installationId.lowercaseString;
             if (!installation || ![installationId isEqualToString:installation.installationId]) {
                 // If there's no installation object, or the object's installation
                 // ID doesn't match this device's installation ID, create a new
@@ -141,8 +141,8 @@ NSString *const PFCurrentInstallationPinName = @"_currentInstallation";
     }];
 }
 
-- (BFTask*)saveCurrentObjectAsync:(PFObject*)object {
-    PFInstallation *installation = (PFInstallation*)object;
+- (BFTask *)saveCurrentObjectAsync:(PFObject *)object {
+    PFInstallation *installation = (PFInstallation *)object;
 
     @weakify(self);
     return [_dataTaskQueue enqueue:^BFTask *(BFTask *unused) {
@@ -162,11 +162,11 @@ NSString *const PFCurrentInstallationPinName = @"_currentInstallation";
 #pragma mark - Installation
 ///--------------------------------------
 
-- (PFInstallation*)memoryCachedCurrentInstallation {
+- (PFInstallation *)memoryCachedCurrentInstallation {
     return self.currentInstallation;
 }
 
-- (BFTask*)clearCurrentInstallationAsync {
+- (BFTask *)clearCurrentInstallationAsync {
     @weakify(self);
     return [_dataTaskQueue enqueue:^BFTask *(BFTask *unused) {
         @strongify(self);
@@ -189,7 +189,7 @@ NSString *const PFCurrentInstallationPinName = @"_currentInstallation";
     }];
 }
 
-- (BFTask*)clearMemoryCachedCurrentInstallationAsync {
+- (BFTask *)clearMemoryCachedCurrentInstallationAsync {
     return [_dataTaskQueue enqueue:^BFTask *(BFTask *unused) {
         self.currentInstallation = nil;
         self.currentInstallationMatchesDisk = NO;
@@ -202,7 +202,7 @@ NSString *const PFCurrentInstallationPinName = @"_currentInstallation";
 #pragma mark - Data Storage
 ///--------------------------------------
 
-- (BFTask*)_loadCurrentInstallationFromDiskAsync {
+- (BFTask *)_loadCurrentInstallationFromDiskAsync {
     if (self.storageType == PFCurrentObjectStorageTypeOfflineStore) {
         // Try loading from OfflineStore
         PFQuery *query = [[[PFQuery queryWithClassName:[PFInstallation parseClassName]]
@@ -210,9 +210,9 @@ NSString *const PFCurrentInstallationPinName = @"_currentInstallation";
 
         return [[query findObjectsInBackground] continueWithSuccessBlock:^id(BFTask *task) {
             NSArray *results = task.result;
-            if ([results count] == 1) {
-                return [BFTask taskWithResult:[results firstObject]];
-            } else if ([results count] != 0) {
+            if (results.count == 1) {
+                return [BFTask taskWithResult:results.firstObject];
+            } else if (results.count != 0) {
                 return [[PFObject unpinAllObjectsInBackgroundWithName:PFCurrentInstallationPinName]
                         continueWithSuccessResult:nil];
             }
@@ -227,7 +227,7 @@ NSString *const PFCurrentInstallationPinName = @"_currentInstallation";
     return [controller loadPersistentObjectAsyncForKey:PFCurrentInstallationFileName];
 }
 
-- (BFTask*)_saveCurrentInstallationToDiskAsync:(PFInstallation*)installation {
+- (BFTask *)_saveCurrentInstallationToDiskAsync:(PFInstallation *)installation {
     if (self.storageType == PFCurrentObjectStorageTypeOfflineStore) {
         BFTask *task = [PFObject unpinAllObjectsInBackgroundWithName:PFCurrentInstallationPinName];
         return [task continueWithBlock:^id(BFTask *task) {
@@ -245,15 +245,15 @@ NSString *const PFCurrentInstallationPinName = @"_currentInstallation";
 #pragma mark - Accessors
 ///--------------------------------------
 
-- (PFObjectFilePersistenceController*)objectFilePersistenceController {
+- (PFObjectFilePersistenceController *)objectFilePersistenceController {
     return self.coreDataSource.objectFilePersistenceController;
 }
 
-- (PFInstallationIdentifierStore*)installationIdentifierStore {
+- (PFInstallationIdentifierStore *)installationIdentifierStore {
     return self.commonDataSource.installationIdentifierStore;
 }
 
-- (PFInstallation*)currentInstallation {
+- (PFInstallation *)currentInstallation {
     __block PFInstallation *installation = nil;
     dispatch_sync(_dataQueue, ^{
         installation = _currentInstallation;
@@ -261,7 +261,7 @@ NSString *const PFCurrentInstallationPinName = @"_currentInstallation";
     return installation;
 }
 
-- (void)setCurrentInstallation:(PFInstallation*)currentInstallation {
+- (void)setCurrentInstallation:(PFInstallation *)currentInstallation {
     dispatch_barrier_sync(_dataQueue, ^{
         if (_currentInstallation != currentInstallation) {
             _currentInstallation = currentInstallation;

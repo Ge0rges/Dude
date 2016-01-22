@@ -19,10 +19,10 @@ typedef void(^PFAlertViewCompletion)(NSUInteger selectedOtherButtonIndex);
 
 PF_OSX_UNAVAILABLE PF_WATCH_UNAVAILABLE @interface PFAlertView : NSObject
 
-+ (void)showAlertWithTitle:(NSString*)title
-                   message:(NSString*)message
-         cancelButtonTitle:(NSString*)cancelButtonTitle
-         otherButtonTitles:(NSArray*)otherButtonTitles
++ (void)showAlertWithTitle:(NSString *)title
+                   message:(NSString *)message
+         cancelButtonTitle:(NSString *)cancelButtonTitle
+         otherButtonTitles:(NSArray *)otherButtonTitles
                 completion:(PFAlertViewCompletion)completion NS_EXTENSION_UNAVAILABLE_IOS("");
 
 @end

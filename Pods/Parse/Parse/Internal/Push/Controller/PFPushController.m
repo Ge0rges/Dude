@@ -21,10 +21,6 @@
 #pragma mark - Init
 ///--------------------------------------
 
-- (instancetype)init {
-    PFNotDesignatedInitializer();
-}
-
 - (instancetype)initWithCommandRunner:(id<PFCommandRunning>)commandRunner {
     self = [super init];
     if (!self) return nil;
@@ -42,8 +38,8 @@
 #pragma mark - Sending Push
 ///--------------------------------------
 
-- (BFTask*)sendPushNotificationAsyncWithState:(PFPushState*)state
-                                  sessionToken:(NSString*)sessionToken {
+- (BFTask *)sendPushNotificationAsyncWithState:(PFPushState *)state
+                                  sessionToken:(NSString *)sessionToken {
     @weakify(self);
     return [[BFTask taskFromExecutor:[BFExecutor defaultPriorityBackgroundExecutor] withBlock:^id{
         @strongify(self);

@@ -21,17 +21,17 @@
 #pragma mark - Init
 ///--------------------------------------
 
-+ (void)showAlertWithTitle:(NSString*)title
-                   message:(NSString*)message
-         cancelButtonTitle:(NSString*)cancelButtonTitle
-         otherButtonTitles:(NSArray*)otherButtonTitles
++ (void)showAlertWithTitle:(NSString *)title
+                   message:(NSString *)message
+         cancelButtonTitle:(NSString *)cancelButtonTitle
+         otherButtonTitles:(NSArray *)otherButtonTitles
                 completion:(PFAlertViewCompletion)completion {
     if ([UIAlertController class] != nil) {
         __block UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title
                                                                                          message:message
                                                                                   preferredStyle:UIAlertControllerStyleAlert];
 
-        void (^alertActionHandler)(UIAlertAction*) = [^(UIAlertAction *action) {
+        void (^alertActionHandler)(UIAlertAction *) = [^(UIAlertAction *action) {
             if (completion) {
                 // This block intentionally retains alertController, and releases it afterwards.
                 if (action.style == UIAlertActionStyleCancel) {
@@ -94,7 +94,7 @@
 #pragma mark - UIAlertViewDelegate
 ///--------------------------------------
 
-- (void)alertView:(UIAlertView*)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
     if (self.completion) {
         if (buttonIndex == alertView.cancelButtonIndex) {
             self.completion(NSNotFound);

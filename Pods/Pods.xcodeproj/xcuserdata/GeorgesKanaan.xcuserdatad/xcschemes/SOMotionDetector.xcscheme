@@ -14,7 +14,7 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = 'primary'
-               BlueprintIdentifier = 'F7A680B104BA81DECEF82C39'
+               BlueprintIdentifier = '8F9E6363CA1CA914FEA97DA9'
                BlueprintName = 'SOMotionDetector'
                ReferencedContainer = 'container:Pods.xcodeproj'
                BuildableName = 'libSOMotionDetector.a'>

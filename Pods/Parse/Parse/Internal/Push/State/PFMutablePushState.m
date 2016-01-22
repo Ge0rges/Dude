@@ -24,7 +24,7 @@
 #pragma mark - Payload
 ///--------------------------------------
 
-- (void)setPayloadWithMessage:(NSString*)message {
+- (void)setPayloadWithMessage:(NSString *)message {
     if (!message) {
         self.payload = nil;
     } else {

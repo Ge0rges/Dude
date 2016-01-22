@@ -14,7 +14,7 @@
 
 @implementation PFProductsRequestResult
 
-- (instancetype)initWithProductsResponse:(SKProductsResponse*)response {
+- (instancetype)initWithProductsResponse:(SKProductsResponse *)response {
     self = [super init];
     if (!self) return nil;
 
@@ -39,7 +39,7 @@
 #pragma mark - Init
 ///--------------------------------------
 
-- (instancetype)initWithProductsRequest:(SKProductsRequest*)request {
+- (instancetype)initWithProductsRequest:(SKProductsRequest *)request {
     self = [super init];
     if (!self) return nil;
 
@@ -64,7 +64,7 @@
 #pragma mark - Find
 ///--------------------------------------
 
-- (BFTask*)findProductsAsync {
+- (BFTask *)findProductsAsync {
     if (!_taskCompletionSource.task.completed) {
         [_productsRequest start];
     }
@@ -75,21 +75,21 @@
 #pragma mark - SKProductsRequestDelegate
 ///--------------------------------------
 
-- (void)productsRequest:(SKProductsRequest*)request didReceiveResponse:(SKProductsResponse*)response {
+- (void)productsRequest:(SKProductsRequest *)request didReceiveResponse:(SKProductsResponse *)response {
     _productsRequest.delegate = nil;
 
     PFProductsRequestResult *result = [[PFProductsRequestResult alloc] initWithProductsResponse:response];
     [self.taskCompletionSource trySetResult:result];
 }
 
-- (void)request:(SKRequest*)request didFailWithError:(NSError*)error {
+- (void)request:(SKRequest *)request didFailWithError:(NSError *)error {
     // according to documentation, this method does not call requestDidFinish
     _productsRequest.delegate = nil;
 
     [self.taskCompletionSource trySetError:error];
 }
 
-- (void)requestDidFinish:(SKRequest*)request {
+- (void)requestDidFinish:(SKRequest *)request {
     // the documentation assures that this is the point safe to get rid of the request
     _productsRequest.delegate = nil;
 }

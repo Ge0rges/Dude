@@ -19,8 +19,8 @@
 
 @implementation PFRESTPushCommand
 
-+ (instancetype)sendPushCommandWithPushState:(PFPushState*)state
-                                sessionToken:(NSString*)sessionToken {
++ (instancetype)sendPushCommandWithPushState:(PFPushState *)state
+                                sessionToken:(NSString *)sessionToken {
     NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
 
     if (state.queryState) {
@@ -28,12 +28,12 @@
         parameters[@"where"] = queryParameters[@"where"];
     } else {
         if (state.channels) {
-            parameters[@"channels"] = [state.channels allObjects];
+            parameters[@"channels"] = state.channels.allObjects;
         }
     }
 
     // If there are no conditions set, then push to everyone by specifying empty query conditions.
-    if ([parameters count] == 0) {
+    if (parameters.count == 0) {
         parameters[@"where"] = @{};
     }
 

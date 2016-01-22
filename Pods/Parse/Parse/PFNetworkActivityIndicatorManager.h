@@ -51,7 +51,7 @@ PF_OSX_UNAVAILABLE PF_TV_UNAVAILABLE PF_WATCH_UNAVAILABLE @interface PFNetworkAc
 
  @return The systemwide network activity indicator manager.
  */
-+ (PFNetworkActivityIndicatorManager*)sharedManager;
++ (PFNetworkActivityIndicatorManager *)sharedManager;
 
 /**
  Increments the number of active network requests.

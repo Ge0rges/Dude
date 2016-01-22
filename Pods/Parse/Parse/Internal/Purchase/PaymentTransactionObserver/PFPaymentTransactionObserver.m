@@ -38,7 +38,7 @@
 #pragma mark - SKPaymentTransactionObserver
 ///--------------------------------------
 
-- (void)paymentQueue:(SKPaymentQueue*)queue updatedTransactions:(NSArray*)transactions {
+- (void)paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray *)transactions {
     for (SKPaymentTransaction *transaction in transactions) {
         switch (transaction.transactionState) {
             case SKPaymentTransactionStatePurchased:
@@ -57,18 +57,18 @@
 #pragma mark - PFPaymentTransactionObserver
 ///--------------------------------------
 
-- (void)completeTransaction:(SKPaymentTransaction*)transaction fromPaymentQueue:(SKPaymentQueue*)queue {
+- (void)completeTransaction:(SKPaymentTransaction *)transaction fromPaymentQueue:(SKPaymentQueue *)queue {
     NSString *productIdentifier = transaction.payment.productIdentifier;
 
     @synchronized(lockObj) {
-        void(^completion)(SKPaymentTransaction*) = self.blocks[productIdentifier];
+        void(^completion)(SKPaymentTransaction *) = self.blocks[productIdentifier];
         if (!transaction.error && completion) {
             completion(transaction);
         }
     }
 
     @synchronized(runOnceLockObj) {
-        void(^runOnceBlock)(NSError*) = (void(^)(NSError*))self.runOnceBlocks[productIdentifier];
+        void(^runOnceBlock)(NSError *) = (void(^)(NSError *))self.runOnceBlocks[productIdentifier];
         if (runOnceBlock) {
             runOnceBlock(transaction.error);
             [self.runOnceBlocks removeObjectForKey:productIdentifier];
@@ -83,13 +83,13 @@
 #pragma mark - Public
 ///--------------------------------------
 
-- (void)handle:(NSString*)productIdentifier block:(void(^)(SKPaymentTransaction*))block {
+- (void)handle:(NSString *)productIdentifier block:(void(^)(SKPaymentTransaction *))block {
     @synchronized(lockObj) {
         self.blocks[productIdentifier] = block;
     }
 }
 
-- (void)handle:(NSString*)productIdentifier runOnceBlock:(void(^)(NSError*))block {
+- (void)handle:(NSString *)productIdentifier runOnceBlock:(void(^)(NSError *))block {
     @synchronized(runOnceLockObj) {
         PFConsistencyAssert(self.runOnceBlocks[productIdentifier] == nil,
                             @"You cannot purchase a product that is in the process of being purchased.");
