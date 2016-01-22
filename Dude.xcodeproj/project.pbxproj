@@ -37,6 +37,7 @@
 		FB0CBF881C0762CD0043F89E /* WatchConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB0CBF871C0762CD0043F89E /* WatchConnectivity.framework */; };
 		FB1FF5691B8A2119001831D9 /* WelcomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FB1FF5681B8A2119001831D9 /* WelcomeViewController.m */; };
 		FB2FAF701B514FE70055018B /* Launch Screen.xib in Resources */ = {isa = PBXBuildFile; fileRef = FB2FAF6F1B514FE70055018B /* Launch Screen.xib */; };
+		FB32F8B41C52CF3B00F8698C /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = FB32F8B31C52CF3B00F8698C /* Reachability.m */; };
 		FB4C5D951BF5EFA8002B5A58 /* Interface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FB4C5D931BF5EFA8002B5A58 /* Interface.storyboard */; };
 		FB4C5D971BF5EFA8002B5A58 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FB4C5D961BF5EFA8002B5A58 /* Assets.xcassets */; };
 		FB4C5D9E1BF5EFA8002B5A58 /* Watch Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = FB4C5D9D1BF5EFA8002B5A58 /* Watch Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -157,6 +158,8 @@
 		FB1FF5671B8A2119001831D9 /* WelcomeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WelcomeViewController.h; path = Classes/Controllers/WelcomeViewController.h; sourceTree = "<group>"; };
 		FB1FF5681B8A2119001831D9 /* WelcomeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = WelcomeViewController.m; path = Classes/Controllers/WelcomeViewController.m; sourceTree = "<group>"; };
 		FB2FAF6F1B514FE70055018B /* Launch Screen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = "Launch Screen.xib"; path = "Base.lproj/Launch Screen.xib"; sourceTree = "<group>"; };
+		FB32F8B21C52CF3B00F8698C /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
+		FB32F8B31C52CF3B00F8698C /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
 		FB4C5D911BF5EFA8002B5A58 /* Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FB4C5D941BF5EFA8002B5A58 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Interface.storyboard; sourceTree = "<group>"; };
 		FB4C5D961BF5EFA8002B5A58 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -386,6 +389,7 @@
 		DAEF37681B1E1C5300391DD0 /* Managers */ = {
 			isa = PBXGroup;
 			children = (
+				FB32F8B11C52CEA200F8698C /* Reachability */,
 				DACEE7D41AAF67EC00B958F0 /* Contacts Manager */,
 				DACEE7D01AAF67CC00B958F0 /* Messages Manager */,
 			);
@@ -496,6 +500,16 @@
 			name = Assets;
 			sourceTree = "<group>";
 		};
+		FB32F8B11C52CEA200F8698C /* Reachability */ = {
+			isa = PBXGroup;
+			children = (
+				FB32F8B21C52CF3B00F8698C /* Reachability.h */,
+				FB32F8B31C52CF3B00F8698C /* Reachability.m */,
+			);
+			name = Reachability;
+			path = Classes/Managers/Reachability;
+			sourceTree = "<group>";
+		};
 		FB4C5D921BF5EFA8002B5A58 /* Watch App */ = {
 			isa = PBXGroup;
 			children = (
@@ -544,7 +558,7 @@
 				FBDE26D51B81E0B5006485D0 /* SlidingSegues.h */,
 				FBDE26D61B81E0B5006485D0 /* SlidingSegues.m */,
 			);
-			name = "Custom Segues";
+			path = "Custom Segues";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -825,6 +839,7 @@
 				DAB605F11B2002FA00341828 /* DUser.m in Sources */,
 				DAEF37671B1E1A2100391DD0 /* ProfileViewController.m in Sources */,
 				DACEE7D31AAF67E200B958F0 /* ContactsManager.m in Sources */,
+				FB32F8B41C52CF3B00F8698C /* Reachability.m in Sources */,
 				DA6F4C4E1A1E439800D40186 /* main.m in Sources */,
 				DAB5FCAD1AC69314003D8062 /* NSStringExtensions.m in Sources */,
 				DACEE7D71AB02DB200B958F0 /* UIImageExtensions.m in Sources */,

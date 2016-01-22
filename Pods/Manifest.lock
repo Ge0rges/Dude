@@ -2,7 +2,6 @@ PODS:
   - Bolts/Tasks (1.6.0)
   - Parse (1.12.0):
     - Bolts/Tasks (~> 1.5)
-  - Reachability (3.2)
   - SDWebImage (3.7.5):
     - SDWebImage/Core (= 3.7.5)
   - SDWebImage/Core (3.7.5)
@@ -10,14 +9,12 @@ PODS:
 
 DEPENDENCIES:
   - Parse
-  - Reachability
   - SDWebImage
   - SOMotionDetector
 
 SPEC CHECKSUMS:
   Bolts: f52a250053bb517ca874523c3913776359ab3def
   Parse: de2c52a9a1421b91ae7594ab8ce191afd184f19b
-  Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SDWebImage: 69c6303e3348fba97e03f65d65d4fbc26740f461
   SOMotionDetector: 9e7975e25ccdaa3f108db510153f92ef433767da
 

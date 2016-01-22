@@ -15,12 +15,14 @@
 #import "SignUpViewController.h"
 
 // Pods
-#import <Reachability/Reachability.h>
+#import "Reachability.h"
 
 // Models
 #import "DUser.h"
 
 @interface RedirectionViewController ()
+
+@property (retain, nonatomic)  Reachability *networkReachability;
 
 @end
 
@@ -29,8 +31,18 @@
 - (void)viewDidLoad {
   [super viewDidLoad];
   // Do any additional setup after loading the view.
+
+  // Prepare reachibility
   internetConnectionViewIsShowing = NO;
-    
+  
+  self.networkReachability = [Reachability reachabilityForInternetConnection];
+  [self.networkReachability startNotifier];
+  
+  // keep checking for internet connection
+  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(checkConnection:) name:kReachabilityChangedNotification object:nil];
+
+  [self.networkReachability startNotifier];
+
   // Update status bar
   [self setNeedsStatusBarAppearanceUpdate];
   
@@ -41,25 +53,19 @@
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
   
-  // check for internet connection
-  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(checkConnection:) name:kReachabilityChangedNotification object:nil];
-  
-  // Redirect the app to the correct View Controller if we have an internet connection in the first place
-  Reachability *networkReachability = [Reachability reachabilityForInternetConnection];
-  [networkReachability startNotifier];
-  
   // Tell the delegate we are the visible view
   AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
   appDelegate.visibleViewController = self;
   
-  if ([DUser currentUser].isAuthenticated && networkReachability.isReachable) {
+  // Redirect the app to the correct View Controller if we have an internet connection in the first place
+  if ([DUser currentUser].isAuthenticated && [self.networkReachability currentReachabilityStatus] != NotReachable) {
     // Fetch the latest currentUser
     [[DUser currentUser] fetchInBackgroundWithBlock:^(PFObject *object, NSError *error){
       // Show the main view
       [self performSegueWithIdentifier:@"mainSegue" sender:nil];
     }];
     
-  } else if ([networkReachability isReachable]) {
+  } else if ([self.networkReachability currentReachabilityStatus] != NotReachable) {
     // Clear keychain to prevent issues
     [DUser logOut];
     
@@ -73,16 +79,14 @@
 
 - (void)checkConnection:(NSNotification*)notification {
   // Check if we have internet
-  Reachability *networkReachability = [Reachability reachabilityForInternetConnection];
-
-  if (!networkReachability.isReachable && !internetConnectionViewIsShowing) {
+  if ([self.networkReachability currentReachabilityStatus] == NotReachable && !internetConnectionViewIsShowing) {
     UIViewController *noInternetVC = [self.storyboard instantiateViewControllerWithIdentifier:@"NoInternetConnectionVC"];
     AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
     [appDelegate.visibleViewController presentViewController:noInternetVC animated:YES completion:^{
       internetConnectionViewIsShowing = YES;
     }];
     
-  } else if (internetConnectionViewIsShowing && networkReachability.isReachable){
+  } else if (internetConnectionViewIsShowing && [self.networkReachability currentReachabilityStatus] != NotReachable){
     AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
     [appDelegate.visibleViewController dismissViewControllerAnimated:YES completion:^{
       internetConnectionViewIsShowing = NO;

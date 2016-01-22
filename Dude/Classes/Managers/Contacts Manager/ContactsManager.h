@@ -8,7 +8,7 @@
 
 // Frameworks
 #import <Foundation/Foundation.h>
-#import <Reachability/Reachability.h>
+#import "Reachability.h"
 #import <Contacts/Contacts.h>
 
 // Constants

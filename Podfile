@@ -15,6 +15,5 @@ target :'Dude' do
   platform :ios, '9.0'
   shared_pods
   pod 'SDWebImage'
-  pod 'Reachability'
   pod 'SOMotionDetector'
 end

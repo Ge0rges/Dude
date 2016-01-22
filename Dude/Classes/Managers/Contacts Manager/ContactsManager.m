@@ -151,7 +151,7 @@
 
 - (void)addDeviceContactsAndSendNotification:(BOOL)sendNotification {
   Reachability *reachability = [Reachability reachabilityForInternetConnection];
-  if (![reachability isReachableViaWiFi]) return;
+  if ([reachability currentReachabilityStatus] != ReachableViaWiFi) return;
   
   CNContactStore *contactStore = [CNContactStore new];
   
