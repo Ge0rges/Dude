@@ -62,7 +62,7 @@
   if (notification) {
     [self application:application didReceiveRemoteNotification:(NSDictionary*)notification];
   }
-  
+    
   return YES;
 }
 

@@ -86,7 +86,7 @@ NSString* const FullNameKey = @"fullName";
   return object;
 }
 
-#pragma mark - Other
+#pragma mark - Logout
 + (void)logOut {
   // Create the userunique keys
   NSString *contactsKey = [NSString stringWithFormat:@"contact%@", [DUser currentUser].username];

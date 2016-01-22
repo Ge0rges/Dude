@@ -24,6 +24,7 @@
 // Constants
 #import "Constants.h"
 
+#warning handle location perm denial
 @interface MessagesTableViewController () {
   NSArray *messages;
 }
@@ -39,7 +40,7 @@
   [self setNeedsStatusBarAppearanceUpdate];
   
   // Generate Messages
-  [self reloadData];
+  [self performSelectorInBackground:@selector(reloadData) withObject:nil];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -78,10 +79,8 @@
   // Configure the cell
   [cell.textLabel setText:message.message];
   [cell.imageView sd_setImageWithURL:message.imageURL completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
-    [UIView animateWithDuration:0.15 animations:^{
-      [cell.imageView setImage:[image resizedImage:CGSizeMake(50, 50) interpolationQuality:kCGInterpolationHigh]];
-      [cell layoutSubviews];
-    }];
+    [cell.imageView setImage:[image resizedImage:CGSizeMake(50, 50) interpolationQuality:kCGInterpolationHigh]];
+    [cell layoutSubviews];
   }];
   
   return cell;
@@ -100,6 +99,7 @@
     CGFloat cornerRadius = 7.f;
     cell.backgroundColor = UIColor.clearColor;
     CAShapeLayer *layer = [[CAShapeLayer alloc] init];
+    CAShapeLayer *backgroundLayer = [[CAShapeLayer alloc] init];
     CGMutablePathRef pathRef = CGPathCreateMutable();
     CGRect bounds = CGRectInset(cell.bounds, 10, 0);
     BOOL addLine = NO;
@@ -126,8 +126,11 @@
     }
     
     layer.path = pathRef;
+    backgroundLayer.path = pathRef;
     CFRelease(pathRef);
+    
     layer.fillColor = [UIColor colorWithWhite:1.f alpha:0.8f].CGColor;
+    backgroundLayer.fillColor = [UIColor grayColor].CGColor;
     
     if (addLine == YES) {
       CALayer *lineLayer = [[CALayer alloc] init];
@@ -135,32 +138,35 @@
       lineLayer.frame = CGRectMake(CGRectGetMinX(bounds)+10, bounds.size.height-lineHeight, bounds.size.width-10, lineHeight);
       lineLayer.backgroundColor = tableView.separatorColor.CGColor;
       [layer addSublayer:lineLayer];
+      [backgroundLayer addSublayer:lineLayer];
     }
     
     UIView *testView = [[UIView alloc] initWithFrame:bounds];
     [testView.layer insertSublayer:layer atIndex:0];
     testView.backgroundColor = UIColor.clearColor;
     cell.backgroundView = testView;
+    
+    UIView *backgroundTestView = [[UIView alloc] initWithFrame:bounds];
+    [backgroundTestView.layer insertSublayer:backgroundLayer atIndex:0];
+    backgroundTestView.backgroundColor = UIColor.clearColor;
+    cell.selectedBackgroundView = backgroundTestView;
   }
 }
 
 - (IBAction)reloadData {
   [self.refreshControl performSelectorOnMainThread:@selector(beginRefreshing) withObject:nil waitUntilDone:NO];
-
+  
   [[MessagesManager sharedInstance] setLocationForMessageGenerationWithCompletion:^(NSError *error) {
     if (!error) {
-      if (error.code == 500 && [error.domain isEqualToString:@"LocationAuthorization"]) {
-        [self reloadData];
-      }
-      
       MessagesManager *messagesManager = [MessagesManager sharedInstance];
-
-      messages = [messagesManager generateMessages:20];
       
-      NSLog(@"messages: %@", messages);
+      messages = [messagesManager generateMessages:20];
       
       [self.tableView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:YES];
       [self.refreshControl performSelectorOnMainThread:@selector(endRefreshing) withObject:nil waitUntilDone:NO];
+      
+    } else if (error.code == 500 && [error.domain isEqualToString:@"LocationAuthorization"]) {
+      [self reloadData];
     }
   }];
 }

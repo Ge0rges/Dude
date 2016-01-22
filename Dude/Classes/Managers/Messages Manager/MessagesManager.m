@@ -137,7 +137,7 @@
 
 #pragma mark - Context Messaging building
 - (NSArray*)generateMessages:(NSInteger)numberOfMessagesToGenerate {// Someday this will be an API call to our server
-  //TO DO: Set the images for the messages
+#warning Set the images for the messages
   if ([CLLocationManager authorizationStatus] != kCLAuthorizationStatusDenied && self.locationManager.location) {
     if (numberOfMessagesToGenerate < 6) {
       numberOfMessagesToGenerate = 6;
@@ -145,35 +145,6 @@
     
     // Array to store messages
     NSMutableArray *messages = [NSMutableArray new];
-
-    // Add default messages
-    DMessage *messageDude = [[DMessage alloc] initWithCategory:@"Just Dude" location:self.locationManager.location venueName:@"Just Dude" venueCity:searchedLocation imageURL:nil];
-    DMessage *messageLink = [[DMessage alloc] initForPasteboardURLWithLocation:self.locationManager.location];
-    DMessage *messageLocation = [[DMessage alloc] initForLocation:self.locationManager.location venueCity:searchedLocation];
-    
-    if (messageDude) [messages addObject:messageDude];
-    if (messageLink) [messages addObject:messageLink];
-    if (messageLocation) [messages addObject:messageLocation];
-    
-    if (userIsInAutomobile) {
-      DMessage *messageCar = [[DMessage alloc] initWithCategory:@"Car" location:self.locationManager.location venueName:@"In transit" venueCity:searchedLocation imageURL:nil];
-      DMessage *messageTrain = [[DMessage alloc] initWithCategory:@"Train" location:self.locationManager.location venueName:@"In transit" venueCity:searchedLocation imageURL:nil];
-      DMessage *messagePlane = [[DMessage alloc] initWithCategory:@"Plane" location:self.locationManager.location venueName:@"In transit" venueCity:searchedLocation imageURL:nil];
-      
-      if (messageCar) [messages addObject:messageCar];
-      if (messageTrain) [messages addObject:messageTrain];
-      if (messagePlane) [messages addObject:messagePlane];
-      
-      
-    } else {
-      DMessage *messageHome = [[DMessage alloc] initWithCategory:@"Home" location:self.locationManager.location venueName:@"Home" venueCity:searchedLocation imageURL:nil];
-      DMessage *messageWork = [[DMessage alloc] initWithCategory:@"Work" location:self.locationManager.location venueName:@"Work" venueCity:searchedLocation imageURL:nil];
-      DMessage *messageFriend = [[DMessage alloc] initWithCategory:@"Friend" location:self.locationManager.location venueName:@"a Friend's" venueCity:searchedLocation imageURL:nil];
-      
-      if (messageHome) [messages addObject:messageHome];
-      if (messageWork) [messages addObject:messageWork];
-      if (messageFriend) [messages addObject:messageFriend];
-    }
 
     // Check we are allowed to have location and if we should still generate messsages and get venues if so
     if (numberOfMessagesToGenerate-6 > 0 && !userIsInAutomobile) {
@@ -188,6 +159,34 @@
           if (message) [messages addObject:message];
         }
       }
+    }
+    
+    // Add default messages
+    DMessage *messageDude = [[DMessage alloc] initWithCategory:@"Just Dude" location:self.locationManager.location venueName:@"Just Dude" venueCity:searchedLocation imageURL:nil];
+    DMessage *messageLink = [[DMessage alloc] initForPasteboardURLWithLocation:self.locationManager.location];
+    DMessage *messageLocation = [[DMessage alloc] initForLocation:self.locationManager.location venueCity:searchedLocation];
+    
+    if (messageDude) [messages insertObject:messageDude atIndex:0];
+    if (messageLink) [messages insertObject:messageLink atIndex:1];
+    if (messageLocation) [messages insertObject:messageLocation atIndex:2];
+    
+    if (userIsInAutomobile) {
+      DMessage *messageCar = [[DMessage alloc] initWithCategory:@"Car" location:self.locationManager.location venueName:@"In transit" venueCity:searchedLocation imageURL:nil];
+      DMessage *messageTrain = [[DMessage alloc] initWithCategory:@"Train" location:self.locationManager.location venueName:@"In transit" venueCity:searchedLocation imageURL:nil];
+      DMessage *messagePlane = [[DMessage alloc] initWithCategory:@"Plane" location:self.locationManager.location venueName:@"In transit" venueCity:searchedLocation imageURL:nil];
+      
+      if (messageCar) [messages insertObject:messageCar atIndex:3];
+      if (messageTrain) [messages insertObject:messageTrain atIndex:4];
+      if (messagePlane) [messages insertObject:messagePlane atIndex:4];
+      
+    } else {
+      DMessage *messageHome = [[DMessage alloc] initWithCategory:@"Home" location:self.locationManager.location venueName:@"Home" venueCity:searchedLocation imageURL:nil];
+      DMessage *messageWork = [[DMessage alloc] initWithCategory:@"Work" location:self.locationManager.location venueName:@"Work" venueCity:searchedLocation imageURL:nil];
+      DMessage *messageFriend = [[DMessage alloc] initWithCategory:@"Friend" location:self.locationManager.location venueName:@"a Friend's" venueCity:searchedLocation imageURL:nil];
+      
+      if (messageHome) [messages insertObject:messageHome atIndex:3];
+      if (messageWork) [messages insertObject:messageWork atIndex:4];
+      if (messageFriend) [messages insertObject:messageFriend atIndex:4];
     }
     
     return [NSArray arrayWithArray:messages];
@@ -570,18 +569,18 @@
 #pragma mark - Helper Methods
 - (void)showLocationServicesAlert {
   dispatch_async(dispatch_get_main_queue(), ^{
-    UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"Error" message:@"You must enable location services to be able to send your location and generate meaningfull messages." preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertController *locationServicesAlertController = [UIAlertController alertControllerWithTitle:@"Error" message:@"You must enable location services to be able to send your location and generate meaningfull messages." preferredStyle:UIAlertControllerStyleAlert];
     
     if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]]) {
-      [ac addAction:[UIAlertAction actionWithTitle:@"Open Preferences" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+      [locationServicesAlertController addAction:[UIAlertAction actionWithTitle:@"Open Preferences" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]];
       }]];
     }
     
-    [ac addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleCancel handler:nil]];
+    [locationServicesAlertController addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleCancel handler:nil]];
     
     AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
-    [appDelegate.visibleViewController presentViewController:ac animated:YES completion:nil];
+    [appDelegate.visibleViewController presentViewController:locationServicesAlertController animated:YES completion:nil];
   });
 }
 

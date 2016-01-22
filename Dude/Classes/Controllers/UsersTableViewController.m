@@ -30,6 +30,8 @@
 // Constants
 #import "Constants.h"
 
+typedef void(^completion)(BOOL validEmail);
+
 @interface UsersTableViewController () <UITableViewDataSource, UITableViewDelegate> {
   NSArray *contacts;
   
@@ -228,28 +230,22 @@
   return 1;
 }
 
-- (NSString*)tableView:(UITableView*)tableView titleForHeaderInSection:(NSInteger)section {
-  return (self.favoritesOnly) ? @"ALL FAVORITES" : @"ALL FRIENDS";
-}
-
 - (UITableViewCell*)tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath {
   UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"userCell" forIndexPath:indexPath];
   
   // Clear default values
   [cell.textLabel setText:nil];
   [cell.detailTextLabel setText:nil];
-  [cell.imageView setImage:nil];
+  [cell.imageView setImage:[UIImage imageNamed:@"Default Profile Image"]];
   
   DUser *user = contacts[indexPath.row];
   
   // Populate the cell
   cell.textLabel.text = user.fullName;
   cell.detailTextLabel.text = [[ContactsManager sharedInstance] lastMessageForContact:user].lastSeen;
-  [cell.imageView sd_setImageWithURL:[NSURL URLWithString:user.profileImage.url] completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
-    [UIView animateWithDuration:0.15 animations:^{
-      [cell.imageView setImage:[image resizedImage:CGSizeMake(50, 50) interpolationQuality:kCGInterpolationHigh]];
-      [cell layoutSubviews];
-    }];
+  [cell.imageView sd_setImageWithURL:[NSURL URLWithString:user.profileImage.url] placeholderImage:[UIImage imageNamed:@"Default Profile Image"] completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
+    [cell.imageView setImage:[image resizedImage:CGSizeMake(50, 50) interpolationQuality:kCGInterpolationHigh]];
+    [cell layoutSubviews];
   }];
   
   return cell;
@@ -268,6 +264,7 @@
     CGFloat cornerRadius = 7.f;
     cell.backgroundColor = UIColor.clearColor;
     CAShapeLayer *layer = [[CAShapeLayer alloc] init];
+    CAShapeLayer *backgroundLayer = [[CAShapeLayer alloc] init];
     CGMutablePathRef pathRef = CGPathCreateMutable();
     CGRect bounds = CGRectInset(cell.bounds, 10, 0);
     BOOL addLine = NO;
@@ -294,25 +291,37 @@
     }
     
     layer.path = pathRef;
+    backgroundLayer.path = pathRef;
     CFRelease(pathRef);
-    layer.fillColor = [UIColor colorWithWhite:1.f alpha:0.8f].CGColor;
     
+    layer.fillColor = [UIColor colorWithWhite:1.f alpha:0.8f].CGColor;
+    backgroundLayer.fillColor = [UIColor grayColor].CGColor;
+
     if (addLine == YES) {
       CALayer *lineLayer = [[CALayer alloc] init];
       CGFloat lineHeight = (1.f / [UIScreen mainScreen].scale);
       lineLayer.frame = CGRectMake(CGRectGetMinX(bounds)+10, bounds.size.height-lineHeight, bounds.size.width-10, lineHeight);
       lineLayer.backgroundColor = tableView.separatorColor.CGColor;
       [layer addSublayer:lineLayer];
+      [backgroundLayer addSublayer:lineLayer];
     }
     
     UIView *testView = [[UIView alloc] initWithFrame:bounds];
     [testView.layer insertSublayer:layer atIndex:0];
     testView.backgroundColor = UIColor.clearColor;
     cell.backgroundView = testView;
+
+    UIView *backgroundTestView = [[UIView alloc] initWithFrame:bounds];
+    [backgroundTestView.layer insertSublayer:backgroundLayer atIndex:0];
+    backgroundTestView.backgroundColor = UIColor.clearColor;
+    cell.selectedBackgroundView = backgroundTestView;
   }
 }
 
 - (void)prepareForSegue:(UIStoryboardSegue*)segue sender:(id)sender {
+#warning check for location perms
+  //  if ([segue.identifier isEqualToString:@"showMessages"]) {
+
   if ([segue.identifier isEqualToString:@"showProfile"]) {
     ProfileViewController *pvc = (ProfileViewController*)[segue destinationViewController];
     pvc.profileUser = sender;
@@ -341,6 +350,14 @@
     }];
   }
   
+  // Reset the UI
+  [self.searchResultButton setImage:nil forState:UIControlStateNormal];
+  [self.searchResultButton setTitle:@"" forState:UIControlStateNormal];
+  [self.searchResultLabel setText:@"Dude enter your friend's email"];
+  [self.searchResultImageView setImage:[UIImage imageNamed:@"Default Profile Image"]];
+  [self.searchTextfield setText:@""];
+  
+  
   // Animate in
   self.searchFriendsView.alpha = 0.0;
   self.searchFriendsView.hidden = NO;
@@ -366,68 +383,67 @@
 }
 
 - (IBAction)textfieldValueChanged:(UITextField*)textfield {
-  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-    [self.searchResultButton removeTarget:self action:@selector(addFriend) forControlEvents:UIControlEventTouchUpInside];
-    
-    if (![self validateEmail:textfield.text withAlert:NO]) {
+  [self.searchResultButton removeTarget:self action:@selector(addFriend) forControlEvents:UIControlEventTouchUpInside];
+
+  [self validateEmail:textfield.text withAlert:NO completion:^(BOOL validEmail) {
       dispatch_async(dispatch_get_main_queue(), ^{
-        [self.searchResultButton setImage:nil forState:UIControlStateNormal];
-        [self.searchResultButton setTitle:@"" forState:UIControlStateNormal];
-        [self.searchResultLabel setText:@"Dude enter your friend's email"];
-        
-        if (![self.searchResultLabel.text isEqualToString:@""] || self.searchResultImageView.image != nil) {
-          [UIView animateWithDuration:0.3 animations:^{
-            [self.searchResultImageView setImage:nil];
-            self.searchResultLabel.text = @"";
-          }];
-        }
-      });
-      
-    } else {
-      dispatch_async(dispatch_get_main_queue(), ^{
-        [self.searchResultLabel setText:@"Searching..."];
-        [self.searchResultButton setTitle:@"" forState:UIControlStateNormal];
-      });
-      
-      // Get the user with that email to make sure its valid
-      PFQuery *userQuery = [DUser query];
-      [userQuery whereKey:@"email" equalTo:textfield.text.lowercaseString];
-      
-      friendSearchedUser = (DUser*)[userQuery getFirstObject];
-      
-      // If valid update results UI
-      dispatch_async(dispatch_get_main_queue(), ^{
-        if (friendSearchedUser) {
-          [UIView animateWithDuration:0.3 animations:^{
-            [self.searchResultImageView sd_setImageWithURL:[NSURL URLWithString:friendSearchedUser.profileImage.url] placeholderImage:[UIImage imageNamed:@"Default Profile Image"] options:SDWebImageHighPriority];
-            self.searchResultLabel.text = friendSearchedUser.fullName;
-          }];
-          
-          NSString *imageName;
-          if ([[ContactsManager sharedInstance] contactBlockedCurrentUser:friendSearchedUser]) {
-            imageName = @"Blocked Friend Search";
-            
-          } else if ([[DUser currentUser].contactsEmails containsObject:friendSearchedUser.email.lowercaseString]) {
-            imageName = @"Friends Friend Search";
-            
-          } else {
-            imageName = @"Add Friend Search";
-            [self.searchResultButton addTarget:self action:@selector(addFriend) forControlEvents:UIControlEventTouchUpInside];
-          }
-          
-          [self.searchResultButton setImage:[UIImage imageNamed:imageName] forState:UIControlStateNormal];
-          
-        }  else {
-          [self.searchResultLabel setText:@"Not Found."];
+        if (!validEmail) {
+          // Reset the UI
           [self.searchResultButton setImage:nil forState:UIControlStateNormal];
-          [self.searchResultButton setTitle:@"Double check the email you entered." forState:UIControlStateNormal];
+          [self.searchResultButton setTitle:@"" forState:UIControlStateNormal];
+          [self.searchResultLabel setText:@"Dude enter your friend's email"];
+          [self.searchResultImageView setImage:[UIImage imageNamed:@"Default Profile Image"]];
+          
+        } else {
+          [self.searchResultLabel setText:@"Searching..."];
+          [self.searchResultButton setTitle:@"" forState:UIControlStateNormal];
+          
+          // Get the user with that email to make sure its valid
+          PFQuery *userQuery = [DUser query];
+          [userQuery whereKey:@"email" equalTo:textfield.text.lowercaseString];
+          
+          [userQuery getFirstObjectInBackgroundWithBlock:^(PFObject * _Nullable object, NSError * _Nullable error) {
+            friendSearchedUser = (DUser*)object;
+            
+            // If valid update results UI
+            if (friendSearchedUser && !error) {
+              NSString *imageName;
+              if ([[ContactsManager sharedInstance] contactBlockedCurrentUser:friendSearchedUser]) {
+                imageName = @"Blocked Friend Search";
+                
+              } else if ([[DUser currentUser].contactsEmails containsObject:friendSearchedUser.email.lowercaseString]) {
+                imageName = @"Friends Friend Search";
+                
+              } else {
+                imageName = @"Add Friend Search";
+                [self.searchResultButton addTarget:self action:@selector(addFriend) forControlEvents:UIControlEventTouchUpInside];
+              }
+              
+              [UIView animateWithDuration:0.3 animations:^{
+                [self.searchResultImageView sd_setImageWithURL:[NSURL URLWithString:friendSearchedUser.profileImage.url] placeholderImage:[UIImage imageNamed:@"Default Profile Image"] options:SDWebImageHighPriority];
+                self.searchResultLabel.text = friendSearchedUser.fullName;
+                [self.searchResultButton setTitle:nil forState:UIControlStateNormal];
+                [self.searchResultButton setImage:[UIImage imageNamed:imageName] forState:UIControlStateNormal];
+
+              }];
+              
+            }  else {
+              friendSearchedUser = nil;
+              
+              [self.searchResultLabel setText:@"Not Found."];
+              [self.searchResultButton setImage:nil forState:UIControlStateNormal];
+              [self.searchResultButton setTitle:@"Double check the email you entered." forState:UIControlStateNormal];
+              [self.searchResultImageView setImage:[UIImage imageNamed:@"Default Profile Image"]];
+
+            }
+            
+            [self.searchResultButton sizeToFit];
+          }];
         }
-        
-        [self.searchResultButton sizeToFit];
       });
-    }
-  });
+    }];
 }
+
 
 - (void)addFriend {
   [[ContactsManager sharedInstance] addContactToContacts:friendSearchedUser sendNotification:YES];
@@ -458,22 +474,24 @@
 
 
 #pragma mark - Email Validation
-- (BOOL)validateEmail:(NSString*)email withAlert:(BOOL)showAlert {
-  BOOL validEmail = [self validateEmailFormat:email];
-  
-  if (!validEmail && showAlert) {
-    NSString *title = @"Email Invalid";
-    NSString *message = @"This email appears to be invalid, please check for typos.";
+- (void)validateEmail:(NSString*)email withAlert:(BOOL)showAlert completion:(completion)completionBlock {
+  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+    BOOL validEmail = [self validateEmailFormat:email];
     
-    UIAlertController *ac = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
-    [ac addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleCancel handler:nil]];
+    if (!validEmail && showAlert) {
+      NSString *title = @"Email Invalid";
+      NSString *message = @"This email appears to be invalid, please check for typos.";
+      
+      UIAlertController *ac = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
+      [ac addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleCancel handler:nil]];
+      
+      [self presentViewController:ac animated:YES completion:nil];
+      
+      completionBlock(NO);
+    }
     
-    [self presentViewController:ac animated:YES completion:nil];
-    
-    return NO;
-  }
-  
-  return validEmail;
+    completionBlock(validEmail);
+  });
 }
 
 - (BOOL)validateEmailFormat:(NSString*)candidate {

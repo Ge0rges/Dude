@@ -26,6 +26,13 @@
 
 @implementation WelcomeViewController
 
+- (void)viewDidLoad {
+  [super viewDidLoad];
+  
+  // Update status bar
+  [self setNeedsStatusBarAppearanceUpdate];
+}
+
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:YES];
   if ([DUser currentUser]) {
@@ -44,5 +51,9 @@
   SignUpViewController *signUpViewController = (SignUpViewController*)[segue destinationViewController];
   signUpViewController.logIn = ([segue.identifier isEqualToString:@"logInSegue"]) ? YES : NO;
 }
+
+#pragma mark - Status Bar
+- (BOOL)prefersStatusBarHidden {return NO;}
+- (UIStatusBarStyle)preferredStatusBarStyle {return UIStatusBarStyleLightContent;}
 
 @end

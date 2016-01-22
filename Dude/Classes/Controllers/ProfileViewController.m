@@ -90,12 +90,12 @@
     if ([[DUser currentUser].favouriteContactsEmails containsObject:self.profileUser.email.lowercaseString]) {
       // Already favorited
       [self.favoriteButton setImage:[UIImage imageNamed:@"Favorite Selected"] forState:UIControlStateNormal];
-      [self.favoriteButton setTitle:[NSString stringWithFormat:@"Remove %@ from Favorites", self.profileUser.fullName] forState:UIControlStateNormal];
+      [self.favoriteButton setTitle:[NSString stringWithFormat:@"     Remove %@ from Favorites", self.profileUser.fullName] forState:UIControlStateNormal];
       
     } else {
       // Not Already favorited
       [self.favoriteButton setImage:[UIImage imageNamed:@"Favorite Deselected"] forState:UIControlStateNormal];
-      [self.favoriteButton setTitle:[NSString stringWithFormat:@"Add %@ to Favorites", self.profileUser.fullName] forState:UIControlStateNormal];
+      [self.favoriteButton setTitle:[NSString stringWithFormat:@"     Add %@ to Favorites", self.profileUser.fullName] forState:UIControlStateNormal];
     }
     
     // Profile Image
@@ -174,14 +174,14 @@
     [[ContactsManager sharedInstance] removeContactFromFavourites:self.profileUser];
     
     [self.favoriteButton setImage:[UIImage imageNamed:@"Favorite Deselected"] forState:UIControlStateNormal];
-    [self.favoriteButton setTitle:[NSString stringWithFormat:@"Add %@ to Favorites", self.profileUser.fullName] forState:UIControlStateNormal];
+    [self.favoriteButton setTitle:[NSString stringWithFormat:@"     Add %@ to Favorites", self.profileUser.fullName] forState:UIControlStateNormal];
     
   } else {
     // Not Already favorited
     [[ContactsManager sharedInstance] addContactToFavourites:self.profileUser];
     
     [self.favoriteButton setImage:[UIImage imageNamed:@"Favorite Selected"] forState:UIControlStateNormal];
-    [self.favoriteButton setTitle:[NSString stringWithFormat:@"Remove %@ from Favorites", self.profileUser.fullName] forState:UIControlStateNormal];
+    [self.favoriteButton setTitle:[NSString stringWithFormat:@"     Remove %@ from Favorites", self.profileUser.fullName] forState:UIControlStateNormal];
   }
 }
 
@@ -249,6 +249,11 @@
 
 #pragma mark - Navigation
 - (IBAction)unwindToProfileViewController:(UIStoryboardSegue*)segue {}
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+#warning check for location perms
+  //  if ([segue.identifier isEqualToString:@"showMessages"]) {
+}
 
 #pragma mark - Status Bar
 - (BOOL)prefersStatusBarHidden {return NO;}

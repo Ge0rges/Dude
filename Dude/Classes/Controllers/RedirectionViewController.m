@@ -52,7 +52,7 @@
   AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
   appDelegate.visibleViewController = self;
   
-  if ([DUser currentUser].isAuthenticated && [networkReachability isReachable]) {
+  if ([DUser currentUser].isAuthenticated && networkReachability.isReachable) {
     // Fetch the latest currentUser
     [[DUser currentUser] fetchInBackgroundWithBlock:^(PFObject *object, NSError *error){
       // Show the main view
@@ -87,7 +87,7 @@
   }
 }
 
-#pragma mark - Other
+#pragma mark - Status Bar
 - (BOOL)prefersStatusBarHidden {return NO;}
 - (UIStatusBarStyle)preferredStatusBarStyle {return UIStatusBarStyleLightContent;}
 
