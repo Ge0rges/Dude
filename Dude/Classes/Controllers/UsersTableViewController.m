@@ -319,9 +319,6 @@ typedef void(^completion)(BOOL validEmail);
 }
 
 - (void)prepareForSegue:(UIStoryboardSegue*)segue sender:(id)sender {
-#warning check for location perms
-  //  if ([segue.identifier isEqualToString:@"showMessages"]) {
-
   if ([segue.identifier isEqualToString:@"showProfile"]) {
     ProfileViewController *pvc = (ProfileViewController*)[segue destinationViewController];
     pvc.profileUser = sender;

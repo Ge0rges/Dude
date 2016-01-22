@@ -101,6 +101,7 @@ NSString* const TimestampKey = @"timestamp";
     self.location = [messageLocation copy];
     self.locationCity = [messageLocationCity copy];
     self.type = DMessageTypeLocation;
+    self.imageURL = [NSURL URLWithString:@"http://Badge_Location.com"];
 
     if (!self.location || !self.locationCity) return nil;
   }
@@ -112,6 +113,7 @@ NSString* const TimestampKey = @"timestamp";
   if (self = [super init]) {
     self.location = [messageLocation copy];
     self.type = DMessageTypeURL;
+    self.imageURL = [NSURL URLWithString:@"http://Badge_Link.com"];
     
     if (!self.URL || !self.location) return nil;
   }

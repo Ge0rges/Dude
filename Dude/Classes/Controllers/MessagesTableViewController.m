@@ -24,7 +24,6 @@
 // Constants
 #import "Constants.h"
 
-#warning handle location perm denial
 @interface MessagesTableViewController () {
   NSArray *messages;
 }
@@ -78,10 +77,20 @@
   
   // Configure the cell
   [cell.textLabel setText:message.message];
-  [cell.imageView sd_setImageWithURL:message.imageURL completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
-    [cell.imageView setImage:[image resizedImage:CGSizeMake(50, 50) interpolationQuality:kCGInterpolationHigh]];
-    [cell layoutSubviews];
-  }];
+  if (indexPath.row > 6) {// Non-Default messages
+    [cell.imageView sd_setImageWithURL:message.imageURL completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
+      [cell.imageView setImage:[image resizedImage:CGSizeMake(50, 50) interpolationQuality:kCGInterpolationHigh]];
+      [cell layoutSubviews];
+    }];
+  
+  } else {// Default messages handle image differently
+    NSString *imageName = [message.imageURL.absoluteString stringByReplacingOccurrencesOfString:@"_" withString:@" "];
+    [imageName stringByReplacingOccurrencesOfString:@"http://" withString:@""];
+     [imageName stringByReplacingOccurrencesOfString:@".com" withString:@""];
+
+    [cell.imageView setImage:[[UIImage imageNamed:imageName] resizedImage:CGSizeMake(50, 50) interpolationQuality:kCGInterpolationHigh]];
+    
+  }
   
   return cell;
 }
@@ -167,9 +176,33 @@
       
     } else if (error.code == 500 && [error.domain isEqualToString:@"LocationAuthorization"]) {
       [self reloadData];
+    
+    } else {
+      [DUser showSocialServicesAlert];
     }
   }];
 }
+
+#pragma mark - Helpers
+- (void)showLocationServicesAlert {
+  dispatch_async(dispatch_get_main_queue(), ^{
+    UIAlertController *locationServicesAlertController = [UIAlertController alertControllerWithTitle:@"Error" message:@"You must enable location services to be able to send your location and generate meaningfull messages." preferredStyle:UIAlertControllerStyleAlert];
+    
+    if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]]) {
+      [locationServicesAlertController addAction:[UIAlertAction actionWithTitle:@"Open Preferences" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]];
+      }]];
+    }
+    
+    [locationServicesAlertController addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+      [self dismissViewControllerAnimated:YES completion:nil];
+    }]];
+    
+    AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
+    [appDelegate.visibleViewController presentViewController:locationServicesAlertController animated:YES completion:nil];
+  });
+}
+
 
 #pragma mark - Navigation
 - (void)prepareForSegue:(UIStoryboardSegue*)segue sender:(id)sender {

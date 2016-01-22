@@ -250,11 +250,6 @@
 #pragma mark - Navigation
 - (IBAction)unwindToProfileViewController:(UIStoryboardSegue*)segue {}
 
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-#warning check for location perms
-  //  if ([segue.identifier isEqualToString:@"showMessages"]) {
-}
-
 #pragma mark - Status Bar
 - (BOOL)prefersStatusBarHidden {return NO;}
 - (UIStatusBarStyle)preferredStatusBarStyle {return UIStatusBarStyleLightContent;}

@@ -171,16 +171,16 @@
     if (messageLocation) [messages insertObject:messageLocation atIndex:2];
     
     if (userIsInAutomobile) {
-      DMessage *messageCar = [[DMessage alloc] initWithCategory:@"Car" location:self.locationManager.location venueName:@"In transit" venueCity:searchedLocation imageURL:nil];
-      DMessage *messageTrain = [[DMessage alloc] initWithCategory:@"Train" location:self.locationManager.location venueName:@"In transit" venueCity:searchedLocation imageURL:nil];
-      DMessage *messagePlane = [[DMessage alloc] initWithCategory:@"Plane" location:self.locationManager.location venueName:@"In transit" venueCity:searchedLocation imageURL:nil];
+      DMessage *messageCar = [[DMessage alloc] initWithCategory:@"Car" location:self.locationManager.location venueName:@"In transit" venueCity:searchedLocation imageURL:@"http://Badge_Car.com"];
+      DMessage *messageTrain = [[DMessage alloc] initWithCategory:@"Train" location:self.locationManager.location venueName:@"In transit" venueCity:searchedLocation imageURL:@"http://Badge_Train.com"];
+      DMessage *messagePlane = [[DMessage alloc] initWithCategory:@"Plane" location:self.locationManager.location venueName:@"In transit" venueCity:searchedLocation imageURL:@"http://Badge_Plane.com"];
       
       if (messageCar) [messages insertObject:messageCar atIndex:3];
       if (messageTrain) [messages insertObject:messageTrain atIndex:4];
       if (messagePlane) [messages insertObject:messagePlane atIndex:4];
       
     } else {
-      DMessage *messageHome = [[DMessage alloc] initWithCategory:@"Home" location:self.locationManager.location venueName:@"Home" venueCity:searchedLocation imageURL:nil];
+      DMessage *messageHome = [[DMessage alloc] initWithCategory:@"Home" location:self.locationManager.location venueName:@"Home" venueCity:searchedLocation imageURL:@"http://Badge_Home.com"];
       DMessage *messageWork = [[DMessage alloc] initWithCategory:@"Work" location:self.locationManager.location venueName:@"Work" venueCity:searchedLocation imageURL:nil];
       DMessage *messageFriend = [[DMessage alloc] initWithCategory:@"Friend" location:self.locationManager.location venueName:@"a Friend's" venueCity:searchedLocation imageURL:nil];
       
