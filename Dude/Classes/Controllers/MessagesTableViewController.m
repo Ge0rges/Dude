@@ -77,7 +77,8 @@
   
   // Configure the cell
   [cell.textLabel setText:message.message];
-  if (indexPath.row > 6) {// Non-Default messages
+  
+  if (indexPath.section >= 6) {// Non-Default messages
     [cell.imageView sd_setImageWithURL:message.imageURL completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
       [cell.imageView setImage:[image resizedImage:CGSizeMake(50, 50) interpolationQuality:kCGInterpolationHigh]];
       [cell layoutSubviews];
@@ -85,8 +86,8 @@
   
   } else {// Default messages handle image differently
     NSString *imageName = [message.imageURL.absoluteString stringByReplacingOccurrencesOfString:@"_" withString:@" "];
-    [imageName stringByReplacingOccurrencesOfString:@"http://" withString:@""];
-     [imageName stringByReplacingOccurrencesOfString:@".com" withString:@""];
+    imageName = [imageName stringByReplacingOccurrencesOfString:@"http://" withString:@""];
+    imageName = [imageName stringByReplacingOccurrencesOfString:@".com" withString:@""];
 
     [cell.imageView setImage:[[UIImage imageNamed:imageName] resizedImage:CGSizeMake(50, 50) interpolationQuality:kCGInterpolationHigh]];
     
@@ -98,7 +99,7 @@
 - (void)tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
   
-  DMessage *message = messages[indexPath.row];
+  DMessage *message = messages[indexPath.section];
   
   [self performSegueWithIdentifier:@"composingSheet" sender:message];
 }
