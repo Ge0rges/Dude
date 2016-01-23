@@ -466,8 +466,6 @@
 				FB4C5DA51BF5EFA8002B5A58 /* InterfaceController.m */,
 				FB4C5DBA1BF5F0AE002B5A58 /* MessageInterfaceController.h */,
 				FB4C5DBB1BF5F0AE002B5A58 /* MessageInterfaceController.m */,
-				FB4C5DBD1BF5F0BA002B5A58 /* RowController.h */,
-				FB4C5DBE1BF5F0BA002B5A58 /* RowController.m */,
 				FB4C5DAA1BF5EFA8002B5A58 /* NotificationController.h */,
 				FB4C5DAB1BF5EFA8002B5A58 /* NotificationController.m */,
 			);
@@ -477,6 +475,8 @@
 		FB02EF6C1C0B53690010B916 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				FB4C5DBD1BF5F0BA002B5A58 /* RowController.h */,
+				FB4C5DBE1BF5F0BA002B5A58 /* RowController.m */,
 				FB02EF691C0B53650010B916 /* DUserWatch.h */,
 				FB02EF6A1C0B53650010B916 /* DUserWatch.m */,
 			);
@@ -486,8 +486,8 @@
 		FB02EF6D1C0B53720010B916 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				FB02EF6C1C0B53690010B916 /* Models */,
 				FB02EF651C0B53400010B916 /* Controllers */,
+				FB02EF6C1C0B53690010B916 /* Models */,
 			);
 			name = Classes;
 			sourceTree = "<group>";

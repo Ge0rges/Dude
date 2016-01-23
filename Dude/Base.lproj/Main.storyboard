@@ -68,13 +68,13 @@
                                     <constraint firstAttribute="width" secondItem="CiD-D5-1Pf" secondAttribute="height" multiplier="1:1" id="YmW-0B-Y0N"/>
                                 </constraints>
                             </imageView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Woah, what happened..." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FpS-iD-wYe">
-                                <rect key="frame" x="209" y="323" width="184" height="20"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Woah Dude, what happened..." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FpS-iD-wYe">
+                                <rect key="frame" x="187" y="323" width="228" height="20"/>
                                 <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
                                 <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Your device isn't connected to the internet. Get online and we'll try again automatically." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kJk-18-x53">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Dude, your device isn't connected to the internet. Get online and we'll try again!" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kJk-18-x53">
                                 <rect key="frame" x="176" y="353" width="251" height="62"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="251" id="PmR-Ky-3S0"/>
@@ -1022,6 +1022,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <color key="barTintColor" red="0.23921568630000001" green="0.59215686270000001" blue="0.85882352939999995" alpha="1" colorSpace="calibratedRGB"/>
                         <textAttributes key="titleTextAttributes">
                             <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -1071,8 +1072,8 @@
                                 </tableViewCellContentView>
                                 <connections>
                                     <segue destination="HfV-82-QQI" kind="show" identifier="composingSheet" id="vSt-jy-4r4">
-                                        <segue key="commit" inheritsFrom="parent" id="Byp-n4-9E3"/>
-                                        <segue key="preview" inheritsFrom="commit" id="Uxu-Oh-sZK"/>
+                                        <segue key="commit" inheritsFrom="parent" id="W2K-kp-niK"/>
+                                        <segue key="preview" inheritsFrom="commit" id="yaj-AE-mDE"/>
                                     </segue>
                                 </connections>
                             </tableViewCell>
@@ -1139,7 +1140,7 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="Nbs-OA-gvm"/>
-        <segue reference="3Uq-ao-rtd"/>
+        <segue reference="NF1-BU-3Xi"/>
         <segue reference="vSt-jy-4r4"/>
     </inferredMetricsTieBreakers>
     <color key="tintColor" red="0.23921568627450981" green="0.59215686274509804" blue="0.85882352941176465" alpha="1" colorSpace="calibratedRGB"/>

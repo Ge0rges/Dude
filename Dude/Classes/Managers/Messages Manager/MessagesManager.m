@@ -137,7 +137,7 @@
 
 #pragma mark - Context Messaging building
 - (NSArray*)generateMessages:(NSInteger)numberOfMessagesToGenerate {// Someday this will be an API call to our server
-#warning Set the images for the messages
+#warning Remaining images
   if ([CLLocationManager authorizationStatus] != kCLAuthorizationStatusDenied && self.locationManager.location) {
     if (numberOfMessagesToGenerate < 6) {
       numberOfMessagesToGenerate = 6;
@@ -315,7 +315,7 @@
                             },
                         
                         @"sound": @"default",
-                        @"category": @"mainCategory"
+                        @"category": @"REPLY_CATEGORY"
                         },
                     
                     @"long": [NSNumber numberWithDouble:message.location.coordinate.longitude],
@@ -351,7 +351,7 @@
                           },
                       
                       @"sound": @"default",
-                      @"category": @"mainCategory"
+                      @"category": @"REPLY_CATEGORY"
                       },
 #warning toggle location sending on composing sheet
                   //@"long": [NSNumber numberWithDouble:message.location.coordinate.longitude],
@@ -382,7 +382,7 @@
                             },
                         
                         @"sound": @"default",
-                        @"category": @"mainCategory"
+                        @"category": @"REPLY_CATEGORY"
                         },
                     
                     @"url": message.URL.absoluteString,

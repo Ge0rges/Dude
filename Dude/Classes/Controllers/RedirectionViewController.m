@@ -36,13 +36,7 @@
   internetConnectionViewIsShowing = NO;
   
   self.networkReachability = [Reachability reachabilityForInternetConnection];
-  [self.networkReachability startNotifier];
   
-  // keep checking for internet connection
-  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(checkConnection:) name:kReachabilityChangedNotification object:nil];
-
-  [self.networkReachability startNotifier];
-
   // Update status bar
   [self setNeedsStatusBarAppearanceUpdate];
   
@@ -53,6 +47,10 @@
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
   
+  // Keep checking for internet connection
+  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(checkConnection:) name:kReachabilityChangedNotification object:nil];
+  [self.networkReachability startNotifier];
+
   // Tell the delegate we are the visible view
   AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
   appDelegate.visibleViewController = self;

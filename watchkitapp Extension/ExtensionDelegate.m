@@ -8,6 +8,12 @@
 
 #import "ExtensionDelegate.h"
 
+// Models
+#import "DUserWatch.h"
+
+// Constants
+#import "Constants.h"
+
 // Pods
 #import <Parse/Parse.h>
 
@@ -20,6 +26,8 @@
   //[Parse enableDataSharingWithApplicationGroupIdentifier:@"group.com.ge0rges.Dude"];
   
   // Setup Parse
+  [DUserWatch registerSubclass];
+  [Parse enableLocalDatastore];
   [Parse setApplicationId:@"Lwdk0Qnb9755omfrz9Jt1462lzCyzBSTU4lSs37S" clientKey:@"bqhjVGFBHTtfjyoRG8WlYBrjqkulOjcilhtQursd"];
 }
 
@@ -33,7 +41,13 @@
 }
 
 - (void)handleActionWithIdentifier:(NSString*)identifier forRemoteNotification:(NSDictionary*)remoteNotification {
-#warning implement reply to notification
+  if ([identifier isEqualToString:@"REPLY_ACTION"]) {// If it's a reply action
+    PFQuery *contactsQuery = [DUserWatch query];// Get a query
+    [contactsQuery fromPinWithName:WatchRequestContacts];// From the pinned contacts
+    [contactsQuery whereKey:@"email" equalTo:remoteNotification[@"email"]];// For the DUser of the sender
+    
+    [[WKExtension sharedExtension].rootInterfaceController pushControllerWithName:@"MessagesController" context:[contactsQuery getFirstObject]];// Then push it to the messages controller
+  }
 }
 
 @end

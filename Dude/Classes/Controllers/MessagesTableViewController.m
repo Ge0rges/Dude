@@ -98,10 +98,6 @@
 
 - (void)tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
-  
-  DMessage *message = messages[indexPath.section];
-  
-  [self performSegueWithIdentifier:@"composingSheet" sender:message];
 }
 
 - (void)tableView:(UITableView*)tableView willDisplayCell:(UITableViewCell*)cell forRowAtIndexPath:(NSIndexPath*)indexPath {
@@ -209,8 +205,11 @@
 - (void)prepareForSegue:(UIStoryboardSegue*)segue sender:(id)sender {
   // Pass the selected object to the compose view controller.
   if ([segue.identifier isEqualToString:@"composingSheet"]) {
+    UITableViewCell *cell = (UITableViewCell*)sender;
+    DMessage *message = messages[[self.tableView indexPathForCell:cell].section];
+
     ComposeSheetViewController *composeSheetViewController = (ComposeSheetViewController*)[segue destinationViewController];
-    composeSheetViewController.selectedMessage = (DMessage*)sender;
+    composeSheetViewController.selectedMessage = message;
   }
 }
 

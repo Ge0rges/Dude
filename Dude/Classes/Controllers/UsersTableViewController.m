@@ -10,7 +10,6 @@
 
 // Classes
 #import "AppDelegate.h"
-#import "SlidingSegues.h"
 
 // Pods
 #import <SDWebImage/UIImageView+WebCache.h>
@@ -252,11 +251,9 @@ typedef void(^completion)(BOOL validEmail);
 }
 
 - (void)tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
-  if (contacts && contacts.count > 0) {
-    [self performSegueWithIdentifier:@"showProfile" sender:contacts[indexPath.row]];
-  }
-  
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
+  
+  [self performSegueWithIdentifier:@"showProfile" sender:[self.tableView cellForRowAtIndexPath:indexPath]];
 }
 
 - (void)tableView:(UITableView*)tableView willDisplayCell:(UITableViewCell*)cell forRowAtIndexPath:(NSIndexPath*)indexPath {
@@ -318,10 +315,14 @@ typedef void(^completion)(BOOL validEmail);
   }
 }
 
+#pragma mark - Navigation
 - (void)prepareForSegue:(UIStoryboardSegue*)segue sender:(id)sender {
   if ([segue.identifier isEqualToString:@"showProfile"]) {
+    UITableViewCell *cell = (UITableViewCell*)sender;
+    DUser *selectedUser = contacts[[self.tableView indexPathForCell:cell].row];
+    
     ProfileViewController *pvc = (ProfileViewController*)[segue destinationViewController];
-    pvc.profileUser = sender;
+    pvc.profileUser = selectedUser;
   }
 }
 
@@ -465,9 +466,6 @@ typedef void(^completion)(BOOL validEmail);
   [addButton removeTarget:self action:@selector(exitFriendSearch:) forControlEvents:UIControlEventAllEvents];
   [addButton addTarget:self action:@selector(beginFriendSearch:) forControlEvents:UIControlEventTouchUpInside];
 }
-
-#pragma mark - Navigation
-- (IBAction)unwindToUsersTableViewController:(UIStoryboardSegue*)segue {}
 
 
 #pragma mark - Email Validation

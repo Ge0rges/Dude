@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "0700"
+   LastUpgradeVersion = "0710"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -14,23 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "DACFF3E11A8F8FCD00E3A784"
-               BuildableName = "Dude WatchKit App.app"
-               BlueprintName = "Dude WatchKit App"
-               ReferencedContainer = "container:Dude.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "DACFF3CF1A8F8FCC00E3A784"
-               BuildableName = "Dude WatchKit Extension.appex"
-               BlueprintName = "Dude WatchKit Extension"
+               BlueprintIdentifier = "FB4C5D901BF5EFA8002B5A58"
+               BuildableName = "Watch App.app"
+               BlueprintName = "Watch App"
                ReferencedContainer = "container:Dude.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -48,6 +34,20 @@
                ReferencedContainer = "container:Dude.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "FB4C5D9C1BF5EFA8002B5A58"
+               BuildableName = "Watch Extension.appex"
+               BlueprintName = "Watch Extension"
+               ReferencedContainer = "container:Dude.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
@@ -60,9 +60,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "DACFF3E11A8F8FCD00E3A784"
-            BuildableName = "Dude WatchKit App.app"
-            BlueprintName = "Dude WatchKit App"
+            BlueprintIdentifier = "FB4C5D901BF5EFA8002B5A58"
+            BuildableName = "Watch App.app"
+            BlueprintName = "Watch App"
             ReferencedContainer = "container:Dude.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -78,25 +78,26 @@
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
-      allowLocationSimulation = "YES">
+      allowLocationSimulation = "YES"
+      notificationPayloadFile = "watchkitapp Extension/PushNotificationPayload.apns">
       <RemoteRunnable
          runnableDebuggingMode = "2"
-         BundleIdentifier = "com.apple.springboard"
+         BundleIdentifier = "com.apple.carousel"
          RemotePath = "/Dude">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "DACFF3E11A8F8FCD00E3A784"
-            BuildableName = "Dude WatchKit App.app"
-            BlueprintName = "Dude WatchKit App"
+            BlueprintIdentifier = "FB4C5D901BF5EFA8002B5A58"
+            BuildableName = "Watch App.app"
+            BlueprintName = "Watch App"
             ReferencedContainer = "container:Dude.xcodeproj">
          </BuildableReference>
       </RemoteRunnable>
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "DACFF3E11A8F8FCD00E3A784"
-            BuildableName = "Dude WatchKit App.app"
-            BlueprintName = "Dude WatchKit App"
+            BlueprintIdentifier = "FB4C5D901BF5EFA8002B5A58"
+            BuildableName = "Watch App.app"
+            BlueprintName = "Watch App"
             ReferencedContainer = "container:Dude.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -111,22 +112,22 @@
       debugDocumentVersioning = "YES">
       <RemoteRunnable
          runnableDebuggingMode = "2"
-         BundleIdentifier = "com.apple.springboard"
+         BundleIdentifier = "com.apple.carousel"
          RemotePath = "/Dude">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "DACFF3E11A8F8FCD00E3A784"
-            BuildableName = "Dude WatchKit App.app"
-            BlueprintName = "Dude WatchKit App"
+            BlueprintIdentifier = "FB4C5D901BF5EFA8002B5A58"
+            BuildableName = "Watch App.app"
+            BlueprintName = "Watch App"
             ReferencedContainer = "container:Dude.xcodeproj">
          </BuildableReference>
       </RemoteRunnable>
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "DACFF3E11A8F8FCD00E3A784"
-            BuildableName = "Dude WatchKit App.app"
-            BlueprintName = "Dude WatchKit App"
+            BlueprintIdentifier = "FB4C5D901BF5EFA8002B5A58"
+            BuildableName = "Watch App.app"
+            BlueprintName = "Watch App"
             ReferencedContainer = "container:Dude.xcodeproj">
          </BuildableReference>
       </MacroExpansion>

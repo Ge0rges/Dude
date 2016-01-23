@@ -120,13 +120,12 @@
 }
 
 - (void)table:(WKInterfaceTable*)table didSelectRowAtIndex:(NSInteger)rowIndex {
-  //TO DO: Replace with WCSession updateContext
+#warning Replace with WCSession updateContext
   NSDictionary *payload =  @{WatchRequestSendMessages: WatchRequestsKey,
                              @"message": messages[rowIndex],
                              @"senderEmail": selectedUser.email
                              };
   
-#warning show feedback
   [session sendMessage:payload replyHandler:nil errorHandler:nil];
   
   [self popToRootController];

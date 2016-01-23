@@ -50,6 +50,13 @@
     
     if (error || !contacts || contacts.count == 0) {
       // Update UI
+      if (!error && contacts.count == 0) {
+        [self.notLoggedInLabel setText:@"Dude, use your phone to add your closest friends to show up here."];
+      
+      } else {
+        [self.notLoggedInLabel setText:@"Woah Dude, make sure your phone is connected to the internet and your watch."];
+      }
+      
       [self.notLoggedInLabel setHidden:NO];
       [self.table setHidden:YES];
       

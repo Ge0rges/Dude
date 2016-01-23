@@ -19,7 +19,6 @@
 
 // Classes
 #import "AppDelegate.h"
-#import "SlidingSegues.h"
 
 @interface ProfileViewController () <UINavigationControllerDelegate, UIImagePickerControllerDelegate>
 
@@ -148,24 +147,35 @@
 }
 
 - (void)toggleBlock {
-  if ([[ContactsManager sharedInstance] currentUserBlockedContact:self.profileUser]) {
-    [[ContactsManager sharedInstance] unblockContact:self.profileUser];
+  // No multiple presses
+  [self.secondaryButton setEnabled:NO];
+
+  // Asyncly perform the action (block/unblock)
+  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+    if ([[ContactsManager sharedInstance] currentUserBlockedContact:self.profileUser]) {
+      [[ContactsManager sharedInstance] unblockContact:self.profileUser];
+      
+    } else {
+      [[ContactsManager sharedInstance] blockContact:self.profileUser];
+    }
     
-  } else {
-    [[ContactsManager sharedInstance] blockContact:self.profileUser];
-  }
-  
-  if ([[ContactsManager sharedInstance] contactBlockedCurrentUser:self.profileUser]) {
-    [self.secondaryButton setImage:[UIImage imageNamed:@"Blocked"] forState:UIControlStateNormal];
-    
-  } else if ([[ContactsManager sharedInstance] currentUserBlockedContact:self.profileUser]) {
-    [self.secondaryButton setImage:[UIImage imageNamed:@"Unblock Person"] forState:UIControlStateNormal];
-    [self.secondaryButton addTarget:self action:@selector(toggleBlock) forControlEvents:UIControlEventTouchUpInside];
-    
-  } else {
-    [self.secondaryButton setImage:[UIImage imageNamed:@"Block Person"] forState:UIControlStateNormal];
-    [self.secondaryButton addTarget:self action:@selector(toggleBlock) forControlEvents:UIControlEventTouchUpInside];
-  }
+    dispatch_async(dispatch_get_main_queue(), ^{
+      // Update the image
+      if ([[ContactsManager sharedInstance] contactBlockedCurrentUser:self.profileUser]) {
+        [self.secondaryButton setImage:[UIImage imageNamed:@"Blocked"] forState:UIControlStateNormal];
+        
+      } else if ([[ContactsManager sharedInstance] currentUserBlockedContact:self.profileUser]) {
+        [self.secondaryButton setImage:[UIImage imageNamed:@"Unblock Person"] forState:UIControlStateNormal];
+        [self.secondaryButton addTarget:self action:@selector(toggleBlock) forControlEvents:UIControlEventTouchUpInside];
+        
+      } else {
+        [self.secondaryButton setImage:[UIImage imageNamed:@"Block Person"] forState:UIControlStateNormal];
+        [self.secondaryButton addTarget:self action:@selector(toggleBlock) forControlEvents:UIControlEventTouchUpInside];
+      }
+      
+      [self.secondaryButton setEnabled:YES];
+    });
+  });
 }
 
 - (IBAction)toggleFavorite:(id)sender {
@@ -246,9 +256,6 @@
   
   [[DUser currentUser] saveInBackground];
 }
-
-#pragma mark - Navigation
-- (IBAction)unwindToProfileViewController:(UIStoryboardSegue*)segue {}
 
 #pragma mark - Status Bar
 - (BOOL)prefersStatusBarHidden {return NO;}

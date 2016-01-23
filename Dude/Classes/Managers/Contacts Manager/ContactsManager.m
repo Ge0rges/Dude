@@ -71,7 +71,7 @@
   
   // Save the blocked users
   [[DUser currentUser] setBlockedEmails:savedContacts];
-  [[DUser currentUser] saveEventually];
+  [[DUser currentUser] save];
 }
 
 - (void)unblockContact:(DUser*)user {
@@ -86,7 +86,7 @@
   
   // Save the blocked users
   [[DUser currentUser] setBlockedEmails:savedContacts];
-  [[DUser currentUser] saveEventually];
+  [[DUser currentUser] save];
 }
 
 #pragma mark - Fetching
@@ -131,7 +131,7 @@
     // Notify the user that we added him
     if (sendNotification) [self sendAddedNotificationToContact:user];
     
-    [[DUser currentUser] saveEventually];
+    [[DUser currentUser] save];
   }
 }
 
@@ -146,7 +146,7 @@
   
   [[DUser currentUser] setFavouriteContactsEmails:savedContacts];
   
-  [[DUser currentUser] saveInBackground];
+  [[DUser currentUser] save];
 }
 
 - (void)addDeviceContactsAndSendNotification:(BOOL)sendNotification {
@@ -205,7 +205,7 @@
   [savedContacts removeObject:email.lowercaseString];
   
   [[DUser currentUser] setContactsEmails:savedContacts];
-  [[DUser currentUser] saveEventually];
+  [[DUser currentUser] save];
   
   // Reload contacts if necessary
   return (reload) ? [self getContactsRefreshedNecessary:YES favourites:NO] : nil;
@@ -220,7 +220,7 @@
   
   [[DUser currentUser] setFavouriteContactsEmails:savedContacts];
   
-  [[DUser currentUser] saveInBackground];
+  [[DUser currentUser] save];
 }
 
 #pragma mark Added Notification
