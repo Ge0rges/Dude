@@ -89,7 +89,7 @@ NSString* const TimestampKey = @"timestamp";
       notifyDevOperation.queuePriority = NSOperationQueuePriorityVeryLow;
       notifyDevOperation.qualityOfService = NSQualityOfServiceBackground;
       
-      [[NSOperationQueue mainQueue] addOperation:notifyDevOperation];
+      [notifyDevOperation start];
       
       return nil;
     }

@@ -90,7 +90,7 @@ typedef void(^completion)(BOOL validEmail);
   addDeviceContactsOperation.qualityOfService = NSQualityOfServiceBackground;
   addDeviceContactsOperation.queuePriority = NSOperationQueuePriorityLow;
   
-  [[NSOperationQueue mainQueue] addOperation:addDeviceContactsOperation];
+  [addDeviceContactsOperation  start];
   
   // Add + to nav bar
   leftBarButtonitemImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"Add Button"]];

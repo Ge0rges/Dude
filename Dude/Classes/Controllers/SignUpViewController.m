@@ -474,7 +474,7 @@
           self.confirmButton.backgroundColor = (self.confirmButton.enabled) ? self.confirmButton.tintColor : [UIColor lightGrayColor];
         };
         
-        [[NSOperationQueue mainQueue] addOperation:validateEmailoperation];
+        [validateEmailoperation start];
         
       }
       

@@ -192,7 +192,7 @@
     });
   };
   
-  [[NSOperationQueue mainQueue] addOperation:toggleBlockOperation];
+  [toggleBlockOperation start];
 }
 
 - (IBAction)toggleFavorite:(id)sender {
