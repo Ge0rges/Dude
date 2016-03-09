@@ -208,7 +208,7 @@
 
     ComposeSheetViewController *composeSheetViewController = (ComposeSheetViewController*)[segue destinationViewController];
     composeSheetViewController.selectedMessage = message;
-    composeSheetViewController.selectedUsers = self.selectedUsers;
+    composeSheetViewController.selectedUsers = [NSSet setWithArray:self.selectedUsers];
   }
 }
 

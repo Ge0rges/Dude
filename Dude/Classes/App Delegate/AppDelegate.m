@@ -16,6 +16,10 @@
 #import "MessagesManager.h"
 #import "ContactsManager.h"
 
+// Pods
+#import "JCNotificationBanner.h"
+#import "JCNotificationBannerPresenterIOS7Style.h"
+
 @interface AppDelegate ()
 
 @end
@@ -98,29 +102,44 @@
 
 - (void)application:(UIApplication*)application didReceiveRemoteNotification:(NSDictionary*)userInfo {
   // Get the push data
-  //NSString *title = userInfo[@"aps"][@"alert"][@"title"];
-  //NSString *notificationMessage = userInfo[@"aps"][@"alert"][@"body"];
+  NSString *title = userInfo[@"aps"][@"alert"][@"title"];
+  NSString *notificationMessage = userInfo[@"aps"][@"alert"][@"body"];
   NSString *username = userInfo[@"username"];
   NSString *email = userInfo[@"email"];
-
+  
   url = [NSURL URLWithString:userInfo[@"url"]];
   
   double latitude = [userInfo[@"lat"] doubleValue];
   double longitude = [userInfo[@"long"] doubleValue];
   
-#warning show a notif banner with JCNotificationBannerPresenter
   // Handle notification
   if (application) {// While in app
+    JCNotificationBanner *banner;
     if (url) {
+      banner = [[JCNotificationBanner alloc] initWithTitle:title message:notificationMessage tapHandler:^{
+        [[UIApplication sharedApplication] openURL:url];
+      }];
+      
+      
     } else if (latitude && longitude) {
       MKPlacemark *placemark = [[MKPlacemark alloc] initWithCoordinate:CLLocationCoordinate2DMake(latitude, longitude) addressDictionary:nil];
       mapItem = [[MKMapItem alloc] initWithPlacemark:placemark];
       mapItem.name = [NSString stringWithFormat:@"%@'s Location", username];
       
+      banner = [[JCNotificationBanner alloc] initWithTitle:title message:notificationMessage tapHandler:^{
+        [mapItem openInMapsWithLaunchOptions:nil];
+      }];
       
     } else {
+      banner = [[JCNotificationBanner alloc] initWithTitle:title message:notificationMessage tapHandler:^{
+        [[UIApplication sharedApplication] openURL:url];
+      }];
+      
     }
     
+    // Present the notification
+    [[JCNotificationBannerPresenterIOS7Style new] presentNotification:banner finished:nil];
+
     // Move sender to top most in contacts
     NSMutableArray *contacts = [[DUser currentUser].contactsEmails mutableCopy];
     [contacts removeObject:email];
@@ -138,7 +157,7 @@
       [visibleUsersTableVC performSelectorInBackground:@selector(reloadData:) withObject:nil];
     }
     
-  } else {
+  } else {// Regular notification
     if (url) {
       [[UIApplication sharedApplication] openURL:url];
       

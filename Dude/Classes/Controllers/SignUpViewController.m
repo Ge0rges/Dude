@@ -120,10 +120,6 @@
 
         break;
       }
-    
-      default: {
-        break;
-      }
     }
     
   } else {
@@ -180,10 +176,6 @@
             }];
           }];
         }];
-      }
-        
-      default: {
-        break;
       }
     }
   }
@@ -496,10 +488,6 @@
       self.confirmButton.enabled = YES;
       break;
     }
-      
-    default: {
-      break;
-    }
   }
   
   if (!self.logIn && self.confirmButton.tag == 2) {// Check if we are on the email step for sign up
@@ -564,10 +552,6 @@
       [self animateToNextStepWithInitialScreenshot:[self screenshot] fromRight:NO];
       [self proceedToSocial];
       
-      break;
-    }
-      
-    default: {
       break;
     }
   }

@@ -4,6 +4,11 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
+		<key>JCNotificationBannerPresenter.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>Pods-Dude-Bolts.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -47,12 +52,22 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>4AEA686EDFCFF29D11E3AF6FFDAA65DA</key>
+		<key>0D29EB2EE1D3FC1DF0681DEC54D16ED5</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>83503C0B60A3D8B3A716D03B72EF8EA6</key>
+		<key>17310B6D1F477C6236CF57A712E92059</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>3C96F3CB4F01920556B65E64A9526048</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>86F7231B5D6C7D918C28F8A5E78E12ED</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -67,22 +82,17 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>9EBCE570D1FD620698A8636066DA2348</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>ABAB78B5AB546671DA76B55A3B13A21A</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>BAF5ADB14B1A5D648CD860A3FD534795</key>
+		<key>A1042EDDDF18E66CA7DC4A6EFBDE1730</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
 		<key>C0537291D567CA222A6C061601E6570C</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>F4071B8F9AB8B0D6233F77812D090893</key>
 		<dict>
 			<key>primary</key>
 			<true/>

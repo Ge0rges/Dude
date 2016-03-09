@@ -27,6 +27,7 @@ NSString* const CategoryKey = @"category";
 NSString* const TypeKey = @"type";
 NSString* const SendDateKey = @"sendDate";
 NSString* const TimestampKey = @"timestamp";
+NSString* const IncludeLocationKey = @"includeLocation";
 
 @interface DMessage ()
 
@@ -143,6 +144,7 @@ NSString* const TimestampKey = @"timestamp";
     self.type = [aDecoder decodeIntegerForKey:TypeKey];
     self.sendDate = [aDecoder decodeObjectForKey:SendDateKey];
     self.timestamp = [aDecoder decodeObjectForKey:TimestampKey];
+    self.includeLocation = [aDecoder decodeBoolForKey:IncludeLocationKey];
   }
   
   return self;
@@ -162,6 +164,7 @@ NSString* const TimestampKey = @"timestamp";
   [aCoder encodeInteger:self.type forKey:TypeKey];
   [aCoder encodeObject:self.sendDate forKey:SendDateKey];
   [aCoder encodeObject:self.timestamp forKey:TimestampKey];
+  [aCoder encodeBool:self.includeLocation forKey:IncludeLocationKey];
 }
 
 #pragma mark - Message Parsing
@@ -197,11 +200,6 @@ NSString* const TimestampKey = @"timestamp";
       return @"Dude, I'm over here.";
       break;
     }
-    
-    default: {
-      return nil;
-      break;
-    }
   }
   
   return nil;
@@ -230,11 +228,6 @@ NSString* const TimestampKey = @"timestamp";
       return [NSString stringWithFormat:@"%@'s Location", username];
       break;
     }
-    
-    default: {
-      return [NSString stringWithFormat:@"%@ - Message", username];
-      break;
-    }
   }
 }
 
@@ -261,10 +254,6 @@ NSString* const TimestampKey = @"timestamp";
     
     case DMessageTypeLocation: {
       return [NSString stringWithFormat:@"Current Location: %@", self.city];
-      break;
-    }
-    
-    default: {
       break;
     }
   }

@@ -15,6 +15,6 @@
 @interface ComposeSheetViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
 
 @property (strong, nonatomic) DMessage *selectedMessage;
-@property (strong, nonatomic) NSArray *selectedUsers;
+@property (strong, nonatomic) NSSet *selectedUsers;
 
 @end

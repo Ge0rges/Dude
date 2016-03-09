@@ -1,0 +1,1 @@
+../../../JCNotificationBannerPresenter/Library/JCNotificationBannerPresenterIOS7Style.h

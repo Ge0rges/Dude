@@ -159,7 +159,7 @@ typedef void(^completion)(BOOL validEmail);
     fetchUsersOperation.queuePriority = NSOperationQueuePriorityHigh;
     fetchUsersOperation.qualityOfService = NSQualityOfServiceUserInteractive;
     
-    [[NSOperationQueue mainQueue] addOperation:fetchUsersOperation];
+    [fetchUsersOperation start];
   }
 }
 

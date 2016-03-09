@@ -16,17 +16,21 @@
 
 @interface ComposeSheetViewController ()
 
-@property (nonatomic) BOOL *selectedFacebook;
-@property (nonatomic) BOOL *selectedTwitter;
-
 @property (strong, nonatomic) IBOutlet UITableView *tableView;
 
 @property (strong, nonatomic) IBOutlet UIButton *sendButton;
+
+@property (strong, nonatomic) UISwitch *shareLocationSwitch;
+@property (strong, nonatomic) UISwitch *shareDudeSwitch;
+@property (strong, nonatomic) UISwitch *shareTwitterSwitch;
+@property (strong, nonatomic) UISwitch *shareFacebookSwitch;
 
 @end
 
 @implementation ComposeSheetViewController
 #warning make composing sheet, make sure any fully public messages are put in lastSeen of currentUser email
+#warning small images
+#warning scroll shade not appearing
 
 - (void)viewDidLoad {
   [super viewDidLoad];
@@ -64,6 +68,12 @@
         
       case 1:
         cell = [tableView dequeueReusableCellWithIdentifier:@"switchCell"];
+        cell.textLabel.text = (self.selectedMessage.type == DMessageTypeLocation) ? @"Your Location will be Shared": @"Share exact location?";
+        
+        self.shareLocationSwitch = [cell viewWithTag:3];
+        
+        self.shareLocationSwitch.on = (self.selectedMessage.type == DMessageTypeLocation);
+        
         break;
 
     }
@@ -76,22 +86,49 @@
       
       case 1:
         cell = [tableView dequeueReusableCellWithIdentifier:@"detailCell"];
+        
+        cell.textLabel.text = @"Send via messages";
+        cell.imageView.image = [UIImage imageNamed:@"Messages Bubble"];
+        cell.detailTextLabel.text = @"";
+        
         break;
       
       case 2:
         cell = [tableView dequeueReusableCellWithIdentifier:@"detailCell"];
+        cell.textLabel.text = @"Send to Dude Friend";
+        cell.imageView.image = [UIImage imageNamed:@"Tab Person"];
+        cell.detailTextLabel.text = [NSString stringWithFormat:@"%lu %@", self.selectedUsers.count, (self.selectedUsers.count != 1) ? @"Friends" : @"Friend"];
+
         break;
       
       case 3:
         cell = [tableView dequeueReusableCellWithIdentifier:@"switchCell"];
+        cell.textLabel.text = @"Share on Dude";
+        cell.imageView.image = [UIImage imageNamed:@"Pin"];
+        cell.imageView.contentMode = UIViewContentModeScaleAspectFit;
+
+        self.shareDudeSwitch = [cell viewWithTag:3];
+
         break;
       
       case 4:
         cell = [tableView dequeueReusableCellWithIdentifier:@"switchCell"];
+        cell.textLabel.text = @"Tweet to Twitter";
+        cell.imageView.image = [UIImage imageNamed:@"Twitter"];
+        cell.imageView.contentMode = UIViewContentModeScaleAspectFit;
+
+        self.shareTwitterSwitch = [cell viewWithTag:3];
+
         break;
       
       case 5:
         cell = [tableView dequeueReusableCellWithIdentifier:@"switchCell"];
+        cell.textLabel.text = @"Post to Facebook";
+        cell.imageView.image = [UIImage imageNamed:@"Facebook"];
+        cell.imageView.contentMode = UIViewContentModeScaleAspectFit;
+
+        self.shareFacebookSwitch = [cell viewWithTag:3];
+
         break;
     
     }
@@ -167,18 +204,33 @@
 - (void)send {
   MessagesManager *messagesManager = [MessagesManager sharedInstance];
   
+  self.selectedMessage.includeLocation = self.shareLocationSwitch.on;
+  
+  if (self.shareDudeSwitch.on) {
+    self.selectedUsers = [DUser currentUser].contactsEmails;
+  }
+  
   for (DUser *user in self.selectedUsers) {
     [messagesManager sendMessage:self.selectedMessage toContact:user withCompletion:nil];
   }
   
-  if (self.selectedTwitter) {
+  if (self.shareTwitterSwitch.on) {
     [messagesManager tweetMessage:self.selectedMessage withCompletion:nil];
   }
   
-  if (self.selectedFacebook) {
+  if (self.shareFacebookSwitch.on) {
     [messagesManager postMessage:self.selectedMessage withCompletion:nil];
   }
   
+}
+
+#pragma mark - Actions
+- (void)selectUsers {
+  #warning implement
+}
+
+- (void)sendViaMessages {
+  #warning implement
 }
 
 #pragma mark - Status Bar

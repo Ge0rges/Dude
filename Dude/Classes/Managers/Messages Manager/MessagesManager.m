@@ -283,7 +283,7 @@
 #pragma mark - Sending
 - (void)sendMessage:(DMessage*)message toContact:(DUser*)user withCompletion:(MessageCompletionBlock)handler {
   // Make sure we have all we need before proceeeding
-  if (!message || !user) handler(NO, [NSError errorWithDomain:@"Args" code:404 userInfo:nil]);
+  if (!message || !user) handler(NO, [NSError errorWithDomain:@"Arguments" code:404 userInfo:nil]);
 
   // Check if we blocked this user or if he blocked us
   if ([[DUser currentUser].blockedEmails containsObject:user.email] || [user.blockedEmails containsObject:[DUser currentUser].email]) {
@@ -295,7 +295,7 @@
   
   switch (message.type) {
     case DMessageTypeLocation: {
-      if ([CLLocationManager authorizationStatus] != kCLAuthorizationStatusDenied) {// If we have permission
+      if ([CLLocationManager authorizationStatus] != kCLAuthorizationStatusDenied && message.includeLocation) {// If we have permission
         payload = @{
                     @"aps": @{
                         @"alert": @{
@@ -322,7 +322,7 @@
                     @"lastSeen": message.lastSeen
                     };
         
-      } else {
+      } else if (message.includeLocation) {
         [self showLocationServicesAlert];
         
         handler(NO, [NSError errorWithDomain:@"Location" code:500 userInfo:nil]);
@@ -348,9 +348,9 @@
                       @"sound": @"default",
                       @"category": @"REPLY_CATEGORY"
                       },
-#warning toggle location sending on composing sheet
-                  //@"long": [NSNumber numberWithDouble:message.location.coordinate.longitude],
-                  //@"lat": [NSNumber numberWithDouble:message.location.coordinate.latitude],
+
+                  @"long": (message.includeLocation) ? [NSNumber numberWithDouble:message.location.coordinate.longitude] : @"",
+                  @"lat": (message.includeLocation) ? [NSNumber numberWithDouble:message.location.coordinate.latitude] : @"",
                   @"email": [DUser currentUser].email,
                   @"username": [DUser currentUser].username,
                   
@@ -384,6 +384,9 @@
                     @"username": [DUser currentUser].username,
                     @"email": [DUser currentUser].email,
                     
+                    @"long": (message.includeLocation) ? [NSNumber numberWithDouble:message.location.coordinate.longitude] : @"",
+                    @"lat": (message.includeLocation) ? [NSNumber numberWithDouble:message.location.coordinate.latitude] : @"",
+                    
                     @"lastSeen": message.lastSeen
                     };
         
@@ -391,10 +394,6 @@
         handler(NO, [NSError errorWithDomain:@"URL" code:404 userInfo:nil]);
       }
 
-      break;
-    }
-    
-    default: {
       break;
     }
   }
@@ -432,22 +431,17 @@
   
   NSDictionary *messageDict;
   switch (message.type) {
+    case DMessageTypeMessage: {}
     case DMessageTypeLocation: {
       messageDict = @{
                       @"status": socialMessage,
-                      @"long" : [NSString stringWithFormat:@"%f", message.location.coordinate.longitude],
-                      @"lat" : [NSString stringWithFormat:@"%f", message.location.coordinate.latitude],
-                      @"display_coordinates": @"true"
+                      @"long" : (message.includeLocation) ? [NSString stringWithFormat:@"%f", message.location.coordinate.longitude] : @"",
+                      @"lat" : (message.includeLocation) ? [NSString stringWithFormat:@"%f", message.location.coordinate.latitude] : @"",
+                      @"display_coordinates": (message.includeLocation) ? @"true" : @"false"
                       };
       break;
     }
     
-    case DMessageTypeMessage: {
-      messageDict = @{
-                      @"status": socialMessage
-                      };
-      break;
-    }
     
     case DMessageTypeURL: {
       // Shorten the URL
@@ -464,12 +458,12 @@
       // Modify the message string
       socialMessage = [socialMessage stringByReplacingOccurrencesOfString:@"." withString:@":"];
       messageDict = @{
-                      @"status": [NSString stringWithFormat:@"%@ %@", socialMessage, shortenedURL]
+                      @"status": [NSString stringWithFormat:@"%@ %@", socialMessage, shortenedURL],
+                      @"long" : (message.includeLocation) ? [NSString stringWithFormat:@"%f", message.location.coordinate.longitude] : @"",
+                      @"lat" : (message.includeLocation) ? [NSString stringWithFormat:@"%f", message.location.coordinate.latitude] : @"",
+                      @"display_coordinates": (message.includeLocation) ? @"true" : @"false"
+
                       };
-      break;
-    }
-    
-    default: {
       break;
     }
   }
@@ -501,22 +495,16 @@
   
   NSDictionary *messageDict;
   switch (message.type) {
-    case DMessageTypeLocation: {
+    case DMessageTypeLocation: {}
+    case  DMessageTypeMessage: {
       messageDict = @{
                       @"access_token": account.credential.oauthToken,
                       @"message": socialMessage,
-                      @"link": [NSString stringWithFormat:@"http://maps.apple.com/maps?q=%f,%f", message.location.coordinate.latitude, message.location.coordinate.longitude]
+                      @"link": (message.includeLocation) ? [NSString stringWithFormat:@"http://maps.apple.com/maps?q=%f,%f", message.location.coordinate.latitude, message.location.coordinate.longitude] : @""
                       };
       break;
     }
     
-    case DMessageTypeMessage: {
-      messageDict = @{
-                      @"access_token": account.credential.oauthToken,
-                      @"message": socialMessage
-                      };
-      break;
-    }
     
     case DMessageTypeURL: {
       // Shorten the URL
@@ -536,10 +524,6 @@
                       @"message": socialMessage,
                       @"link": shortenedURL
                       };
-      break;
-    }
-    
-    default: {
       break;
     }
   }

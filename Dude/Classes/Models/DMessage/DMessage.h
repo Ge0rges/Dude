@@ -18,6 +18,8 @@ typedef NS_ENUM(NSInteger, DMessageType) {
 
 @interface DMessage : NSObject <NSCoding>
 
+@property (nonatomic) BOOL includeLocation;
+
 @property (strong, nonatomic, readonly) NSString *message;// The full message string (Dude, I'm eating sushi for lunch at Itsu.)
 @property (strong, nonatomic, readonly) NSString *notificationMessage;// The string to be used for notifications (Gio: Dude, I'm eating sushi for lunch at Itsu.)
 @property (strong, nonatomic, readonly) NSString *notificationTitle;// The string to be used for notification titles (Gio - Message/Link/'s Location)
