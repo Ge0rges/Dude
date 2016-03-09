@@ -39,6 +39,8 @@ typedef void(^completion)(BOOL validEmail);
   DUser *friendSearchedUser;
   
   UIButton *addButton;
+  
+  NSBlockOperation *fetchUsersOperation;
 }
 
 @property (nonatomic) BOOL favoritesOnly;
@@ -81,9 +83,14 @@ typedef void(^completion)(BOOL validEmail);
   [NSTimer timerWithTimeInterval:300 target:self selector:@selector(reloadData:) userInfo:nil repeats:YES];
   
   // Add device contacts
-  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+  NSBlockOperation *addDeviceContactsOperation = [NSBlockOperation blockOperationWithBlock:^{
     [[ContactsManager sharedInstance] addDeviceContactsAndSendNotification:YES];
-  });
+  }];
+  
+  addDeviceContactsOperation.qualityOfService = NSQualityOfServiceBackground;
+  addDeviceContactsOperation.queuePriority = NSOperationQueuePriorityLow;
+  
+  [[NSOperationQueue mainQueue] addOperation:addDeviceContactsOperation];
   
   // Add + to nav bar
   leftBarButtonitemImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"Add Button"]];
@@ -136,74 +143,40 @@ typedef void(^completion)(BOOL validEmail);
     self.favoritesOnly = segmentedController.selectedSegmentIndex;
   }
   
+  // Show fast results
   contacts = [[ContactsManager sharedInstance] getContactsRefreshedNecessary:NO favourites:self.favoritesOnly];
   [self updateUI];
 
   // Update Table with new data in the background
   if (!segmentedController || contacts.count == 0) {
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+    [fetchUsersOperation cancel];// No double fetching
+    
+    fetchUsersOperation = [NSBlockOperation blockOperationWithBlock:^{
       contacts = [[ContactsManager sharedInstance] getContactsRefreshedNecessary:YES favourites:self.favoritesOnly];
-      [self updateUI];
-    });
+      [self performSelectorOnMainThread:@selector(updateUI) withObject:nil waitUntilDone:NO];
+    }];
+    
+    fetchUsersOperation.queuePriority = NSOperationQueuePriorityHigh;
+    fetchUsersOperation.qualityOfService = NSQualityOfServiceUserInteractive;
+    
+    [[NSOperationQueue mainQueue] addOperation:fetchUsersOperation];
   }
 }
 
 - (void)updateUI {
   // Update UI again on main thread
-  dispatch_async(dispatch_get_main_queue(), ^{
-    [self.tableView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];
-    
-    if (contacts.count == 0) {
-      if (self.favoritesOnly) {
-        // Show no favorites
-        [self.view bringSubviewToFront:self.nofavoritesView];
-        
-        self.nofavoritesView.alpha = 0.0;
-        self.nofavoritesView.hidden = NO;
-        
-        [UIView animateWithDuration:0.3 animations:^{
-          self.nofavoritesView.alpha = 1.0;
-        }];
-        
-        // Hide no friends
-        [UIView animateWithDuration:0.3 animations:^{
-          self.noFriendsView.alpha = 0.0;
-          
-        } completion:^(BOOL finished) {
-          self.noFriendsView.hidden = YES;
-          [self.view sendSubviewToBack:self.noFriendsView];
-        }];
-        
-      } else {
-        // Show no friends
-        [self.view bringSubviewToFront:self.noFriendsView];
-        
-        self.noFriendsView.alpha = 0.0;
-        self.noFriendsView.hidden = NO;
-        
-        [UIView animateWithDuration:0.3 animations:^{
-          self.noFriendsView.alpha = 1.0;
-        }];
-        
-        // Hide no favorites
-        [UIView animateWithDuration:0.3 animations:^{
-          self.nofavoritesView.alpha = 0.0;
-          
-        } completion:^(BOOL finished) {
-          self.nofavoritesView.hidden = YES;
-          [self.view sendSubviewToBack:self.nofavoritesView];
-        }];
-      }
+  [self.tableView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];
+  
+  if (contacts.count == 0) {
+    if (self.favoritesOnly) {
+      // Show no favorites
+      [self.view bringSubviewToFront:self.nofavoritesView];
       
-    } else {
-      // Hide all:
-      // Hide no favorites
+      self.nofavoritesView.alpha = 0.0;
+      self.nofavoritesView.hidden = NO;
+      
       [UIView animateWithDuration:0.3 animations:^{
-        self.nofavoritesView.alpha = 0.0;
-        
-      } completion:^(BOOL finished) {
-        self.nofavoritesView.hidden = YES;
-        [self.view sendSubviewToBack:self.nofavoritesView];
+        self.nofavoritesView.alpha = 1.0;
       }];
       
       // Hide no friends
@@ -214,8 +187,48 @@ typedef void(^completion)(BOOL validEmail);
         self.noFriendsView.hidden = YES;
         [self.view sendSubviewToBack:self.noFriendsView];
       }];
+      
+    } else {
+      // Show no friends
+      [self.view bringSubviewToFront:self.noFriendsView];
+      
+      self.noFriendsView.alpha = 0.0;
+      self.noFriendsView.hidden = NO;
+      
+      [UIView animateWithDuration:0.3 animations:^{
+        self.noFriendsView.alpha = 1.0;
+      }];
+      
+      // Hide no favorites
+      [UIView animateWithDuration:0.3 animations:^{
+        self.nofavoritesView.alpha = 0.0;
+        
+      } completion:^(BOOL finished) {
+        self.nofavoritesView.hidden = YES;
+        [self.view sendSubviewToBack:self.nofavoritesView];
+      }];
     }
-  });
+    
+  } else {
+    // Hide all:
+    // Hide no favorites
+    [UIView animateWithDuration:0.3 animations:^{
+      self.nofavoritesView.alpha = 0.0;
+      
+    } completion:^(BOOL finished) {
+      self.nofavoritesView.hidden = YES;
+      [self.view sendSubviewToBack:self.nofavoritesView];
+    }];
+    
+    // Hide no friends
+    [UIView animateWithDuration:0.3 animations:^{
+      self.noFriendsView.alpha = 0.0;
+      
+    } completion:^(BOOL finished) {
+      self.noFriendsView.hidden = YES;
+      [self.view sendSubviewToBack:self.noFriendsView];
+    }];
+  }
 }
 
 
@@ -238,13 +251,15 @@ typedef void(^completion)(BOOL validEmail);
   [cell.imageView setImage:[UIImage imageNamed:@"Default Profile Image"]];
   
   DUser *user = contacts[indexPath.row];
+  DMessage *message = [[ContactsManager sharedInstance] latestMessageForContact:user];
   
   // Populate the cell
   cell.textLabel.text = user.fullName;
-  cell.detailTextLabel.text = [[ContactsManager sharedInstance] lastMessageForContact:user].lastSeen;
+  cell.detailTextLabel.text = (message) ? [NSString stringWithFormat:@"%@ - %@", message.lastSeen, message.timestamp] : @"Dude didn't share an update yet";
+  
   [cell.imageView sd_setImageWithURL:[NSURL URLWithString:user.profileImage.url] placeholderImage:[UIImage imageNamed:@"Default Profile Image"] completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
     [cell.imageView setImage:[image resizedImage:CGSizeMake(50, 50) interpolationQuality:kCGInterpolationHigh]];
-    [cell layoutSubviews];
+    //[cell layoutSubviews];
   }];
   
   return cell;
@@ -252,67 +267,69 @@ typedef void(^completion)(BOOL validEmail);
 
 - (void)tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
-  
-  [self performSegueWithIdentifier:@"showProfile" sender:[self.tableView cellForRowAtIndexPath:indexPath]];
 }
 
 - (void)tableView:(UITableView*)tableView willDisplayCell:(UITableViewCell*)cell forRowAtIndexPath:(NSIndexPath*)indexPath {
-  if ([cell respondsToSelector:@selector(tintColor)]) {
-    CGFloat cornerRadius = 7.f;
-    cell.backgroundColor = UIColor.clearColor;
-    CAShapeLayer *layer = [[CAShapeLayer alloc] init];
-    CAShapeLayer *backgroundLayer = [[CAShapeLayer alloc] init];
-    CGMutablePathRef pathRef = CGPathCreateMutable();
-    CGRect bounds = CGRectInset(cell.bounds, 10, 0);
-    BOOL addLine = NO;
+  // Set transparent background so we can see the layer
+  cell.backgroundColor = UIColor.clearColor;
+  
+  // Declare two layers: one for the background and one for the selecetdBackground
+  CAShapeLayer *backgroundLayer = [CAShapeLayer layer];
+  CAShapeLayer *selectedBackgroundLayer = [[CAShapeLayer alloc] init];
+  
+  CGRect bounds = CGRectInset(cell.bounds, 0, 0);//Cell bounds feel free to adjust insets.
+  
+  BOOL addSeparator = NO;// Controls if we should add a seperator
+  
+  // Determine which corners should be rounded
+  if (indexPath.row == 0 && indexPath.row == [tableView numberOfRowsInSection:indexPath.section]-1) {
+    // This is the only row in its section, round all corners
+    backgroundLayer.path = [UIBezierPath bezierPathWithRoundedRect:bounds byRoundingCorners:UIRectCornerAllCorners cornerRadii:CGSizeMake(7, 7)].CGPath;
     
-    if (indexPath.row == 0 && indexPath.row == [tableView numberOfRowsInSection:indexPath.section]-1) {
-      CGPathAddRoundedRect(pathRef, nil, bounds, cornerRadius, cornerRadius);
-      
-    } else if (indexPath.row == 0) {
-      CGPathMoveToPoint(pathRef, nil, CGRectGetMinX(bounds), CGRectGetMaxY(bounds));
-      CGPathAddArcToPoint(pathRef, nil, CGRectGetMinX(bounds), CGRectGetMinY(bounds), CGRectGetMidX(bounds), CGRectGetMinY(bounds), cornerRadius);
-      CGPathAddArcToPoint(pathRef, nil, CGRectGetMaxX(bounds), CGRectGetMinY(bounds), CGRectGetMaxX(bounds), CGRectGetMidY(bounds), cornerRadius);
-      CGPathAddLineToPoint(pathRef, nil, CGRectGetMaxX(bounds), CGRectGetMaxY(bounds));
-      addLine = YES;
-      
-    } else if (indexPath.row == [tableView numberOfRowsInSection:indexPath.section]-1) {
-      CGPathMoveToPoint(pathRef, nil, CGRectGetMinX(bounds), CGRectGetMinY(bounds));
-      CGPathAddArcToPoint(pathRef, nil, CGRectGetMinX(bounds), CGRectGetMaxY(bounds), CGRectGetMidX(bounds), CGRectGetMaxY(bounds), cornerRadius);
-      CGPathAddArcToPoint(pathRef, nil, CGRectGetMaxX(bounds), CGRectGetMaxY(bounds), CGRectGetMaxX(bounds), CGRectGetMidY(bounds), cornerRadius);
-      CGPathAddLineToPoint(pathRef, nil, CGRectGetMaxX(bounds), CGRectGetMinY(bounds));
-      
-    } else {
-      CGPathAddRect(pathRef, nil, bounds);
-      addLine = YES;
-    }
+  } else if (indexPath.row == 0) {
+    // First row, round the top two corners.
+    backgroundLayer.path = [UIBezierPath bezierPathWithRoundedRect:bounds byRoundingCorners:UIRectCornerTopLeft | UIRectCornerTopRight cornerRadii:CGSizeMake(7, 7)].CGPath;
+    addSeparator = YES;
     
-    layer.path = pathRef;
-    backgroundLayer.path = pathRef;
-    CFRelease(pathRef);
+  } else if (indexPath.row == [tableView numberOfRowsInSection:indexPath.section]-1) {
+    // Bottom row, round the bottom two corners.
+    backgroundLayer.path = [UIBezierPath bezierPathWithRoundedRect:bounds byRoundingCorners:UIRectCornerBottomLeft | UIRectCornerBottomRight cornerRadii:CGSizeMake(7, 7)].CGPath;
     
-    layer.fillColor = [UIColor colorWithWhite:1.f alpha:0.8f].CGColor;
-    backgroundLayer.fillColor = [UIColor grayColor].CGColor;
-
-    if (addLine == YES) {
-      CALayer *lineLayer = [[CALayer alloc] init];
-      CGFloat lineHeight = (1.f / [UIScreen mainScreen].scale);
-      lineLayer.frame = CGRectMake(CGRectGetMinX(bounds)+10, bounds.size.height-lineHeight, bounds.size.width-10, lineHeight);
-      lineLayer.backgroundColor = tableView.separatorColor.CGColor;
-      [layer addSublayer:lineLayer];
-      [backgroundLayer addSublayer:lineLayer];
-    }
-    
-    UIView *testView = [[UIView alloc] initWithFrame:bounds];
-    [testView.layer insertSublayer:layer atIndex:0];
-    testView.backgroundColor = UIColor.clearColor;
-    cell.backgroundView = testView;
-
-    UIView *backgroundTestView = [[UIView alloc] initWithFrame:bounds];
-    [backgroundTestView.layer insertSublayer:backgroundLayer atIndex:0];
-    backgroundTestView.backgroundColor = UIColor.clearColor;
-    cell.selectedBackgroundView = backgroundTestView;
+  } else {
+    // Somewhere between the first and last row don't round anything but add a seperator
+    backgroundLayer.path = [UIBezierPath bezierPathWithRect:bounds].CGPath;// So we have a background
+    addSeparator = YES;
   }
+  
+  // Copy the same path for the selected background layer
+  selectedBackgroundLayer.path = CGPathCreateCopy(backgroundLayer.path);
+  
+  // Yay colors!
+  backgroundLayer.fillColor = [UIColor colorWithWhite:1.f alpha:0.8f].CGColor;
+  selectedBackgroundLayer.fillColor = [UIColor grayColor].CGColor;
+  
+  // Draw seperator if necessary
+  if (addSeparator == YES) {
+    CALayer *separatorLayer = [CALayer layer];
+    CGFloat separatorHeight = (1.f / [UIScreen mainScreen].scale);
+    
+    separatorLayer.frame = CGRectMake(CGRectGetMinX(bounds)+10, bounds.size.height-separatorHeight, bounds.size.width-10, separatorHeight);
+    separatorLayer.backgroundColor = tableView.separatorColor.CGColor;
+    
+    [backgroundLayer addSublayer:separatorLayer];
+  }
+  
+  
+  // Create a UIView from these layers and set them to the cell's .backgroundView and .selectedBackgroundView
+  UIView *backgroundView = [[UIView alloc] initWithFrame:bounds];
+  [backgroundView.layer insertSublayer:backgroundLayer atIndex:0];
+  backgroundView.backgroundColor = UIColor.clearColor;
+  cell.backgroundView = backgroundView;
+  
+  UIView *selectedBackgroundView = [[UIView alloc] initWithFrame:bounds];
+  [selectedBackgroundView.layer insertSublayer:selectedBackgroundLayer atIndex:0];
+  selectedBackgroundView.backgroundColor = UIColor.clearColor;
+  cell.selectedBackgroundView = selectedBackgroundView;
 }
 
 #pragma mark - Navigation
@@ -383,6 +400,17 @@ typedef void(^completion)(BOOL validEmail);
 - (IBAction)textfieldValueChanged:(UITextField*)textfield {
   [self.searchResultButton removeTarget:self action:@selector(addFriend) forControlEvents:UIControlEventTouchUpInside];
 
+  if ([textfield.text isEqualToString:[DUser currentUser].email]) {
+    [self.searchResultButton setImage:nil forState:UIControlStateNormal];
+    [self.searchResultButton setTitle:@"You" forState:UIControlStateNormal];
+    [self.searchResultLabel setText:@"Dude you can't add yourself :p"];
+    [self.searchResultImageView sd_setImageWithURL:[NSURL URLWithString:[DUser currentUser].profileImage.url] placeholderImage:[UIImage imageNamed:@"Default Profile Image"]];
+    
+    [self.searchResultButton sizeToFit];
+
+    return;
+  }
+  
   [self validateEmail:textfield.text withAlert:NO completion:^(BOOL validEmail) {
       dispatch_async(dispatch_get_main_queue(), ^{
         if (!validEmail) {

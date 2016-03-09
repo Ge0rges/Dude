@@ -21,13 +21,13 @@
 
 - (void)applicationDidFinishLaunching {
   // Perform any final initialization of your application.
+    
+  // Parse setup
+  [Parse enableLocalDatastore];// For offline data
   
-  // Enable data sharing in app extensions for localDatastore
-  //[Parse enableDataSharingWithApplicationGroupIdentifier:@"group.com.ge0rges.Dude"];
-  
-  // Setup Parse
+  // Register our subclass
   [DUserWatch registerSubclass];
-  [Parse enableLocalDatastore];
+    
   [Parse setApplicationId:@"Lwdk0Qnb9755omfrz9Jt1462lzCyzBSTU4lSs37S" clientKey:@"bqhjVGFBHTtfjyoRG8WlYBrjqkulOjcilhtQursd"];
 }
 

@@ -22,7 +22,7 @@ NSString* const LastSeenKey = @"lastSeen";
 NSString* const URLKey = @"URL";
 NSString* const ImageURLKey = @"imageURL";
 NSString* const LocationKey = @"location";
-NSString* const LocationCityKey = @"locationCity";
+NSString* const CityKey = @"City";
 NSString* const CategoryKey = @"category";
 NSString* const TypeKey = @"type";
 NSString* const SendDateKey = @"sendDate";
@@ -41,7 +41,7 @@ NSString* const TimestampKey = @"timestamp";
 @property (strong, nonatomic) NSURL *imageURL;// The URL for the image associted with message (category or venue)
 
 @property (strong, nonatomic) CLLocation *location;// The location of the sender
-@property (strong, nonatomic) NSString *locationCity;// The city of the sender (London)
+@property (strong, nonatomic) NSString *city;// The city of the sender (London)
 
 @property (strong, nonatomic) NSString *category;// The 4sq category from which it was generated (Sushi Restaurant)
 
@@ -52,7 +52,7 @@ NSString* const TimestampKey = @"timestamp";
 
 @implementation DMessage
 
-@synthesize message, notificationMessage, lastSeen, URL, location, locationCity, category, type, notificationTitle, venueName, imageURL, sendDate, timestamp;
+@synthesize message, notificationMessage, lastSeen, URL, location, city, category, type, notificationTitle, venueName, imageURL, sendDate, timestamp;
 
 #pragma mark - Initilizations
 - (instancetype)initWithCategory:(NSString*)messageCategory location:(CLLocation*)messageLocation venueName:(NSString*)messageVenueName  venueCity:(NSString*)messageLocationCity imageURL:(NSString*)imageURLString {
@@ -60,16 +60,16 @@ NSString* const TimestampKey = @"timestamp";
     self.category = [messageCategory copy];
     self.location = [messageLocation copy];
     self.venueName = [messageVenueName copy];
-    self.locationCity = [messageLocationCity copy];
+    self.city = [messageLocationCity copy];
     self.type = DMessageTypeMessage;
     self.imageURL = [NSURL URLWithString:imageURLString];
     
-    if (!self.location || !self.venueName || !self.locationCity) {
+    if (!self.location || !self.venueName || !self.city) {
       return nil;
     }
     
     if (![self actionSentences][self.category]) { // Check that the category is valid othwise notifies dev
-      dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+      NSBlockOperation *notifyDevOperation = [NSBlockOperation blockOperationWithBlock:^{
         // Notify Devs
         PFQuery *innerQuery = [DUser query];
         [innerQuery whereKey:@"email" equalTo:@"ge0rges@ge0rges.com"];
@@ -84,7 +84,12 @@ NSString* const TimestampKey = @"timestamp";
         [push setQuery:query];
         
         [push sendPushInBackground];
-      });
+      }];
+      
+      notifyDevOperation.queuePriority = NSOperationQueuePriorityVeryLow;
+      notifyDevOperation.qualityOfService = NSQualityOfServiceBackground;
+      
+      [[NSOperationQueue mainQueue] addOperation:notifyDevOperation];
       
       return nil;
     }
@@ -96,22 +101,23 @@ NSString* const TimestampKey = @"timestamp";
   return self;
 }
 
-- (instancetype)initForLocation:(CLLocation*)messageLocation venueCity:(NSString*)messageLocationCity {
+- (instancetype)initLocationMessage:(CLLocation*)messageLocation venueCity:(NSString*)messageLocationCity {
   if (self = [super init]) {
     self.location = [messageLocation copy];
-    self.locationCity = [messageLocationCity copy];
+    self.city = [messageLocationCity copy];
     self.type = DMessageTypeLocation;
     self.imageURL = [NSURL URLWithString:@"http://Badge_Location.com"];
 
-    if (!self.location || !self.locationCity) return nil;
+    if (!self.location || !self.city) return nil;
   }
   
   return self;
 }
 
-- (instancetype)initForPasteboardURLWithLocation:(CLLocation*)messageLocation {
+- (instancetype)initURLMessageWithLocation:(CLLocation*)messageLocation venueCity:(NSString*)messageLocationCity {
   if (self = [super init]) {
     self.location = [messageLocation copy];
+    self.city = [messageLocationCity copy];
     self.type = DMessageTypeURL;
     self.imageURL = [NSURL URLWithString:@"http://Badge_Link.com"];
     
@@ -132,7 +138,7 @@ NSString* const TimestampKey = @"timestamp";
     self.URL = [aDecoder decodeObjectForKey:URLKey];
     self.imageURL = [aDecoder decodeObjectForKey:ImageURLKey];
     self.location = [aDecoder decodeObjectForKey:LocationKey];
-    self.locationCity = [aDecoder decodeObjectForKey:LocationCityKey];
+    self.city = [aDecoder decodeObjectForKey:CityKey];
     self.category = [aDecoder decodeObjectForKey:CategoryKey];
     self.type = [aDecoder decodeIntegerForKey:TypeKey];
     self.sendDate = [aDecoder decodeObjectForKey:SendDateKey];
@@ -151,7 +157,7 @@ NSString* const TimestampKey = @"timestamp";
   [aCoder encodeObject:self.URL forKey:URLKey];
   [aCoder encodeObject:self.imageURL forKey:ImageURLKey];
   [aCoder encodeObject:self.location forKey:LocationKey];
-  [aCoder encodeObject:self.locationCity forKey:LocationCityKey];
+  [aCoder encodeObject:self.city forKey:CityKey];
   [aCoder encodeObject:self.category forKey:CategoryKey];
   [aCoder encodeInteger:self.type forKey:TypeKey];
   [aCoder encodeObject:self.sendDate forKey:SendDateKey];
@@ -240,27 +246,21 @@ NSString* const TimestampKey = @"timestamp";
     }
     
     case DMessageTypeMessage: {
-      if ([self.message isEqualToString:@"Dude."]) return self.message;
+      if ([self.message isEqualToString:@"Dude"]) return self.message;
       
-      // Remove Dude, I'm from message
-      NSString *truncatedMessage = [self.message stringByReplacingOccurrencesOfString:@"Dude, I'm " withString:@""];
+      // Remove "Dude, I'm" from message
+      NSString *modifiedMessage = [self.message stringByReplacingOccurrencesOfString:@"Dude, I'm " withString:@""];
       
-      // Add location to end of sentence
-      truncatedMessage = [truncatedMessage stringByAppendingString:[NSString stringWithFormat:@", %@.", self.locationCity]];
+      // Capitalize first letter of sentence
+      modifiedMessage = [modifiedMessage stringByReplacingCharactersInRange:NSMakeRange(0,1) withString:[[modifiedMessage substringToIndex:1] capitalizedString]];
       
-      if (truncatedMessage.length > 0) {
-        // Capitalize first letter of sentence
-        return [truncatedMessage stringByReplacingCharactersInRange:NSMakeRange(0,1) withString:[[truncatedMessage substringToIndex:1] capitalizedString]];
-        
-      } else {
-        return self.message;
-      }
+      return [modifiedMessage stringByTrimmingCharactersInSet:[NSCharacterSet punctuationCharacterSet]];// Remove "."
       
       break;
     }
     
     case DMessageTypeLocation: {
-      return [NSString stringWithFormat:@"Current Location, %@", self.locationCity];
+      return [NSString stringWithFormat:@"Current Location: %@", self.city];
       break;
     }
     

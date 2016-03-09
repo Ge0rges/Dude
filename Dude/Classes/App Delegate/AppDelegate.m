@@ -27,7 +27,7 @@
   // Override point for customization after application launch.
   
   // Parse setup
-  [Parse enableLocalDatastore];
+  [Parse enableLocalDatastore];// For offline data
   
   // Register our subclass
   [DUser registerSubclass];
@@ -35,8 +35,7 @@
   // Enable data sharing in app extensions.
   [Parse enableDataSharingWithApplicationGroupIdentifier:@"group.com.ge0rges.Dude"];
   
-  [Parse setApplicationId:@"Lwdk0Qnb9755omfrz9Jt1462lzCyzBSTU4lSs37S"
-                clientKey:@"bqhjVGFBHTtfjyoRG8WlYBrjqkulOjcilhtQursd"];
+  [Parse setApplicationId:@"Lwdk0Qnb9755omfrz9Jt1462lzCyzBSTU4lSs37S" clientKey:@"bqhjVGFBHTtfjyoRG8WlYBrjqkulOjcilhtQursd"];
   [PFAnalytics trackAppOpenedWithLaunchOptions:launchOptions];
       
   // Register for Push Notifications
@@ -62,7 +61,7 @@
   if (notification) {
     [self application:application didReceiveRemoteNotification:(NSDictionary*)notification];
   }
-    
+
   return YES;
 }
 
@@ -109,7 +108,7 @@
   double latitude = [userInfo[@"lat"] doubleValue];
   double longitude = [userInfo[@"long"] doubleValue];
   
-#warning show a notif banner
+#warning show a notif banner with JCNotificationBannerPresenter
   // Handle notification
   if (application) {// While in app
     if (url) {

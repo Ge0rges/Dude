@@ -113,7 +113,7 @@
   return users;
 }
 
-- (DMessage*)lastMessageForContact:(DUser*)user {
+- (DMessage*)latestMessageForContact:(DUser*)user {
   return [DUser currentUser].lastSeens[user.email];
 }
 
@@ -147,6 +147,8 @@
   [[DUser currentUser] setFavouriteContactsEmails:savedContacts];
   
   [[DUser currentUser] save];
+  
+  [self getContactsRefreshedNecessary:YES favourites:YES];
 }
 
 - (void)addDeviceContactsAndSendNotification:(BOOL)sendNotification {
@@ -221,6 +223,8 @@
   [[DUser currentUser] setFavouriteContactsEmails:savedContacts];
   
   [[DUser currentUser] save];
+  
+  [self getContactsRefreshedNecessary:YES favourites:YES];
 }
 
 #pragma mark Added Notification

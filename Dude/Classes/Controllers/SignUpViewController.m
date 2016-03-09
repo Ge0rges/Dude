@@ -106,8 +106,10 @@
       case 3: {
         DUser *loggedInUser = [DUser logInWithUsername:user.username password:user.password];
         if (!loggedInUser) {
-          UIAlertController *incorrectCredentialsAlertController = [UIAlertController alertControllerWithTitle:@"Dude, we couldn't find you!" message:@"WE couldn't identify you with these credentials. Check for typos and try again." preferredStyle:UIAlertControllerStyleAlert];
-          [incorrectCredentialsAlertController addAction:[UIAlertAction actionWithTitle:@"Will do!" style:UIAlertActionStyleDefault handler:nil]];
+          UIAlertController *incorrectCredentialsAlertController = [UIAlertController alertControllerWithTitle:@"Dude, who are you!?" message:@"Your credentials don't match anyone we know! Check for typos and try again." preferredStyle:UIAlertControllerStyleAlert];
+          [incorrectCredentialsAlertController addAction:[UIAlertAction actionWithTitle:@"Will do!" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            [self back];
+          }]];
           
           [self presentViewController:incorrectCredentialsAlertController animated:YES completion:nil];
           
@@ -448,6 +450,7 @@
   return self.confirmButton.enabled;
 }
 
+
 - (void)checkConfirmButton {
   switch (self.confirmButton.tag) {
     case 1: {
@@ -460,13 +463,19 @@
         self.confirmButton.enabled = (self.textField.text.length > 5);
       
       } else {
-          dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-            self.confirmButton.enabled = [self isValidEmailWithAlert:NO];
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-              self.confirmButton.backgroundColor = (self.confirmButton.enabled) ? self.confirmButton.tintColor : [UIColor lightGrayColor];
-            });
-          });
+        NSBlockOperation *validateEmailoperation = [NSBlockOperation blockOperationWithBlock:^{
+          self.confirmButton.enabled = [self isValidEmailWithAlert:NO];
+        }];
+        
+        validateEmailoperation.qualityOfService = NSOperationQualityOfServiceUserInteractive;
+        validateEmailoperation.queuePriority = NSOperationQueuePriorityVeryHigh;
+        
+        validateEmailoperation.completionBlock = ^{
+          self.confirmButton.backgroundColor = (self.confirmButton.enabled) ? self.confirmButton.tintColor : [UIColor lightGrayColor];
+        };
+        
+        [[NSOperationQueue mainQueue] addOperation:validateEmailoperation];
+        
       }
       
       break;

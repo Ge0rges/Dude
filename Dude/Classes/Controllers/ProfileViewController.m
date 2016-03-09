@@ -20,7 +20,9 @@
 // Classes
 #import "AppDelegate.h"
 
-@interface ProfileViewController () <UINavigationControllerDelegate, UIImagePickerControllerDelegate>
+@interface ProfileViewController () <UINavigationControllerDelegate, UIImagePickerControllerDelegate> {
+  CGRect originalProfileImageViewFrame;
+}
 
 @property (strong, nonatomic) IBOutlet UIImageView *profileImageView;
 
@@ -51,9 +53,16 @@
   
   // Update UI
   // Status Update
-  DMessage *message = [[ContactsManager sharedInstance] lastMessageForContact:(self.profileUser)?: [DUser currentUser]];
-  [self.locationLabel setText:(message && message.locationCity && message.timestamp) ? [NSString stringWithFormat:@"%@ - %@", message.locationCity, message.timestamp] : @"Location not Shared yet"];
-  [self.statusLabel setText:(message.lastSeen && message) ? message.lastSeen : @"Dude, no available update yet."];
+  DMessage *message = [[ContactsManager sharedInstance] latestMessageForContact:(self.profileUser)?: [DUser currentUser]];
+  
+  
+  NSString *locationErrorText = ([self.profileUser isEqual:[DUser currentUser]]) ? @"Dude, you didn't share a location yet" : @"Dude, you didn't share a location yet";
+  NSString *lastSeenErrorText = ([self.profileUser isEqual:[DUser currentUser]]) ? @"Dude, you didn't share an update yet" : @"Dude, you didn't share an update yet";
+
+  NSString *locationText = [NSString stringWithFormat:@"%@ - %@", message.city, message.timestamp];
+  
+  self.locationLabel.text = (message.city && message.timestamp) ? locationText : locationErrorText;
+  self.statusLabel.text = (message.lastSeen) ? message.lastSeen : lastSeenErrorText;
   
   // Map
   if (message.location && message) {
@@ -143,6 +152,7 @@
 
 #pragma mark - Actions
 - (IBAction)requestStatus:(id)sender {
+#warning connect
   [[ContactsManager sharedInstance] requestStatusForContact:self.profileUser inBackground:YES];
 }
 
@@ -151,14 +161,19 @@
   [self.secondaryButton setEnabled:NO];
 
   // Asyncly perform the action (block/unblock)
-  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+  NSBlockOperation *toggleBlockOperation = [NSBlockOperation blockOperationWithBlock:^{
     if ([[ContactsManager sharedInstance] currentUserBlockedContact:self.profileUser]) {
       [[ContactsManager sharedInstance] unblockContact:self.profileUser];
       
     } else {
       [[ContactsManager sharedInstance] blockContact:self.profileUser];
     }
-    
+  }];
+  
+  toggleBlockOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
+  toggleBlockOperation.qualityOfService = NSQualityOfServiceUserInitiated;
+  
+  toggleBlockOperation.completionBlock = ^{
     dispatch_async(dispatch_get_main_queue(), ^{
       // Update the image
       if ([[ContactsManager sharedInstance] contactBlockedCurrentUser:self.profileUser]) {
@@ -175,7 +190,9 @@
       
       [self.secondaryButton setEnabled:YES];
     });
-  });
+  };
+  
+  [[NSOperationQueue mainQueue] addOperation:toggleBlockOperation];
 }
 
 - (IBAction)toggleFavorite:(id)sender {
@@ -227,6 +244,26 @@
   }]];
   
   [self presentViewController:actionSheet animated:YES completion:nil];
+}
+
+- (IBAction)toggleFullscreenProfileImage:(id)sender {
+  // Toggle fullscreen when profile image view clicked (only in non current user)
+  if (CGRectEqualToRect(self.profileImageView.frame, self.view.frame)) {
+    [self.profileImageView setContentMode:UIViewContentModeScaleAspectFit];
+
+    [UIView animateWithDuration:0.3 animations:^{
+      [self.profileImageView setFrame:originalProfileImageViewFrame];
+    }];
+
+  } else {
+    [self.profileImageView setContentMode:UIViewContentModeScaleAspectFit];
+
+    originalProfileImageViewFrame = self.profileImageView.frame;
+    
+    [UIView animateWithDuration:0.3 animations:^{
+      [self.profileImageView setFrame:self.view.frame];
+    }];
+  }
 }
 
 - (IBAction)logout:(id)sender {

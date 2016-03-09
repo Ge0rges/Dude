@@ -120,13 +120,19 @@
 }
 
 - (void)table:(WKInterfaceTable*)table didSelectRowAtIndex:(NSInteger)rowIndex {
-#warning Replace with WCSession updateContext
   NSDictionary *payload =  @{WatchRequestSendMessages: WatchRequestsKey,
                              @"message": messages[rowIndex],
                              @"senderEmail": selectedUser.email
                              };
   
-  [session sendMessage:payload replyHandler:nil errorHandler:nil];
+  if (session.reachable) {
+    [session sendMessage:payload replyHandler:nil errorHandler:^(NSError * _Nonnull error) {
+      [WKAlertAction actionWithTitle:@"Dude, I couldn't send your message! Try again." style:WKAlertActionStyleDefault handler:^{}];
+    }];
+  
+  } else {
+    [WKAlertAction actionWithTitle:@"Dude, I couldn't send your message! Make sure your connected to your phone." style:WKAlertActionStyleDefault handler:^{}];
+  }
   
   [self popToRootController];
 }

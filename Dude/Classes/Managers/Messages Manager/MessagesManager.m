@@ -139,16 +139,44 @@
 - (NSArray*)generateMessages:(NSInteger)numberOfMessagesToGenerate {// Someday this will be an API call to our server
 #warning Remaining images
   if ([CLLocationManager authorizationStatus] != kCLAuthorizationStatusDenied && self.locationManager.location) {
-    if (numberOfMessagesToGenerate < 6) {
-      numberOfMessagesToGenerate = 6;
-    }
     
     // Array to store messages
     NSMutableArray *messages = [NSMutableArray new];
-
-    // Check we are allowed to have location and if we should still generate messsages and get venues if so
+    
+    // Get searchedLocation (current city)
+    [self fetchNearbyVenues:0 fromOldResponse:nil];
+    
+    // Add default messages
+    DMessage *messageDude = [[DMessage alloc] initWithCategory:@"Just Dude" location:self.locationManager.location venueName:@"Just Dude" venueCity:searchedLocation imageURL:@"http://Badge_Dude.com"];
+    DMessage *messageLink = [[DMessage alloc] initURLMessageWithLocation:self.locationManager.location venueCity:searchedLocation];
+    DMessage *messageLocation = [[DMessage alloc] initLocationMessage:self.locationManager.location venueCity:searchedLocation];
+    
+    if (messageDude) [messages addObject:messageDude];
+    if (messageLink) [messages addObject:messageLink];
+    if (messageLocation) [messages addObject:messageLocation];
+    
+    if (userIsInAutomobile) {
+      DMessage *messageCar = [[DMessage alloc] initWithCategory:@"Car" location:self.locationManager.location venueName:@"In transit" venueCity:searchedLocation imageURL:@"http://Badge_Car.com"];
+      DMessage *messageTrain = [[DMessage alloc] initWithCategory:@"Train" location:self.locationManager.location venueName:@"In transit" venueCity:searchedLocation imageURL:@"http://Badge_Train.com"];
+      DMessage *messagePlane = [[DMessage alloc] initWithCategory:@"Plane" location:self.locationManager.location venueName:@"In transit" venueCity:searchedLocation imageURL:@"http://Badge_Plane.com"];
+      
+      if (messageCar) [messages addObject:messageCar];
+      if (messageTrain) [messages addObject:messageTrain];
+      if (messagePlane) [messages addObject:messagePlane];
+      
+    } else {
+      DMessage *messageHome = [[DMessage alloc] initWithCategory:@"Home" location:self.locationManager.location venueName:@"Home" venueCity:searchedLocation imageURL:@"http://Badge_Home.com"];
+      DMessage *messageWork = [[DMessage alloc] initWithCategory:@"Work" location:self.locationManager.location venueName:@"Work" venueCity:searchedLocation imageURL:@"http://Badge_Work.com"];
+      DMessage *messageFriend = [[DMessage alloc] initWithCategory:@"Friend" location:self.locationManager.location venueName:@"a Friend's" venueCity:searchedLocation imageURL:@"http://Badge_Friend.com"];
+      
+      if (messageHome) [messages addObject:messageHome];
+      if (messageWork) [messages addObject:messageWork];
+      if (messageFriend) [messages addObject:messageFriend];
+    }
+    
+    // Check if user is in a transport
     if (numberOfMessagesToGenerate-6 > 0 && !userIsInAutomobile) {
-      NSArray *venues = [self getNearbyVenuesNameAndCategory:numberOfMessagesToGenerate-6 withResponse:nil];
+      NSArray *venues = [self fetchNearbyVenues:numberOfMessagesToGenerate-6 fromOldResponse:nil];
       
       // Check if there are any venues
       if (venues && venues.count > 0) {
@@ -161,41 +189,13 @@
       }
     }
     
-    // Add default messages
-    DMessage *messageDude = [[DMessage alloc] initWithCategory:@"Just Dude" location:self.locationManager.location venueName:@"Just Dude" venueCity:searchedLocation imageURL:nil];
-    DMessage *messageLink = [[DMessage alloc] initForPasteboardURLWithLocation:self.locationManager.location];
-    DMessage *messageLocation = [[DMessage alloc] initForLocation:self.locationManager.location venueCity:searchedLocation];
-    
-    if (messageDude) [messages insertObject:messageDude atIndex:0];
-    if (messageLink) [messages insertObject:messageLink atIndex:1];
-    if (messageLocation) [messages insertObject:messageLocation atIndex:2];
-    
-    if (userIsInAutomobile) {
-      DMessage *messageCar = [[DMessage alloc] initWithCategory:@"Car" location:self.locationManager.location venueName:@"In transit" venueCity:searchedLocation imageURL:@"http://Badge_Car.com"];
-      DMessage *messageTrain = [[DMessage alloc] initWithCategory:@"Train" location:self.locationManager.location venueName:@"In transit" venueCity:searchedLocation imageURL:@"http://Badge_Train.com"];
-      DMessage *messagePlane = [[DMessage alloc] initWithCategory:@"Plane" location:self.locationManager.location venueName:@"In transit" venueCity:searchedLocation imageURL:@"http://Badge_Plane.com"];
-      
-      if (messageCar) [messages insertObject:messageCar atIndex:3];
-      if (messageTrain) [messages insertObject:messageTrain atIndex:4];
-      if (messagePlane) [messages insertObject:messagePlane atIndex:4];
-      
-    } else {
-      DMessage *messageHome = [[DMessage alloc] initWithCategory:@"Home" location:self.locationManager.location venueName:@"Home" venueCity:searchedLocation imageURL:@"http://Badge_Home.com"];
-      DMessage *messageWork = [[DMessage alloc] initWithCategory:@"Work" location:self.locationManager.location venueName:@"Work" venueCity:searchedLocation imageURL:nil];
-      DMessage *messageFriend = [[DMessage alloc] initWithCategory:@"Friend" location:self.locationManager.location venueName:@"a Friend's" venueCity:searchedLocation imageURL:nil];
-      
-      if (messageHome) [messages insertObject:messageHome atIndex:3];
-      if (messageWork) [messages insertObject:messageWork atIndex:4];
-      if (messageFriend) [messages insertObject:messageFriend atIndex:4];
-    }
-    
     return [NSArray arrayWithArray:messages];
   }
   
   return nil;
 }
 
-- (NSArray*)getNearbyVenuesNameAndCategory:(NSInteger)numberOfVenues withResponse:(NSDictionary*)response {
+- (NSArray*)fetchNearbyVenues:(NSInteger)numberOfVenues fromOldResponse:(NSDictionary*)response {
   // Set a default venue count if none is provided
   if (!numberOfVenues || numberOfVenues <= 0) numberOfVenues = 3;
   if ([CLLocationManager authorizationStatus] != kCLAuthorizationStatusDenied) {// If we have permission
@@ -205,6 +205,8 @@
       
       if (!response) return nil;
       searchedLocation = (response[@"headerLocation"]) ? response[@"headerLocation"] : @"Could not determine City.";
+      
+      if (numberOfVenues == 0) return nil;// We just wanted the searchedLocation for default messages
     }
     
     // For each venue get the name and category
@@ -215,14 +217,7 @@
     NSDictionary *nestedGroups = [groups objectAtIndex:0];
     NSArray *items = nestedGroups[@"items"];
     
-    if (numberOfVenues > [items count]) {
-      // If we have less venues than ordered
-      if (numberOfVenues-1 == 0) return nil;// If only 1 message was ordered return nil
-      
-      return [self getNearbyVenuesNameAndCategory:numberOfVenues-1 withResponse:response];// Decrease the ordered messages by 1
-    }
-    
-    for (NSInteger i=0; i<numberOfVenues; i++) {
+    for (NSInteger i=0; i<[items count]; i++) {
       // Start parsing until we get the venue
       NSDictionary *outerVenue = [items objectAtIndex:i];
       NSDictionary *venue = outerVenue[@"venue"];
@@ -263,7 +258,7 @@
   // Build the URL
   NSString *openNow = @"1";
   NSString *sortByDistance = @"1";
-  NSString *radius = @"200";
+  NSString *radius = @"50";
   NSString *clientID = @"3VUKCE1KQH5G30T4XDF0M0L1L25ETMTGFWXJ05PXNMG3QXW5";
   NSString *clientSecret = @"4O34UZ5VIQVMRSI5GQTGEG4P1MJP3QNWGY0IPYQYWQVQ25U1";
   NSString *date = [dateFormat stringFromDate:[NSDate date]];
@@ -356,7 +351,6 @@
 #warning toggle location sending on composing sheet
                   //@"long": [NSNumber numberWithDouble:message.location.coordinate.longitude],
                   //@"lat": [NSNumber numberWithDouble:message.location.coordinate.latitude],
-                  
                   @"email": [DUser currentUser].email,
                   @"username": [DUser currentUser].username,
                   

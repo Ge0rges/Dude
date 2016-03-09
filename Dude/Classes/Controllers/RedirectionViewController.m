@@ -56,21 +56,21 @@
   appDelegate.visibleViewController = self;
   
   // Redirect the app to the correct View Controller if we have an internet connection in the first place
-  if ([DUser currentUser].isAuthenticated && [self.networkReachability currentReachabilityStatus] != NotReachable) {
-    // Fetch the latest currentUser
-    [[DUser currentUser] fetchInBackgroundWithBlock:^(PFObject *object, NSError *error){
-      // Show the main view
+  if ([self.networkReachability currentReachabilityStatus] != NotReachable) {// Check if we have internet
+    if ([DUser currentUser].isAuthenticated) {
+      // Fetch the latest currentUser
+      [[DUser currentUser] fetchInBackgroundWithBlock:nil];
       [self performSegueWithIdentifier:@"mainSegue" sender:nil];
-    }];
-    
-  } else if ([self.networkReachability currentReachabilityStatus] != NotReachable) {
-    // Clear keychain to prevent issues
-    [DUser logOut];
-    
-    // Show the log/sign in view
-    [self performSegueWithIdentifier:@"welcomeSegue" sender:nil];
-  
-  } else {
+      
+    } else  {// User isn't authenticated
+      // Clear keychain to prevent issues
+      [DUser logOut];
+      
+      // Show the log/sign in view
+      [self performSegueWithIdentifier:@"welcomeSegue" sender:nil];
+      
+    }
+  } else {// No internet
     [self checkConnection:nil];
   }
 }

@@ -11,8 +11,6 @@
 
 @interface MessagesTableViewController : UITableViewController
 
-@property (strong, nonatomic) NSArray *selectedUsers;
-@property (nonatomic) BOOL selectedTwitter;
-@property (nonatomic) BOOL selectedFacebook;
+@property (strong, nonatomic) NSArray *selectedUsers;// Public so that notifications can set it
 
 @end

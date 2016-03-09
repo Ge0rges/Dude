@@ -74,6 +74,12 @@
   }];
 }
 
+- (void)didAppear {
+  if (contacts.count == 0) {
+    [self awakeWithContext:nil];
+  }
+}
+
 #pragma mark - Table Rows
 - (void)configureTableWithContacts {
   // Init the new arrays

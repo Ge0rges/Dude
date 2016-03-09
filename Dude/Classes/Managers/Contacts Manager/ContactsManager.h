@@ -41,7 +41,7 @@
 - (NSArray*)getContactsRefreshedNecessary:(BOOL)needsLatestData favourites:(BOOL)favs;
 
 // Last seens
-- (DMessage*)lastMessageForContact:(DUser*)user;
+- (DMessage*)latestMessageForContact:(DUser*)user;
 
 // Added notification
 - (void)sendAddedNotificationToContact:(DUser*)user;

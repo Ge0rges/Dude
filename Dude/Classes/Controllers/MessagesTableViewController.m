@@ -24,9 +24,9 @@
 // Constants
 #import "Constants.h"
 
-@interface MessagesTableViewController () {
-  NSArray *messages;
-}
+@interface MessagesTableViewController ()
+
+@property (strong, nonatomic) NSArray *messages;
 
 @end
 
@@ -56,6 +56,38 @@
 }
 
 #pragma mark - Table view data source
+- (IBAction)reloadData {
+  [self.refreshControl performSelectorOnMainThread:@selector(beginRefreshing) withObject:nil waitUntilDone:NO];
+  __weak MessagesManager *messagesManager = [MessagesManager sharedInstance];
+
+  if (self.messages.count == 0) {
+    // Generate quickly default while others load
+    [messagesManager setLocationForMessageGenerationWithCompletion:^(NSError *error) {
+      if (!error) {
+        self.messages = [messagesManager generateMessages:6];
+        
+        [self.tableView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];
+        
+      }
+    }];
+  }
+  
+  [messagesManager setLocationForMessageGenerationWithCompletion:^(NSError *error) {
+    if (!error) {
+      self.messages = [messagesManager generateMessages:20];
+      
+      [self.tableView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];
+      [self.refreshControl performSelectorOnMainThread:@selector(endRefreshing) withObject:nil waitUntilDone:NO];
+      
+    } else if (error.code == 500 && [error.domain isEqualToString:@"LocationAuthorization"]) {
+      [self reloadData];
+      
+    } else {
+      [DUser showSocialServicesAlert];
+    }
+  }];
+}
+
 - (NSString*)tableView:(UITableView*)tableView titleForHeaderInSection:(NSInteger)section {
   return (section == 0) ? @"CHOOSE AN UPDATE TO SEND" : @"";
 }
@@ -66,14 +98,14 @@
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView*)tableView {
-  return messages.count;
+  return self.messages.count;
 }
 
 - (UITableViewCell*)tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath {
   UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"messageCell" forIndexPath:indexPath];
   
   // Get the message
-  DMessage *message = (DMessage*)messages[indexPath.section];
+  DMessage *message = (DMessage*)self.messages[indexPath.section];
   
   // Configure the cell
   [cell.textLabel setText:message.message];
@@ -90,7 +122,6 @@
     imageName = [imageName stringByReplacingOccurrencesOfString:@".com" withString:@""];
 
     [cell.imageView setImage:[[UIImage imageNamed:imageName] resizedImage:CGSizeMake(50, 50) interpolationQuality:kCGInterpolationHigh]];
-    
   }
   
   return cell;
@@ -101,83 +132,50 @@
 }
 
 - (void)tableView:(UITableView*)tableView willDisplayCell:(UITableViewCell*)cell forRowAtIndexPath:(NSIndexPath*)indexPath {
-  if ([cell respondsToSelector:@selector(tintColor)]) {
-    CGFloat cornerRadius = 7.f;
-    cell.backgroundColor = UIColor.clearColor;
-    CAShapeLayer *layer = [[CAShapeLayer alloc] init];
-    CAShapeLayer *backgroundLayer = [[CAShapeLayer alloc] init];
-    CGMutablePathRef pathRef = CGPathCreateMutable();
-    CGRect bounds = CGRectInset(cell.bounds, 10, 0);
-    BOOL addLine = NO;
-    
-    if (indexPath.row == 0 && indexPath.row == [tableView numberOfRowsInSection:indexPath.section]-1) {
-      CGPathAddRoundedRect(pathRef, nil, bounds, cornerRadius, cornerRadius);
-      
-    } else if (indexPath.row == 0) {
-      CGPathMoveToPoint(pathRef, nil, CGRectGetMinX(bounds), CGRectGetMaxY(bounds));
-      CGPathAddArcToPoint(pathRef, nil, CGRectGetMinX(bounds), CGRectGetMinY(bounds), CGRectGetMidX(bounds), CGRectGetMinY(bounds), cornerRadius);
-      CGPathAddArcToPoint(pathRef, nil, CGRectGetMaxX(bounds), CGRectGetMinY(bounds), CGRectGetMaxX(bounds), CGRectGetMidY(bounds), cornerRadius);
-      CGPathAddLineToPoint(pathRef, nil, CGRectGetMaxX(bounds), CGRectGetMaxY(bounds));
-      addLine = YES;
-      
-    } else if (indexPath.row == [tableView numberOfRowsInSection:indexPath.section]-1) {
-      CGPathMoveToPoint(pathRef, nil, CGRectGetMinX(bounds), CGRectGetMinY(bounds));
-      CGPathAddArcToPoint(pathRef, nil, CGRectGetMinX(bounds), CGRectGetMaxY(bounds), CGRectGetMidX(bounds), CGRectGetMaxY(bounds), cornerRadius);
-      CGPathAddArcToPoint(pathRef, nil, CGRectGetMaxX(bounds), CGRectGetMaxY(bounds), CGRectGetMaxX(bounds), CGRectGetMidY(bounds), cornerRadius);
-      CGPathAddLineToPoint(pathRef, nil, CGRectGetMaxX(bounds), CGRectGetMinY(bounds));
-      
-    } else {
-      CGPathAddRect(pathRef, nil, bounds);
-      addLine = YES;
-    }
-    
-    layer.path = pathRef;
-    backgroundLayer.path = pathRef;
-    CFRelease(pathRef);
-    
-    layer.fillColor = [UIColor colorWithWhite:1.f alpha:0.8f].CGColor;
-    backgroundLayer.fillColor = [UIColor grayColor].CGColor;
-    
-    if (addLine == YES) {
-      CALayer *lineLayer = [[CALayer alloc] init];
-      CGFloat lineHeight = (1.f / [UIScreen mainScreen].scale);
-      lineLayer.frame = CGRectMake(CGRectGetMinX(bounds)+10, bounds.size.height-lineHeight, bounds.size.width-10, lineHeight);
-      lineLayer.backgroundColor = tableView.separatorColor.CGColor;
-      [layer addSublayer:lineLayer];
-      [backgroundLayer addSublayer:lineLayer];
-    }
-    
-    UIView *testView = [[UIView alloc] initWithFrame:bounds];
-    [testView.layer insertSublayer:layer atIndex:0];
-    testView.backgroundColor = UIColor.clearColor;
-    cell.backgroundView = testView;
-    
-    UIView *backgroundTestView = [[UIView alloc] initWithFrame:bounds];
-    [backgroundTestView.layer insertSublayer:backgroundLayer atIndex:0];
-    backgroundTestView.backgroundColor = UIColor.clearColor;
-    cell.selectedBackgroundView = backgroundTestView;
-  }
-}
-
-- (IBAction)reloadData {
-  [self.refreshControl performSelectorOnMainThread:@selector(beginRefreshing) withObject:nil waitUntilDone:NO];
+  // Set transparent background so we can see the layer
+  cell.backgroundColor = UIColor.clearColor;
   
-  [[MessagesManager sharedInstance] setLocationForMessageGenerationWithCompletion:^(NSError *error) {
-    if (!error) {
-      MessagesManager *messagesManager = [MessagesManager sharedInstance];
-      
-      messages = [messagesManager generateMessages:20];
-      
-      [self.tableView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:YES];
-      [self.refreshControl performSelectorOnMainThread:@selector(endRefreshing) withObject:nil waitUntilDone:NO];
-      
-    } else if (error.code == 500 && [error.domain isEqualToString:@"LocationAuthorization"]) {
-      [self reloadData];
+  // Declare two layers: one for the background and one for the selecetdBackground
+  CAShapeLayer *backgroundLayer = [CAShapeLayer layer];
+  CAShapeLayer *selectedBackgroundLayer = [[CAShapeLayer alloc] init];
+  
+  CGRect bounds = CGRectInset(cell.bounds, 5, -5);//Cell bounds feel free to adjust insets.
+  
+  // Determine which corners should be rounded
+  if (indexPath.row == 0 && indexPath.row == [tableView numberOfRowsInSection:indexPath.section]-1) {
+    // This is the only row in its section, round all corners
+    backgroundLayer.path = [UIBezierPath bezierPathWithRoundedRect:bounds byRoundingCorners:UIRectCornerAllCorners cornerRadii:CGSizeMake(7, 7)].CGPath;
     
-    } else {
-      [DUser showSocialServicesAlert];
-    }
-  }];
+  } else if (indexPath.row == 0) {
+    // First row, round the top two corners.
+    backgroundLayer.path = [UIBezierPath bezierPathWithRoundedRect:bounds byRoundingCorners:UIRectCornerTopLeft | UIRectCornerTopRight cornerRadii:CGSizeMake(7, 7)].CGPath;
+    
+  } else if (indexPath.row == [tableView numberOfRowsInSection:indexPath.section]-1) {
+    // Bottom row, round the bottom two corners.
+    backgroundLayer.path = [UIBezierPath bezierPathWithRoundedRect:bounds byRoundingCorners:UIRectCornerBottomLeft | UIRectCornerBottomRight cornerRadii:CGSizeMake(7, 7)].CGPath;
+    
+  } else {
+    // Somewhere between the first and last row don't round anything but add a seperator
+    backgroundLayer.path = [UIBezierPath bezierPathWithRect:bounds].CGPath;// So we have a background
+  }
+  
+  // Copy the same path for the selected background layer
+  selectedBackgroundLayer.path = CGPathCreateCopy(backgroundLayer.path);
+  
+  // Yay colors!
+  backgroundLayer.fillColor = [UIColor colorWithWhite:1.f alpha:0.8f].CGColor;
+  selectedBackgroundLayer.fillColor = [UIColor grayColor].CGColor;
+  
+  // Create a UIView from these layers and set them to the cell's .backgroundView and .selectedBackgroundView
+  UIView *backgroundView = [[UIView alloc] initWithFrame:bounds];
+  [backgroundView.layer insertSublayer:backgroundLayer atIndex:0];
+  backgroundView.backgroundColor = UIColor.clearColor;
+  cell.backgroundView = backgroundView;
+  
+  UIView *selectedBackgroundView = [[UIView alloc] initWithFrame:bounds];
+  [selectedBackgroundView.layer insertSublayer:selectedBackgroundLayer atIndex:0];
+  selectedBackgroundView.backgroundColor = UIColor.clearColor;
+  cell.selectedBackgroundView = selectedBackgroundView;
 }
 
 #pragma mark - Helpers
@@ -206,10 +204,11 @@
   // Pass the selected object to the compose view controller.
   if ([segue.identifier isEqualToString:@"composingSheet"]) {
     UITableViewCell *cell = (UITableViewCell*)sender;
-    DMessage *message = messages[[self.tableView indexPathForCell:cell].section];
+    DMessage *message = self.messages[[self.tableView indexPathForCell:cell].section];
 
     ComposeSheetViewController *composeSheetViewController = (ComposeSheetViewController*)[segue destinationViewController];
     composeSheetViewController.selectedMessage = message;
+    composeSheetViewController.selectedUsers = self.selectedUsers;
   }
 }
 
