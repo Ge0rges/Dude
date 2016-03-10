@@ -242,9 +242,10 @@
   
   if (self.shareByMessageSwitch.on) {
     [self sendViaMessages];
-  }
   
-  [self dismissViewControllerAnimated:YES completion:nil];
+  } else {
+    [self dismissViewControllerAnimated:YES completion:nil];// Only dismiss if use didn't select the message sheet
+  }
 }
 
 - (void)selectUsers {
@@ -259,12 +260,13 @@
   composeVC.body = self.selectedMessage.message;
   
   // Present the view controller modally.
-  [self presentViewController:composeVC animated:YES completion:nil];}
+  [self presentViewController:composeVC animated:YES completion:nil];
+}
 
 #pragma mark - MFMessageComposeViewControllerDelegate
 - (void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result {
   // Dismiss the mail compose view controller.
-  [self dismissViewControllerAnimated:YES completion:nil];
+  [controller.presentingViewController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark - Status Bar

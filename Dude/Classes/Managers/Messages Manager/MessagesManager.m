@@ -143,6 +143,7 @@
     // Array to store messages
     NSMutableArray *messages = [NSMutableArray new];
     
+#warning find better way to get city
     // Get searchedLocation (current city)
     [self fetchNearbyVenues:0 fromOldResponse:nil];
     
