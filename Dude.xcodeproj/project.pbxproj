@@ -49,6 +49,7 @@
 		FB4C5DBC1BF5F0AE002B5A58 /* MessageInterfaceController.m in Sources */ = {isa = PBXBuildFile; fileRef = FB4C5DBB1BF5F0AE002B5A58 /* MessageInterfaceController.m */; };
 		FB4C5DBF1BF5F0BA002B5A58 /* RowController.m in Sources */ = {isa = PBXBuildFile; fileRef = FB4C5DBE1BF5F0BA002B5A58 /* RowController.m */; };
 		FB4FC3C71BAD938900FC5F01 /* QNSURLConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = FB4FC3C61BAD938900FC5F01 /* QNSURLConnection.m */; };
+		FB68259C1C91BFFA00A88579 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB68259B1C91BFFA00A88579 /* MessageUI.framework */; };
 		FB6F4E251C2FF2830083DCD8 /* ComposeSheetViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FB6F4E241C2FF2830083DCD8 /* ComposeSheetViewController.m */; };
 		FBDE26D71B81E0B5006485D0 /* SlidingSegues.m in Sources */ = {isa = PBXBuildFile; fileRef = FBDE26D61B81E0B5006485D0 /* SlidingSegues.m */; };
 /* End PBXBuildFile section */
@@ -181,6 +182,7 @@
 		FB4FC3C51BAD938900FC5F01 /* QNSURLConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = QNSURLConnection.h; path = QNSURLConnection/QNSURLConnection.h; sourceTree = "<group>"; };
 		FB4FC3C61BAD938900FC5F01 /* QNSURLConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = QNSURLConnection.m; path = QNSURLConnection/QNSURLConnection.m; sourceTree = "<group>"; };
 		FB4FC3C91BAD976200FC5F01 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		FB68259B1C91BFFA00A88579 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
 		FB6F4E231C2FF2830083DCD8 /* ComposeSheetViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ComposeSheetViewController.h; path = Classes/Controllers/ComposeSheetViewController.h; sourceTree = "<group>"; };
 		FB6F4E241C2FF2830083DCD8 /* ComposeSheetViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ComposeSheetViewController.m; path = Classes/Controllers/ComposeSheetViewController.m; sourceTree = "<group>"; };
 		FBA0019D1C23217E00E9A263 /* Watch Extension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Watch Extension.entitlements"; sourceTree = SOURCE_ROOT; };
@@ -194,6 +196,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FB68259C1C91BFFA00A88579 /* MessageUI.framework in Frameworks */,
 				FB02EF621C0B3EED0010B916 /* Contacts.framework in Frameworks */,
 				FB02EF601C0B3EE20010B916 /* Social.framework in Frameworks */,
 				FB02EF5E1C0B3EC70010B916 /* Foundation.framework in Frameworks */,
@@ -440,6 +443,7 @@
 		F569341E6D59A1D0A110C94E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				FB68259B1C91BFFA00A88579 /* MessageUI.framework */,
 				FB02EF611C0B3EED0010B916 /* Contacts.framework */,
 				FB02EF5F1C0B3EE20010B916 /* Social.framework */,
 				FB02EF5D1C0B3EC70010B916 /* Foundation.framework */,

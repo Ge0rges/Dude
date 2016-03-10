@@ -1148,7 +1148,7 @@
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" image="0C84ADC9-B6DF-41E1-A717-274B5C9D7271" id="WgX-dx-Bjt">
+                                                <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" image="DEC67C14-C6BB-446C-BA0D-1D15F34BB9F1" id="WgX-dx-Bjt">
                                                     <rect key="frame" x="15" y="13" width="38" height="38"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                 </imageView>
@@ -1280,7 +1280,11 @@
         </scene>
     </scenes>
     <resources>
-        <image name="0C84ADC9-B6DF-41E1-A717-274B5C9D7271" width="38" height="38">
+        <image name="Back Indicator" width="13" height="22"/>
+        <image name="Block Person" width="162" height="20"/>
+        <image name="Blue Compose" width="24" height="24"/>
+        <image name="Compose" width="24" height="24"/>
+        <image name="DEC67C14-C6BB-446C-BA0D-1D15F34BB9F1" width="38" height="38">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGPT5YJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK4HCBMU
 GR4fIyQrLjE3OlUkbnVsbNUJCgsMDQ4PEBESVk5TU2l6ZVYkY2xhc3NcTlNJbWFnZUZsYWdzVk5TUmVw
@@ -1427,10 +1431,6 @@ AKsArQCyALUAtwC5ALsAvQDCANkA2wDdIA8gFCAfICggOyA/IEogUyBYIGAgYyBoIHcgeyCCIIoglyCc
 IJ4goCClIK0gsCC1IL0gwCDSINUg2gAAAAAAAAIBAAAAAAAAAEEAAAAAAAAAAAAAAAAAACDcA
 </mutableData>
         </image>
-        <image name="Back Indicator" width="13" height="22"/>
-        <image name="Block Person" width="162" height="20"/>
-        <image name="Blue Compose" width="24" height="24"/>
-        <image name="Compose" width="24" height="24"/>
         <image name="Default Profile Image" width="120" height="120"/>
         <image name="Disclosure" width="9" height="15"/>
         <image name="Disconnected" width="210" height="213"/>

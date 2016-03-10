@@ -192,24 +192,45 @@
     });
   };
   
-  [toggleBlockOperation start];
+  [[[NSThread alloc] initWithTarget:toggleBlockOperation selector:@selector(start) object:nil] start];
 }
 
 - (IBAction)toggleFavorite:(id)sender {
-  if ([[DUser currentUser].favouriteContactsEmails containsObject:self.profileUser.email.lowercaseString]) {
-    // Already favorited
-    [[ContactsManager sharedInstance] removeContactFromFavourites:self.profileUser];
-    
-    [self.favoriteButton setImage:[UIImage imageNamed:@"Favorite Deselected"] forState:UIControlStateNormal];
-    [self.favoriteButton setTitle:[NSString stringWithFormat:@"     Add %@ to Favorites", self.profileUser.fullName] forState:UIControlStateNormal];
-    
-  } else {
-    // Not Already favorited
-    [[ContactsManager sharedInstance] addContactToFavourites:self.profileUser];
-    
-    [self.favoriteButton setImage:[UIImage imageNamed:@"Favorite Selected"] forState:UIControlStateNormal];
-    [self.favoriteButton setTitle:[NSString stringWithFormat:@"     Remove %@ from Favorites", self.profileUser.fullName] forState:UIControlStateNormal];
-  }
+  // No multiple presses
+  [self.favoriteButton setEnabled:NO];
+
+  // Asyncly perform the action (favorite/unfavorite)
+  NSBlockOperation *toggleFavoriteOperation = [NSBlockOperation blockOperationWithBlock:^{
+    if ([[DUser currentUser].favouriteContactsEmails containsObject:self.profileUser.email.lowercaseString]) {
+      // Already favorited
+      [[ContactsManager sharedInstance] removeContactFromFavourites:self.profileUser];
+      
+    } else {
+      // Not Already favorited
+      [[ContactsManager sharedInstance] addContactToFavourites:self.profileUser];
+    }
+  }];
+  
+  toggleFavoriteOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
+  toggleFavoriteOperation.qualityOfService = NSQualityOfServiceUserInitiated;
+  
+  toggleFavoriteOperation.completionBlock = ^{
+    dispatch_async(dispatch_get_main_queue(), ^{
+      // Update the image
+      if ([[DUser currentUser].favouriteContactsEmails containsObject:self.profileUser.email.lowercaseString]) {
+        [self.favoriteButton setImage:[UIImage imageNamed:@"Favorite Deselected"] forState:UIControlStateNormal];
+        [self.favoriteButton setTitle:[NSString stringWithFormat:@"     Add %@ to Favorites", self.profileUser.fullName] forState:UIControlStateNormal];
+        
+      } else {
+        [self.favoriteButton setImage:[UIImage imageNamed:@"Favorite Selected"] forState:UIControlStateNormal];
+        [self.favoriteButton setTitle:[NSString stringWithFormat:@"     Remove %@ from Favorites", self.profileUser.fullName] forState:UIControlStateNormal];
+      }
+      
+      [self.favoriteButton setEnabled:YES];
+    });
+  };
+  
+  [[[NSThread alloc] initWithTarget:toggleFavoriteOperation selector:@selector(start) object:nil] start];
 }
 
 - (IBAction)composeUpdate:(id)sender {

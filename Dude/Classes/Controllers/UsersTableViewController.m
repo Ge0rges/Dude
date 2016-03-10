@@ -83,14 +83,9 @@ typedef void(^completion)(BOOL validEmail);
   [NSTimer timerWithTimeInterval:300 target:self selector:@selector(reloadData:) userInfo:nil repeats:YES];
   
   // Add device contacts
-  NSBlockOperation *addDeviceContactsOperation = [NSBlockOperation blockOperationWithBlock:^{
+  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
     [[ContactsManager sharedInstance] addDeviceContactsAndSendNotification:YES];
-  }];
-  
-  addDeviceContactsOperation.qualityOfService = NSQualityOfServiceBackground;
-  addDeviceContactsOperation.queuePriority = NSOperationQueuePriorityLow;
-  
-  [addDeviceContactsOperation  start];
+  });
   
   // Add + to nav bar
   leftBarButtonitemImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"Add Button"]];
@@ -144,8 +139,10 @@ typedef void(^completion)(BOOL validEmail);
   }
   
   // Show fast results
-  contacts = [[ContactsManager sharedInstance] getContactsRefreshedNecessary:NO favourites:self.favoritesOnly];
-  [self updateUI];
+  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
+    contacts = [[ContactsManager sharedInstance] getContactsRefreshedNecessary:NO favourites:self.favoritesOnly];
+    [self performSelectorOnMainThread:@selector(updateUI) withObject:nil waitUntilDone:NO];
+  });
 
   // Update Table with new data in the background
   if (!segmentedController || contacts.count == 0) {
@@ -159,7 +156,7 @@ typedef void(^completion)(BOOL validEmail);
     fetchUsersOperation.queuePriority = NSOperationQueuePriorityHigh;
     fetchUsersOperation.qualityOfService = NSQualityOfServiceUserInteractive;
     
-    [fetchUsersOperation start];
+    [[[NSThread alloc] initWithTarget:fetchUsersOperation selector:@selector(start) object:nil] start];
   }
 }
 

@@ -8,13 +8,19 @@
 
 #import "ComposeSheetViewController.h"
 
+// Frameworks
+#import <MessageUI/MessageUI.h>
+
 // Managers
 #import "MessagesManager.h"
+
+// Extensions & Categories
+#import "UIImageExtensions.h"
 
 // Constants
 #import "Constants.h"
 
-@interface ComposeSheetViewController ()
+@interface ComposeSheetViewController () <MFMessageComposeViewControllerDelegate, UITableViewDataSource, UITableViewDelegate>
 
 @property (strong, nonatomic) IBOutlet UITableView *tableView;
 
@@ -24,12 +30,12 @@
 @property (strong, nonatomic) UISwitch *shareDudeSwitch;
 @property (strong, nonatomic) UISwitch *shareTwitterSwitch;
 @property (strong, nonatomic) UISwitch *shareFacebookSwitch;
+@property (strong, nonatomic) UISwitch *shareByMessageSwitch;
 
 @end
 
 @implementation ComposeSheetViewController
 #warning make composing sheet, make sure any fully public messages are put in lastSeen of currentUser email
-#warning small images
 #warning scroll shade not appearing
 
 - (void)viewDidLoad {
@@ -64,6 +70,7 @@
         cell = [tableView dequeueReusableCellWithIdentifier:@"locationCell"];
         
         cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ - %@", self.selectedMessage.message, self.selectedMessage.city];
+        cell.imageView.image = [[UIImage imageNamed:@"Location"] scaleImageToSize:CGSizeMake(50, 50)];
         break;
         
       case 1:
@@ -73,6 +80,7 @@
         self.shareLocationSwitch = [cell viewWithTag:3];
         
         self.shareLocationSwitch.on = (self.selectedMessage.type == DMessageTypeLocation);
+        self.shareLocationSwitch.enabled = !(self.selectedMessage.type == DMessageTypeLocation);
         
         break;
 
@@ -86,25 +94,27 @@
       
       case 1:
         cell = [tableView dequeueReusableCellWithIdentifier:@"detailCell"];
+        cell.textLabel.text = @"Send to Dude Friend";
+        cell.imageView.image = [[UIImage imageNamed:@"Tab Person"] scaleImageToSize:CGSizeMake(50, 50)];
+        cell.detailTextLabel.text = [NSString stringWithFormat:@"%lu %@", self.selectedUsers.count, (self.selectedUsers.count != 1) ? @"Friends" : @"Friend"];
+
+        break;
         
-        cell.textLabel.text = @"Send via messages";
-        cell.imageView.image = [UIImage imageNamed:@"Messages Bubble"];
+      case 2:
+        cell = [tableView dequeueReusableCellWithIdentifier:@"switchCell"];
+        
+        cell.textLabel.text = @"Send via Messages";
+        cell.imageView.image = [[UIImage imageNamed:@"Messages Bubble"] scaleImageToSize:CGSizeMake(50, 50)];
         cell.detailTextLabel.text = @"";
         
-        break;
-      
-      case 2:
-        cell = [tableView dequeueReusableCellWithIdentifier:@"detailCell"];
-        cell.textLabel.text = @"Send to Dude Friend";
-        cell.imageView.image = [UIImage imageNamed:@"Tab Person"];
-        cell.detailTextLabel.text = [NSString stringWithFormat:@"%lu %@", self.selectedUsers.count, (self.selectedUsers.count != 1) ? @"Friends" : @"Friend"];
+        self.shareByMessageSwitch = [cell viewWithTag:3];
 
         break;
       
       case 3:
         cell = [tableView dequeueReusableCellWithIdentifier:@"switchCell"];
         cell.textLabel.text = @"Share on Dude";
-        cell.imageView.image = [UIImage imageNamed:@"Pin"];
+        cell.imageView.image = [[UIImage imageNamed:@"Pin"] scaleImageToSize:CGSizeMake(50, 50)];
         cell.imageView.contentMode = UIViewContentModeScaleAspectFit;
 
         self.shareDudeSwitch = [cell viewWithTag:3];
@@ -114,7 +124,7 @@
       case 4:
         cell = [tableView dequeueReusableCellWithIdentifier:@"switchCell"];
         cell.textLabel.text = @"Tweet to Twitter";
-        cell.imageView.image = [UIImage imageNamed:@"Twitter"];
+        cell.imageView.image = [[UIImage imageNamed:@"Twitter"] scaleImageToSize:CGSizeMake(50, 50)];
         cell.imageView.contentMode = UIViewContentModeScaleAspectFit;
 
         self.shareTwitterSwitch = [cell viewWithTag:3];
@@ -124,7 +134,7 @@
       case 5:
         cell = [tableView dequeueReusableCellWithIdentifier:@"switchCell"];
         cell.textLabel.text = @"Post to Facebook";
-        cell.imageView.image = [UIImage imageNamed:@"Facebook"];
+        cell.imageView.image = [[UIImage imageNamed:@"Facebook"] scaleImageToSize:CGSizeMake(50, 50)];
         cell.imageView.contentMode = UIViewContentModeScaleAspectFit;
 
         self.shareFacebookSwitch = [cell viewWithTag:3];
@@ -200,7 +210,15 @@
   cell.selectedBackgroundView = selectedBackgroundView;
 }
 
-#pragma - Sending
+- (void)tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
+  [tableView deselectRowAtIndexPath:indexPath animated:YES];
+  
+  if (indexPath.section == 1 && indexPath.row == 2) {
+    //Friend choosing
+  }
+}
+
+#pragma mark - Actions
 - (void)send {
   MessagesManager *messagesManager = [MessagesManager sharedInstance];
   
@@ -222,15 +240,31 @@
     [messagesManager postMessage:self.selectedMessage withCompletion:nil];
   }
   
+  if (self.shareByMessageSwitch.on) {
+    [self sendViaMessages];
+  }
+  
+  [self dismissViewControllerAnimated:YES completion:nil];
 }
 
-#pragma mark - Actions
 - (void)selectUsers {
   #warning implement
 }
 
 - (void)sendViaMessages {
-  #warning implement
+  MFMessageComposeViewController *composeVC = [[MFMessageComposeViewController alloc] init];
+  composeVC.messageComposeDelegate = self;
+  
+  // Configure the fields of the interface.
+  composeVC.body = self.selectedMessage.message;
+  
+  // Present the view controller modally.
+  [self presentViewController:composeVC animated:YES completion:nil];}
+
+#pragma mark - MFMessageComposeViewControllerDelegate
+- (void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result {
+  // Dismiss the mail compose view controller.
+  [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark - Status Bar
