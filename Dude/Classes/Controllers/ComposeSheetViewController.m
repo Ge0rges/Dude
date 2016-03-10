@@ -219,7 +219,7 @@
 }
 
 #pragma mark - Actions
-- (void)send {
+- (IBAction)send {
   MessagesManager *messagesManager = [MessagesManager sharedInstance];
   
   self.selectedMessage.includeLocation = self.shareLocationSwitch.on;

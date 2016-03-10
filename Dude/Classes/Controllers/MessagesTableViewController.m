@@ -139,7 +139,7 @@
   CAShapeLayer *backgroundLayer = [CAShapeLayer layer];
   CAShapeLayer *selectedBackgroundLayer = [[CAShapeLayer alloc] init];
   
-  CGRect bounds = CGRectInset(cell.bounds, 5, -5);//Cell bounds feel free to adjust insets.
+  CGRect bounds = CGRectInset(cell.bounds, 10, -5);//Cell bounds feel free to adjust insets.
   
   // Determine which corners should be rounded
   if (indexPath.row == 0 && indexPath.row == [tableView numberOfRowsInSection:indexPath.section]-1) {
