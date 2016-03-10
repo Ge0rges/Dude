@@ -108,6 +108,7 @@
         cell.detailTextLabel.text = @"";
         
         self.shareByMessageSwitch = [cell viewWithTag:3];
+        self.shareByMessageSwitch.enabled = !(self.selectedMessage.type == DMessageTypeLocation);
 
         break;
       
@@ -261,6 +262,7 @@
   
   // Present the view controller modally.
   [self presentViewController:composeVC animated:YES completion:nil];
+  
 }
 
 #pragma mark - MFMessageComposeViewControllerDelegate
