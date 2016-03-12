@@ -11,18 +11,12 @@
 
 @interface DUserWatch : PFUser <PFSubclassing>
 
-@property (strong, nonatomic) PFFile *profileImage;
+@property (strong, nonatomic) PFFile * _Nullable profileImage;
 
-@property (strong, nonatomic) NSString *fullName;
+@property (strong, nonatomic) NSString * _Nullable fullName;
 
-// Set of user emails
-@property (strong, nonatomic) NSSet *blockedEmails;
-@property (strong, nonatomic) NSSet *contactsEmails;
-@property (strong, nonatomic) NSSet *favouriteContactsEmails;
+@property (strong, nonatomic) NSString * _Nullable email;
 
-@property (strong, nonatomic) NSDictionary *lastSeens;
-
-+ (instancetype)currentUser;
-+ (instancetype)object;
++ (instancetype _Nonnull)object;
 
 @end

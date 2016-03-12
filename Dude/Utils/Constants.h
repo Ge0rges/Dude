@@ -9,7 +9,7 @@
 #import "NSStringExtensions.h"
 #import "QNSURLConnection.h"
 
-#define WatchRequestsKey @"request"// Key for requests
-#define WatchRequestContacts @"requestContacts"// value of WatchRequestsKey
-#define WatchRequestMessages @"requestMessages"// value of WatchRequestsKey
-#define WatchRequestSendMessages @"requestMessages"// value of WatchRequestsKey
+#define WatchRequestKey @"requestType"// value of WatchRequestKey
+#define WatchContextContactsKey @"favoriteContactsArray"// value of WatchContextContactsKey
+#define WatchRequestMessagesValue @"requestMessages"// value of WatchRequestMessagesValue
+#define WatchRequestSendMessageValue @"sendMessage"// value of WatchRequestSendMessageValue

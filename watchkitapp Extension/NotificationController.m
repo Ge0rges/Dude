@@ -26,16 +26,6 @@
     return self;
 }
 
-- (void)willActivate {
-    // This method is called when watch view controller is about to be visible to user
-    [super willActivate];
-}
-
-- (void)didDeactivate {
-    // This method is called when watch view controller is no longer visible
-    [super didDeactivate];
-}
-
 - (void)didReceiveRemoteNotification:(NSDictionary*)remoteNotification withCompletion:(void (^)(WKUserNotificationInterfaceType))completionHandler {
     
     // Set the notification alert

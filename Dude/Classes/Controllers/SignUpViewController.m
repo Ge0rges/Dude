@@ -36,6 +36,8 @@
   DUser *user;
   
   UIImageView *retakeImageView;
+  
+  BOOL loggingIn;
 }
 
 @property (strong, nonatomic) IBOutlet UILabel *stepLabel;
@@ -104,20 +106,32 @@
       }
       
       case 3: {
-        DUser *loggedInUser = [DUser logInWithUsername:user.username password:user.password];
-        if (!loggedInUser) {
-          UIAlertController *incorrectCredentialsAlertController = [UIAlertController alertControllerWithTitle:@"Dude, who are you!?" message:@"Your credentials don't match anyone we know! Check for typos and try again." preferredStyle:UIAlertControllerStyleAlert];
-          [incorrectCredentialsAlertController addAction:[UIAlertAction actionWithTitle:@"Will do!" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-            [self back];
-          }]];
-          
-          [self presentViewController:incorrectCredentialsAlertController animated:YES completion:nil];
-          
-        } else {
-          // Go back to the redirection controller
-          [self dismissViewControllerAnimated:NO completion:nil];
-        }
-
+        loggingIn = YES;
+        self.confirmButton.enabled = NO;
+        
+        [DUser logOutInBackgroundWithBlock:^(NSError * _Nullable error) {
+          [DUser logInWithUsernameInBackground:user.username password:user.password block:^(PFUser * _Nullable loggedInUser, NSError * _Nullable error) {
+            if (!loggedInUser || error) {
+              UIAlertController *incorrectCredentialsAlertController = [UIAlertController alertControllerWithTitle:@"Dude, who are you!?" message:@"Your credentials don't match anyone we know! Check for typos and try again." preferredStyle:UIAlertControllerStyleAlert];
+              [incorrectCredentialsAlertController addAction:[UIAlertAction actionWithTitle:@"Will do!" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                [self back];
+              }]];
+              
+              dispatch_async(dispatch_get_main_queue(), ^{
+                [self presentViewController:incorrectCredentialsAlertController animated:YES completion:nil];
+                self.confirmButton.enabled = YES;
+                loggingIn = NO;
+              });
+              
+            } else if (loggedInUser.isAuthenticated && loggedInUser.sessionToken) {
+              // Go back to the redirection controller
+              dispatch_async(dispatch_get_main_queue(), ^{
+                [self dismissViewControllerAnimated:NO completion:nil];
+              });
+            }
+          }];
+        }];
+        
         break;
       }
     }
@@ -161,20 +175,19 @@
       }
         
       case 5: {
-        [user selectFacebookAccountWithCompletion:^(BOOL success, ACAccount *account, NSError *error) {
-          [user selectTwitterAccountWithCompletion:^(BOOL success, ACAccount *account, NSError *error) {
-            [user signUpInBackgroundWithBlock:^(BOOL succeeded, NSError * _Nullable error) {
-              if (!succeeded) {
-                [self dismissViewControllerAnimated:YES completion:nil];
-                
-              } else {
-                // Go back to the redirection controller
-                [self dismissViewControllerAnimated:YES completion:^{
-                  [self.presentingViewController dismissViewControllerAnimated:NO completion:nil];
-                }];
-              }
+        [user signUpInBackgroundWithBlock:^(BOOL succeeded, NSError * _Nullable error) {
+          if (!succeeded) {
+            [self dismissViewControllerAnimated:YES completion:nil];
+            
+          } else {
+            // Go back to the redirection controller
+            [self dismissViewControllerAnimated:YES completion:^{
+              [self.presentingViewController dismissViewControllerAnimated:NO completion:nil];
             }];
-          }];
+          }
+          
+          [user selectFacebookAccountWithCompletion:nil];
+          [user selectTwitterAccountWithCompletion:nil];
         }];
       }
     }
@@ -455,18 +468,18 @@
         self.confirmButton.enabled = (self.textField.text.length > 5);
       
       } else {
-        NSBlockOperation *validateEmailoperation = [NSBlockOperation blockOperationWithBlock:^{
+        NSBlockOperation *validateEmailOperation = [NSBlockOperation blockOperationWithBlock:^{
           self.confirmButton.enabled = [self isValidEmailWithAlert:NO];
         }];
         
-        validateEmailoperation.qualityOfService = NSOperationQualityOfServiceUserInteractive;
-        validateEmailoperation.queuePriority = NSOperationQueuePriorityVeryHigh;
+        validateEmailOperation.qualityOfService = NSOperationQualityOfServiceUserInteractive;
+        validateEmailOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
         
-        validateEmailoperation.completionBlock = ^{
+        validateEmailOperation.completionBlock = ^{
           self.confirmButton.backgroundColor = (self.confirmButton.enabled) ? self.confirmButton.tintColor : [UIColor lightGrayColor];
         };
         
-        [validateEmailoperation start];
+        [validateEmailOperation start];
         
       }
       
@@ -474,7 +487,7 @@
     }
       
     case 3: {
-      self.confirmButton.enabled = (self.textField.text.length > 5);
+      self.confirmButton.enabled = (self.logIn) ? !loggingIn : (self.textField.text.length > 5);
       break;
     }
       
@@ -676,6 +689,6 @@
 
 #pragma mark - Status Bar
 - (BOOL)prefersStatusBarHidden {return NO;}
-- (UIStatusBarStyle)preferredStatusBarStyle {return UIStatusBarStyleLightContent;}
+- (UIStatusBarStyle)preferredStatusBarStyle {return UIStatusBarStyleDefault;}
 
 @end

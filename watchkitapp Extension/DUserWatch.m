@@ -12,45 +12,22 @@
 #import <Parse/PFObject+Subclass.h>
 
 NSString* const ProfileImageKey = @"profileImage";
-NSString* const BlockedEmailsKey = @"blockedEmails";
-NSString* const ContactsEmailsKey = @"contactsEmails";
-NSString* const FavouriteContactsKey = @"favouriteContactsEmails";
-NSString* const LastSeensKey = @"lastSeens";
 NSString* const FullNameKey = @"fullName";
+NSString* const EmailKey = @"email";
 
 @implementation DUserWatch
 
-@dynamic profileImage, lastSeens, blockedEmails,  contactsEmails, favouriteContactsEmails, fullName;
+@dynamic profileImage, fullName, email;
 
 #pragma mark - Initializations
-+ (instancetype)currentUser {
-  DUserWatch *currentUser = (DUserWatch*)[super currentUser];
-  
-  currentUser.profileImage = (PFFile*)currentUser[ProfileImageKey];
-  
-  currentUser.blockedEmails = [NSSet setWithArray:currentUser[BlockedEmailsKey]];
-  currentUser.contactsEmails = [NSSet setWithArray:currentUser[ContactsEmailsKey]];
-  currentUser.favouriteContactsEmails = [NSSet setWithArray:currentUser[FavouriteContactsKey]];
-  
-  currentUser.fullName = currentUser[FullNameKey];
-  
-  currentUser.lastSeens = currentUser[LastSeensKey];
-    
-  return currentUser;
-}
-
 + (instancetype)object {
   DUserWatch *user = (DUserWatch*)[super object];
   
   user.profileImage = (PFFile*)user[ProfileImageKey];
-    
-  user.blockedEmails = [NSSet setWithArray:user[BlockedEmailsKey]];
-  user.contactsEmails = [NSSet setWithArray:user[ContactsEmailsKey]];
-  user.favouriteContactsEmails = [NSSet setWithArray:user[FavouriteContactsKey]];
   
   user.fullName = user[FullNameKey];
   
-  user.lastSeens = user[LastSeensKey];
+  user.email = user[EmailKey];
   
   return user;
 }
@@ -84,27 +61,6 @@ NSString* const FullNameKey = @"fullName";
   }
   
   return object;
-}
-
-#pragma mark - Other
-+ (void)logOut {
-  // Create the userunique keys
-  NSString *contactsKey = [NSString stringWithFormat:@"contact%@", [DUserWatch currentUser].username];
-  
-  // Clear the saved contacts for this username
-  [[NSUserDefaults standardUserDefaults] setObject:nil forKey:contactsKey];
-  
-  // Clear twitter & facebook preferences for this device
-  [[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"twitterAccountID"];
-  [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"askTwitter"];
-  
-  [[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"facebookAccountID"];
-  [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"askFacebook"];
-  
-  // Sync NSUserDefaults
-  [[NSUserDefaults standardUserDefaults] synchronize];
-  
-  [super logOut];
 }
 
 @end

@@ -2,19 +2,18 @@
   "images" : [
     {
       "idiom" : "watch",
-      "scale" : "2x",
-      "filename" : "Background38mm-1.png"
-    },
-    {
-      "idiom" : "watch",
-      "screenWidth" : "{130,145}",
-      "filename" : "Background38mm.png",
       "scale" : "2x"
     },
     {
       "idiom" : "watch",
-      "screenWidth" : "{146,165}",
+      "filename" : "Background38mm.png",
+      "screen-width" : "<=145",
+      "scale" : "2x"
+    },
+    {
+      "idiom" : "watch",
       "filename" : "Background42mm.png",
+      "screen-width" : ">145",
       "scale" : "2x"
     }
   ],

@@ -13,6 +13,7 @@
 
 // Managers
 #import "MessagesManager.h"
+#import "ContactsManager.h"
 
 // Extensions & Categories
 #import "UIImageExtensions.h"
@@ -226,7 +227,7 @@
   self.selectedMessage.includeLocation = self.shareLocationSwitch.on;
   
   if (self.shareDudeSwitch.on) {
-    self.selectedUsers = [DUser currentUser].contactsEmails;
+    self.selectedUsers = [[ContactsManager sharedInstance] getContactsRefreshedNecessary:NO favourites:NO];
   }
   
   for (DUser *user in self.selectedUsers) {

@@ -54,10 +54,10 @@
   // Tell the delegate we are the visible view
   AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
   appDelegate.visibleViewController = self;
-  
+    
   // Redirect the app to the correct View Controller if we have an internet connection in the first place
   if ([self.networkReachability currentReachabilityStatus] != NotReachable) {// Check if we have internet
-    if ([DUser currentUser].isAuthenticated) {
+    if ([DUser currentUser].isAuthenticated && [DUser currentUser].sessionToken) {
       // Fetch the latest currentUser
       [[DUser currentUser] fetchInBackgroundWithBlock:nil];
       [self performSegueWithIdentifier:@"mainSegue" sender:nil];

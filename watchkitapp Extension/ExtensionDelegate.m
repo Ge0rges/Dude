@@ -8,6 +8,9 @@
 
 #import "ExtensionDelegate.h"
 
+// Frameworks
+#import <WatchConnectivity/WatchConnectivity.h>
+
 // Models
 #import "DUserWatch.h"
 
@@ -17,36 +20,41 @@
 // Pods
 #import <Parse/Parse.h>
 
+@interface ExtensionDelegate () <WCSessionDelegate>
+
+@end
+
 @implementation ExtensionDelegate
 
 - (void)applicationDidFinishLaunching {
   // Perform any final initialization of your application.
     
   // Parse setup
-  [Parse enableLocalDatastore];// For offline data
-  
-  // Register our subclass
   [DUserWatch registerSubclass];
-    
   [Parse setApplicationId:@"Lwdk0Qnb9755omfrz9Jt1462lzCyzBSTU4lSs37S" clientKey:@"bqhjVGFBHTtfjyoRG8WlYBrjqkulOjcilhtQursd"];
-}
-
-- (void)applicationDidBecomeActive {
-  // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
-}
-
-- (void)applicationWillResignActive {
-  // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
-  // Use this method to pause ongoing tasks, disable timers, etc.
 }
 
 - (void)handleActionWithIdentifier:(NSString*)identifier forRemoteNotification:(NSDictionary*)remoteNotification {
   if ([identifier isEqualToString:@"REPLY_ACTION"]) {// If it's a reply action
-    PFQuery *contactsQuery = [DUserWatch query];// Get a query
-    [contactsQuery fromPinWithName:WatchRequestContacts];// From the pinned contacts
-    [contactsQuery whereKey:@"email" equalTo:remoteNotification[@"email"]];// For the DUser of the sender
+    WCSession *session = [WCSession defaultSession];
+    session.delegate = self;
+    [session activateSession];
+
+    NSDictionary *applicationContext = [session receivedApplicationContext];
     
-    [[WKExtension sharedExtension].rootInterfaceController pushControllerWithName:@"MessagesController" context:[contactsQuery getFirstObject]];// Then push it to the messages controller
+    NSSet *contacts = applicationContext[WatchContextContactsKey];
+    
+    DUserWatch *sendUser;
+    
+    for (DUserWatch *user in contacts) {
+      if ([user.email isEqualToString:remoteNotification[@"email"]]) {
+        sendUser = user;
+        
+        break;
+      }
+    }
+    
+    [[WKExtension sharedExtension].rootInterfaceController pushControllerWithName:@"MessagesController" context:sendUser];
   }
 }
 

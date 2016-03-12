@@ -21,12 +21,14 @@
 #import "Constants.h"
 
 @interface InterfaceController() <RowControllerDelegate, WCSessionDelegate> {
-  NSArray *contacts;
+  NSSet *contacts;
   
   NSMutableArray *contactsLeft;
   NSMutableArray *contactsRight;
   
   NSInteger rowIndex;
+  
+  WCSession *session;
 }
 
 @property (weak, nonatomic) IBOutlet WKInterfaceTable *table;
@@ -42,36 +44,39 @@
   [super awakeWithContext:context];
   
   // Configure interface objects here.
-  PFQuery *contactsQuery = [DUserWatch query];
-  [contactsQuery fromPinWithName:WatchRequestContacts];
   
-  [contactsQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-    contacts = [objects copy];
+  // Start a WCSession to get the latest context from the app (contacts)
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    session = [WCSession defaultSession];
+    session.delegate = self;
+    [session activateSession];
+  });
+  
+  NSDictionary *applicationContext = [session receivedApplicationContext];
+  
+  contacts = applicationContext[WatchContextContactsKey];
     
-    if (error || !contacts || contacts.count == 0) {
-      // Update UI
-      if (!error && contacts.count == 0) {
-        [self.notLoggedInLabel setText:@"Dude, use your phone to add your closest friends to show up here."];
-      
-      } else {
-        [self.notLoggedInLabel setText:@"Woah Dude, make sure your phone is connected to the internet and your watch."];
-      }
-      
-      [self.notLoggedInLabel setHidden:NO];
-      [self.table setHidden:YES];
-      
-      // Start a timer to check again
-      [NSTimer scheduledTimerWithTimeInterval:3.0 target:self selector:@selector(awakeWithContext:) userInfo:nil repeats:NO];
-      
-    } else {
+    if (contacts.count > 0) {
       // Update UI
       [self.table setHidden:NO];
       [self.notLoggedInLabel setHidden:YES];
       
       // Update table
       [self configureTableWithContacts];
+      
+    } else {
+      // Update UI
+      if (applicationContext) {
+        [self.notLoggedInLabel setText:@"Dude, add your closest friends as favorites on your phone."];
+        
+      } else {
+        [self.notLoggedInLabel setText:@"Woah Dude, make sure your phone is connected to the internet and your watch."];
+      }
+      
+      [self.notLoggedInLabel setHidden:NO];
+      [self.table setHidden:YES];
     }
-  }];
 }
 
 - (void)didAppear {
@@ -89,9 +94,9 @@
   for (NSInteger i=0; i < contacts.count; i++) {
     if (i % 2 == 0)// If the index/2 has a modulo of 0
       // Add object to right array
-      [contactsLeft addObject:[contacts objectAtIndex:i]];
+      [contactsLeft addObject:[[contacts allObjects] objectAtIndex:i]];
     else
-      [contactsRight addObject:[contacts objectAtIndex:i]];
+      [contactsRight addObject:[[contacts allObjects] objectAtIndex:i]];
   }
   
   // Set the number of rows
@@ -142,14 +147,30 @@
   }
 }
 
-#pragma mark - Notification Hadnling
-- (void)handleActionWithIdentifier:(NSString*)identifier forRemoteNotification:(NSDictionary*)remoteNotification {
-  NSString *senderEmail = remoteNotification[@"email"];
+#pragma mark - WCSessionDelegate
+- (void)session:(WCSession *)session didReceiveApplicationContext:(NSDictionary<NSString *,id> *)applicationContext {  
+  contacts = applicationContext[WatchContextContactsKey];
   
-  PFQuery *senderQuery = [DUserWatch query];
-  [senderQuery whereKey:@"email" equalTo:senderEmail];
-  
-  [self pushControllerWithName:@"MessagesController" context:[senderQuery getFirstObject]];
+  if (contacts.count > 0) {
+    // Update UI
+    [self.table setHidden:NO];
+    [self.notLoggedInLabel setHidden:YES];
+    
+    // Update table
+    [self configureTableWithContacts];
+    
+  } else {
+    // Update UI
+    if (applicationContext) {
+      [self.notLoggedInLabel setText:@"Dude, add your closest friends as favorites on your phone."];
+      
+    } else {
+      [self.notLoggedInLabel setText:@"Woah Dude, make sure your phone is connected to the internet and your watch."];
+    }
+    
+    [self.notLoggedInLabel setHidden:NO];
+    [self.table setHidden:YES];
+  }
 }
 
 @end

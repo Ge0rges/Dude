@@ -20,6 +20,9 @@
 #import "JCNotificationBanner.h"
 #import "JCNotificationBannerPresenterIOS7Style.h"
 
+// Models
+#import "DUser.h"
+
 @interface AppDelegate ()
 
 @end
@@ -35,13 +38,12 @@
   
   // Register our subclass
   [DUser registerSubclass];
-  
-  // Enable data sharing in app extensions.
-  [Parse enableDataSharingWithApplicationGroupIdentifier:@"group.com.ge0rges.Dude"];
-  
+
   [Parse setApplicationId:@"Lwdk0Qnb9755omfrz9Jt1462lzCyzBSTU4lSs37S" clientKey:@"bqhjVGFBHTtfjyoRG8WlYBrjqkulOjcilhtQursd"];
   [PFAnalytics trackAppOpenedWithLaunchOptions:launchOptions];
-      
+  
+  [PFUser enableRevocableSessionInBackground];
+  
   // Register for Push Notifications
   UIUserNotificationType userNotificationTypes = (UIUserNotificationTypeAlert | UIUserNotificationTypeBadge | UIUserNotificationTypeSound);
   
@@ -190,36 +192,6 @@
   [self.window.rootViewController.navigationController presentViewController:messagesTableVC animated:YES completion:nil];
   
   completionHandler();
-}
-
-- (void)application:(UIApplication*)application handleWatchKitExtensionRequest:(NSDictionary*)userInfo reply:(void (^)(NSDictionary*))reply {
-  if ([userInfo[WatchRequestsKey] isEqualToString:WatchRequestMessages]) {
-    [[MessagesManager sharedInstance] setLocationForMessageGenerationWithCompletion:^(NSError *error) {
-      if (error) {
-        reply(nil);
-        return;
-        
-      } else {
-        MessagesManager *messagesManager = [MessagesManager sharedInstance];
-        
-        NSArray *messages = [messagesManager generateMessages:15];
-        
-        reply(@{@"messages": messages});
-        
-        return;
-      }
-    }];
-    
-  } else if ([userInfo[WatchRequestsKey] isEqualToString:WatchRequestSendMessages]) {
-    PFQuery *senderQuery = [DUser query];
-    [senderQuery whereKey:@"email" equalTo:userInfo[@"senderEmail"]];
-    
-    [senderQuery fromLocalDatastore];
-    
-    DUser *receiver = (DUser*)[senderQuery getFirstObject];
-    
-    [[MessagesManager sharedInstance] sendMessage:userInfo[@"message"] toContact:receiver withCompletion:nil];
-  }
 }
 
 @end

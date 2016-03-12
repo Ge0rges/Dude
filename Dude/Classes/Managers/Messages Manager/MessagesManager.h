@@ -13,21 +13,21 @@
 //Pods
 #import <Parse/Parse.h>
 
-typedef void (^LocationCompletionBlock)(NSError *error);
-typedef void (^MessageCompletionBlock)(BOOL success, NSError *error);
-typedef void (^UserAddedBlock)(PFObject *object, NSError *error);
+typedef void (^LocationCompletionBlock)( NSError * _Nullable error);
+typedef void (^MessageCompletionBlock)(BOOL success, NSError *_Nullable error);
+typedef void (^UserAddedBlock)(PFObject *_Nullable object, NSError * _Nullable error);
 
 @interface MessagesManager : NSObject
 
-+ (instancetype)sharedInstance;
++ (instancetype _Nullable)sharedInstance;
 
 // Message Generation
-- (void)setLocationForMessageGenerationWithCompletion:(LocationCompletionBlock)handler;
-- (NSArray*)generateMessages:(NSInteger)numberOfMessagesToGenerate;
+- (void)setLocationForMessageGenerationWithCompletion:(_Nonnull LocationCompletionBlock)handler;
+- (NSArray* _Nonnull)generateMessages:(NSInteger)numberOfMessagesToGenerate;
 
 // Sending messages
-- (void)sendMessage:(DMessage*)message toContact:(DUser*)user withCompletion:(MessageCompletionBlock)handler;
-- (void)tweetMessage:(DMessage*)message withCompletion:(MessageCompletionBlock)handler;
-- (void)postMessage:(DMessage*)message withCompletion:(MessageCompletionBlock)handler;
+- (void)sendMessage:(DMessage* _Nonnull)message toContact:(DUser* _Nonnull)user withCompletion:(_Nullable MessageCompletionBlock)handler;
+- (void)tweetMessage:(DMessage* _Nonnull)message withCompletion:(_Nullable MessageCompletionBlock)handler;
+- (void)postMessage:(DMessage* _Nonnull)message withCompletion:(_Nullable MessageCompletionBlock)handler;
 
 @end

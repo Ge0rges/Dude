@@ -12,6 +12,7 @@
 #import <Social/Social.h>
 #import <Contacts/Contacts.h>
 #import <UIKit/UIKit.h>
+#import <WatchConnectivity/WatchConnectivity.h>
 
 // Constants
 #import "Constants.h"
@@ -28,6 +29,13 @@
 
 // Controllers
 #import "UsersTableViewController.h"
+
+// Models
+#import "DUserWatch.h"
+
+@interface ContactsManager ()
+
+@end
 
 @implementation ContactsManager
 
@@ -90,26 +98,39 @@
 }
 
 #pragma mark - Fetching
-- (NSArray*)getContactsRefreshedNecessary:(BOOL)needsLatestData favourites:(BOOL)favs {
+- (NSSet*)getContactsRefreshedNecessary:(BOOL)needsLatestData favourites:(BOOL)favs {
   if (needsLatestData) [[DUser currentUser] fetch];
   
   NSSet *emails = (favs) ? [DUser currentUser].favouriteContactsEmails : [DUser currentUser].contactsEmails;
-  if (!emails) return @[];
+  if (!emails) return [NSSet new];
   
   // Get the PFUsers
   PFQuery *userQuery = [DUser query];
   
   [userQuery whereKey:@"email" containedIn:[emails allObjects]];
-  if (!needsLatestData) [userQuery fromLocalDatastore];
-  
-  NSArray *users = [userQuery findObjects];
-  
-  if (!users && !needsLatestData) {
-    return [self getContactsRefreshedNecessary:YES favourites:favs];
+  if (!needsLatestData) {
+    [userQuery fromLocalDatastore];
   }
   
-  if (needsLatestData) [PFObject pinAllInBackground:users withName:WatchRequestContacts];
+  NSSet *users = [NSSet setWithArray:[userQuery findObjects]];
   
+  if (needsLatestData) {
+    [DUser pinAllInBackground:[users allObjects]];
+  }
+  
+  if (needsLatestData && favs && [WCSession isSupported]) {
+    NSMutableSet *watchUsers = [NSMutableSet new];
+    
+    for (DUser *user in users) {
+      [watchUsers addObject:user];
+    }
+    
+    WCSession *session = [WCSession defaultSession];
+    [session activateSession];
+    
+    [session updateApplicationContext:@{WatchContextContactsKey: (NSSet*)watchUsers} error:nil];
+  }
+
   return users;
 }
 
@@ -152,6 +173,7 @@
 }
 
 - (void)addDeviceContactsAndSendNotification:(BOOL)sendNotification {
+  
   Reachability *reachability = [Reachability reachabilityForInternetConnection];
   if ([reachability currentReachabilityStatus] != ReachableViaWiFi) return;
   
@@ -172,27 +194,29 @@
     PFQuery *userQuery = [DUser query];
     [userQuery whereKey:@"email" containedIn:[contactEmails allObjects]];
     
-    NSArray *users = [userQuery findObjects];
-    
-    NSMutableSet *currentUserContacts = [[DUser currentUser].contactsEmails mutableCopy];
-    
-    for (DUser *user in users) {
-      [currentUserContacts addObject:user.email];
-    }
-    
-    [[DUser currentUser] setContactsEmails:currentUserContacts];
-    
-    [[DUser currentUser] saveInBackgroundWithBlock:^(BOOL success, NSError *error) {
-      AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
-      UIViewController *viewController = appDelegate.visibleViewController;
+    [userQuery findObjectsInBackgroundWithBlock:^(NSArray * _Nullable objects, NSError * _Nullable error) {
+      NSMutableSet *currentUserContacts = [[DUser currentUser].contactsEmails mutableCopy];
       
-      if ([viewController isKindOfClass:[UsersTableViewController class]]) {
-        UsersTableViewController *userTableVC = (UsersTableViewController*)viewController;
-        [userTableVC reloadData:nil];
+      for (DUser *user in objects) {
+        [currentUserContacts addObject:user.email];
       }
       
-      for (DUser *user in users) {
-        [self sendAddedNotificationToContact:user];
+      if (objects.count > 0) {
+        [[DUser currentUser] setContactsEmails:currentUserContacts];
+        
+        [[DUser currentUser] saveInBackgroundWithBlock:^(BOOL success, NSError *error) {
+          AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
+          UIViewController *viewController = appDelegate.visibleViewController;
+          
+          if ([viewController isKindOfClass:[UsersTableViewController class]] && success) {
+            UsersTableViewController *userTableVC = (UsersTableViewController*)viewController;
+            [userTableVC reloadData:nil];
+          }
+          
+          for (DUser *user in objects) {
+            [self sendAddedNotificationToContact:user];
+          }
+        }];
       }
       
     }];
@@ -200,7 +224,7 @@
 }
 
 #pragma mark - Removing
-- (NSArray*)removeContact:(NSString*)email reloadContacts:(BOOL)reload {
+- (NSSet*)removeContact:(NSString*)email reloadContacts:(BOOL)reload {
   // Remove the username from the list
   NSMutableSet *savedContacts = [[DUser currentUser].contactsEmails mutableCopy];
   

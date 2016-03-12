@@ -15,29 +15,29 @@
 // Frameworks
 #import <Accounts/Accounts.h>
 
-typedef void (^AccountCompletionBlock)(BOOL success, ACAccount *account, NSError *error);
+typedef void (^AccountCompletionBlock)(BOOL success, ACAccount * _Nullable account, NSError * _Nullable error);
 
 @interface DUser : PFUser <PFSubclassing>
 
-@property (strong, nonatomic) PFFile *profileImage;
+@property (strong, nonatomic) PFFile *_Nullable profileImage;
 
-@property (strong, nonatomic) NSString *fullName;
+@property (strong, nonatomic) NSString *_Nullable fullName;
 
 // Set of user emails
-@property (strong, nonatomic) NSSet *blockedEmails;
-@property (strong, nonatomic) NSSet *contactsEmails;
-@property (strong, nonatomic) NSSet *favouriteContactsEmails;
+@property (strong, nonatomic) NSSet *_Nullable blockedEmails;
+@property (strong, nonatomic) NSSet *_Nullable contactsEmails;
+@property (strong, nonatomic) NSSet *_Nullable favouriteContactsEmails;
 
-@property (strong, nonatomic) NSDictionary *lastSeens;
+@property (strong, nonatomic) NSDictionary *_Nullable lastSeens;
 
-+ (instancetype)currentUser;
-+ (instancetype)object;
++ (instancetype _Nullable)currentUser;
++ (instancetype _Nonnull)object;
 
-@property (strong, nonatomic, readonly) NSString *facebookUsername;
-@property (strong, nonatomic, readonly) NSString *twitterUsername;
+@property (strong, nonatomic, readonly) NSString *_Nullable facebookUsername;
+@property (strong, nonatomic, readonly) NSString *_Nullable twitterUsername;
 
-- (void)selectTwitterAccountWithCompletion:(AccountCompletionBlock)completion;
-- (void)selectFacebookAccountWithCompletion:(AccountCompletionBlock)completion;
+- (void)selectTwitterAccountWithCompletion:(_Nullable AccountCompletionBlock)completion;
+- (void)selectFacebookAccountWithCompletion:(_Nullable AccountCompletionBlock)completion;
 
 - (void)renewCredentials;
 

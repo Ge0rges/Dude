@@ -16,6 +16,7 @@
 // Models
 #import "RowController.h"
 #import "DUserWatch.h"
+#import "DMessage.h"
 
 // Constants
 #import "Constants.h"
@@ -44,11 +45,9 @@
   
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    if ([WCSession isSupported]) {
-      session = [WCSession defaultSession];
-      session.delegate = self;
-      [session activateSession];
-    }
+    session = [WCSession defaultSession];
+    session.delegate = self;
+    [session activateSession];
   });
   
   // Set the messages
@@ -62,7 +61,7 @@
     
     
     // Run a backup query by asking for messages (takes more time)
-    [session sendMessage:@{WatchRequestMessages: WatchRequestsKey} replyHandler:^(NSDictionary<NSString *,id> * _Nonnull replyMessage) {
+    [session sendMessage:@{WatchRequestKey: WatchRequestMessagesValue} replyHandler:^(NSDictionary<NSString *,id> * _Nonnull replyMessage) {
       messages = replyMessage[@"messages"];
       
       if (!messages) {
@@ -84,7 +83,7 @@
       [self.notLoggedInLabel setHidden:NO];
       [self.table setHidden:YES];
       
-      // Start a timer to check again
+      // Try again
       [self awakeWithContext:context];
     }];
     
@@ -99,30 +98,22 @@
 }
 
 
-- (void)willActivate {
-  // This method is called when watch view controller is about to be visible to user
-  [super willActivate];
-}
-
-#pragma mark - WCSessionDelegate
-- (void)session:(WCSession*)session didReceiveMessageData:(nonnull NSData*)messageData {
-  
-}
-
 #pragma mark - Table Rows
 - (void)configureTableWithMessages {
   [self.table setNumberOfRows:messages.count withRowType:@"rowController"];
   
   for (NSInteger i = 0; i < self.table.numberOfRows; i++) {
     RowController *row = [self.table rowControllerAtIndex:i];
-    [row.textLabel setText:messages[i]];
+    DMessage *message = messages[i];
+
+    [row.textLabel setText:message.message];
   }
 }
 
 - (void)table:(WKInterfaceTable*)table didSelectRowAtIndex:(NSInteger)rowIndex {
-  NSDictionary *payload =  @{WatchRequestSendMessages: WatchRequestsKey,
+  NSDictionary *payload =  @{WatchRequestKey: WatchRequestSendMessageValue,
                              @"message": messages[rowIndex],
-                             @"senderEmail": selectedUser.email
+                             @"user": selectedUser.email
                              };
   
   if (session.reachable) {

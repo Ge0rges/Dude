@@ -11,18 +11,19 @@
 // Pods
 #import <Parse/PFObject+Subclass.h>
 
-NSString* const ProfileImageKey = @"profileImage";
+NSString* const ProfileImageKey = @"profileImage"; // Defined in DUserWatch which is imported
+NSString* const FullNameKey = @"fullName"; // Defined in DUserWatch which is imported
 NSString* const BlockedEmailsKey = @"blockedEmails";
 NSString* const ContactsEmailsKey = @"contactsEmails";
 NSString* const FavouriteContactsKey = @"favouriteContactsEmails";
 NSString* const LastSeensKey = @"lastSeens";
-NSString* const FullNameKey = @"fullName";
 
 @implementation DUser
 
 @dynamic profileImage, lastSeens, blockedEmails,  contactsEmails, favouriteContactsEmails, fullName;
 
 #pragma mark - Initializations
+
 + (instancetype)currentUser {
   DUser *currentUser = (DUser*)[super currentUser];
   
@@ -124,7 +125,7 @@ NSString* const FullNameKey = @"fullName";
   return (account) ? account.userFullName : @"No Account Selected";
 }
 
-- (void)selectTwitterAccountWithCompletion:(AccountCompletionBlock)completion {
+- (void)selectTwitterAccountWithCompletion:(_Nullable AccountCompletionBlock)completion {
   ACAccountStore *accountStore = [ACAccountStore new];
   ACAccountType *twitterTypeAccount = [accountStore accountTypeWithAccountTypeIdentifier:ACAccountTypeIdentifierTwitter];
   
@@ -133,7 +134,7 @@ NSString* const FullNameKey = @"fullName";
       // Check if there are any Twitter accounts
       NSArray *accounts = [accountStore accountsWithAccountType:twitterTypeAccount];
       if (!accounts || accounts.count == 0) {
-        completion(YES, nil, [NSError errorWithDomain:@"NoAccounts" code:404 userInfo:nil]);
+        if (completion) completion(YES, nil, [NSError errorWithDomain:@"NoAccounts" code:404 userInfo:nil]);
         return;
       }
       
@@ -145,18 +146,18 @@ NSString* const FullNameKey = @"fullName";
         [[NSUserDefaults standardUserDefaults] setObject:account.identifier forKey:@"twitterAccountID"];
         [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"askTwitter"];
         
-        completion(granted, account, error);
+        if (completion) completion(granted, account, error);
       }
       
     } else {
       [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"askTwitter"];
       
-      completion(granted, nil, error);
+      if (completion) completion(granted, nil, error);
     }
   }];
 }
 
-- (void)selectFacebookAccountWithCompletion:(AccountCompletionBlock)completion {
+- (void)selectFacebookAccountWithCompletion:(_Nullable AccountCompletionBlock)completion {
   ACAccountStore *accountStore = [ACAccountStore new];
   
   ACAccountType *facebookTypeAccount = [accountStore accountTypeWithAccountTypeIdentifier:ACAccountTypeIdentifierFacebook];
@@ -172,7 +173,7 @@ NSString* const FullNameKey = @"fullName";
       // Check if there are any Faceboook accounts
       NSArray *accounts = [accountStore accountsWithAccountType:facebookTypeAccount];
       if (!accounts || accounts.count == 0) {
-        completion(YES, nil, [NSError errorWithDomain:@"NoAccounts" code:404 userInfo:nil]);
+        if (completion)  completion(YES, nil, [NSError errorWithDomain:@"NoAccounts" code:404 userInfo:nil]);
         return;
       }
       
@@ -184,13 +185,13 @@ NSString* const FullNameKey = @"fullName";
         [[NSUserDefaults standardUserDefaults] setObject:account.identifier forKey:@"facebookAccountID"];
         [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"askFacebook"];
         
-        completion(granted, account, error);
+        if (completion) completion(granted, account, error);
       }
       
     } else {
       [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"askFacebook"];
       
-      completion(granted, nil, error);
+      if (completion) completion(granted, nil, error);
     }
   }];
 }
@@ -220,7 +221,7 @@ NSString* const FullNameKey = @"fullName";
         [[NSUserDefaults standardUserDefaults] setObject:account.identifier forKey:(twitter) ? @"twitterAccountID" : @"facebookAccountID"];
         [[NSUserDefaults standardUserDefaults] setBool:NO forKey:(twitter) ? @"askTwitter" : @"askFacebook"];
                 
-        completion(YES, account, nil);
+        if (completion) completion(YES, account, nil);
       }]];
     }
     

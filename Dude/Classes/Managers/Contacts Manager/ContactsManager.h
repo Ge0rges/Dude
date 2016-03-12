@@ -34,11 +34,11 @@
 - (BOOL)contactBlockedCurrentUser:(DUser*)user;
 
 // Removing
-- (NSArray*)removeContact:(DUser*)user reloadContacts:(BOOL)reload;
+- (NSSet*)removeContact:(DUser*)user reloadContacts:(BOOL)reload;
 - (void)removeContactFromFavourites:(DUser*)user;
 
 // Fetching contacts
-- (NSArray*)getContactsRefreshedNecessary:(BOOL)needsLatestData favourites:(BOOL)favs;
+- (NSSet*)getContactsRefreshedNecessary:(BOOL)needsLatestData favourites:(BOOL)favs;
 
 // Last seens
 - (DMessage*)latestMessageForContact:(DUser*)user;

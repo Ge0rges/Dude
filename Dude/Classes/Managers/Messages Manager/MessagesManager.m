@@ -14,13 +14,17 @@
 // Classes
 #import "AppDelegate.h"
 
+// Models
+#import "DUserWatch.h"
+
 // Frameworks
 #import <Social/Social.h>
+#import <WatchConnectivity/WatchConnectivity.h>
 
 // Pods
 #import <SOMotionDetector/SOMotionDetector.h>
 
-@interface MessagesManager () <CLLocationManagerDelegate, SOMotionDetectorDelegate> {
+@interface MessagesManager () <CLLocationManagerDelegate, SOMotionDetectorDelegate, WCSessionDelegate> {
   LocationCompletionBlock locationCompletionBlock;
   
   BOOL userIsInAutomobile;
@@ -39,13 +43,17 @@
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     sharedMessagesManager = [self new];
+    WCSession *session = [WCSession defaultSession];
+    session.delegate = sharedMessagesManager;
+    [session activateSession];
+
   });
   
   return sharedMessagesManager;
 }
 
 #pragma mark - Location Handling
-- (void)setLocationForMessageGenerationWithCompletion:(LocationCompletionBlock)handler {
+- (void)setLocationForMessageGenerationWithCompletion:(_Nonnull LocationCompletionBlock)handler {
   self.locationManager = [CLLocationManager new];
   
   if (fabs([self.locationManager.location.timestamp timeIntervalSinceNow]) < 600 && self.locationManager.location) {// Check if we have a cached location within 10min
@@ -282,10 +290,7 @@
 }
 
 #pragma mark - Sending
-- (void)sendMessage:(DMessage*)message toContact:(DUser*)user withCompletion:(MessageCompletionBlock)handler {
-  // Make sure we have all we need before proceeeding
-  if (!message || !user) handler(NO, [NSError errorWithDomain:@"Arguments" code:404 userInfo:nil]);
-
+- (void)sendMessage:(DMessage* _Nonnull)message toContact:(DUser* _Nonnull)user withCompletion:(_Nullable MessageCompletionBlock)handler {
   // Check if we blocked this user or if he blocked us
   if ([[DUser currentUser].blockedEmails containsObject:user.email] || [user.blockedEmails containsObject:[DUser currentUser].email]) {
     handler(NO, [NSError errorWithDomain:@"Blocked" code:500 userInfo:nil]);
@@ -413,7 +418,7 @@
   [PFCloud callFunctionInBackground:@"updateLastSeen" withParameters:payload block:^(id result, NSError *error) {
     if (!error) {
       // Save the last seen if we got a message
-      //wut? ^
+#warning wut? ^
       
     } else {
       NSLog(@"This shouldn't happen. If it does I don't know what to do.");
@@ -421,10 +426,7 @@
   }];
 }
 
-- (void)tweetMessage:(DMessage*)message withCompletion:(MessageCompletionBlock)handler {
-  // Make sure we have all we need before proceeeding
-  if (!message) handler(NO, [NSError errorWithDomain:@"Args" code:404 userInfo:nil]);
-  
+- (void)tweetMessage:(DMessage* _Nonnull)message withCompletion:(_Nullable MessageCompletionBlock)handler {
   ACAccountStore *accountStore = [ACAccountStore new];
   ACAccount *account = [accountStore accountWithIdentifier:[[NSUserDefaults standardUserDefaults] stringForKey:@"twitterAccountID"]];
   
@@ -452,7 +454,7 @@
       NSError *error;
       NSData *resultData = [QNSURLConnection sendSynchronousRequest:request returningResponse:nil error:&error];
 
-      if (!resultData) handler(NO, error);
+      if (!resultData && handler) handler(NO, error);
 
       NSString *shortenedURL = [[NSString alloc] initWithData:resultData encoding:NSUTF8StringEncoding];
       
@@ -476,19 +478,16 @@
   postRequest.account = account;
   
   [postRequest performRequestWithHandler:^(NSData *responseData, NSHTTPURLResponse *urlResponse, NSError *requestError) {
-    if (requestError) {
+    if (requestError && handler) {
       handler(NO, requestError);
       
-    } else if (urlResponse.statusCode == 200) {
+    } else if (urlResponse.statusCode == 200 && handler) {
       handler(YES, nil);
     }
   }];
 }
 
-- (void)postMessage:(DMessage*)message withCompletion:(MessageCompletionBlock)handler {
-  // Make sure we have all we need before proceeeding
-  if (!message) handler(NO, [NSError errorWithDomain:@"Args" code:404 userInfo:nil]);
-  
+- (void)postMessage:(DMessage* _Nonnull)message withCompletion:(_Nullable MessageCompletionBlock)handler {
   ACAccountStore *accountStore = [ACAccountStore new];
   ACAccount *account = [accountStore accountWithIdentifier:[[NSUserDefaults standardUserDefaults] stringForKey:@"facebookAccountID"]];
   
@@ -515,7 +514,7 @@
       NSError *error;
       NSData *resultData = [QNSURLConnection sendSynchronousRequest:request returningResponse:nil error:&error];
       
-      if (!resultData) handler(NO, error);
+      if (!resultData && handler) handler(NO, error);
       
       NSString *shortenedURL = [[NSString alloc] initWithData:resultData encoding:NSUTF8StringEncoding];
       
@@ -536,10 +535,10 @@
   postRequest.account = account;
   
   [postRequest performRequestWithHandler:^(NSData *responseData, NSHTTPURLResponse *urlResponse, NSError *requestError) {
-    if (requestError) {
+    if (requestError && handler) {
       handler(NO, requestError);
       
-    } else if (urlResponse.statusCode == 200) {
+    } else if (urlResponse.statusCode == 200 && handler) {
       handler(YES, nil);
     }
   }];
@@ -561,6 +560,31 @@
     AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
     [appDelegate.visibleViewController presentViewController:locationServicesAlertController animated:YES completion:nil];
   });
+}
+
+#pragma mark - WCSessionDelegate
+- (void)session:(WCSession *)session didReceiveMessage:(nonnull NSDictionary<NSString *,id> *)message {
+  if ([message[WatchRequestKey] isEqualToString:WatchRequestSendMessageValue]) {
+    PFQuery *userQuery = [DUser query];
+    [userQuery fromLocalDatastore];
+    
+    [userQuery whereKey:@"email" equalTo:((DUserWatch*)message[@"user"]).email];
+    
+    [userQuery findObjectsInBackgroundWithBlock:^(NSArray * _Nullable objects, NSError * _Nullable error) {
+      [self sendMessage:message[@"message"] toContact:(DUser*)objects[0] withCompletion:nil];
+    }];
+  }
+}
+
+- (void)session:(WCSession *)session didReceiveMessage:(NSDictionary<NSString *,id> *)message replyHandler:(void (^)(NSDictionary<NSString *,id> * _Nonnull))replyHandler {
+  if ([message[WatchRequestKey] isEqualToString:WatchRequestMessagesValue]) {
+    [self setLocationForMessageGenerationWithCompletion:^(NSError *error) {
+      replyHandler(@{@"messages": [[MessagesManager sharedInstance] generateMessages:20]});
+    }];
+  
+  } else {
+    replyHandler(@{});
+  }
 }
 
 @end

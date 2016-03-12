@@ -32,7 +32,7 @@
 typedef void(^completion)(BOOL validEmail);
 
 @interface UsersTableViewController () <UITableViewDataSource, UITableViewDelegate> {
-  NSArray *contacts;
+  NSSet *contacts;
   
   UIImageView *leftBarButtonitemImageView;
   
@@ -73,19 +73,15 @@ typedef void(^completion)(BOOL validEmail);
   // Set controller properties
   self.favoritesOnly = NO;
   
-  // Load initial data
-  [self performSelectorInBackground:@selector(reloadData:) withObject:nil];
-  
   // Update status bar
   [self setNeedsStatusBarAppearanceUpdate];
   
   // Set a timer to update the users every 5 minutes
+  [self reloadData:nil];
   [NSTimer timerWithTimeInterval:300 target:self selector:@selector(reloadData:) userInfo:nil repeats:YES];
   
   // Add device contacts
-  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
-    [[ContactsManager sharedInstance] addDeviceContactsAndSendNotification:YES];
-  });
+  [[ContactsManager sharedInstance] addDeviceContactsAndSendNotification:YES];
   
   // Add + to nav bar
   leftBarButtonitemImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"Add Button"]];
@@ -113,21 +109,12 @@ typedef void(^completion)(BOOL validEmail);
   BOOL shouldRefreshFacebook = [[NSUserDefaults standardUserDefaults] boolForKey:@"askFacebook"];
   
   if (shouldRefreshTwitter) {
-    [[DUser currentUser] selectTwitterAccountWithCompletion:^(BOOL success, ACAccount *account, NSError *error) {
-      if (shouldRefreshFacebook) {
-        [[DUser currentUser] selectFacebookAccountWithCompletion:^(BOOL success, ACAccount *account, NSError *error) {
-          [self performSelectorInBackground:@selector(reloadData:) withObject:nil];
-        }];
-        
-      } else {
-        [self performSelectorInBackground:@selector(reloadData:) withObject:nil];
-      }
-    }];
+    [[DUser currentUser] selectTwitterAccountWithCompletion:nil];
     
-  } else if (shouldRefreshFacebook) {
-    [[DUser currentUser] selectFacebookAccountWithCompletion:^(BOOL success, ACAccount *account, NSError *error) {
-      [self performSelectorInBackground:@selector(reloadData:) withObject:nil];
-    }];
+  }
+  
+  if (shouldRefreshFacebook) {
+    [[DUser currentUser] selectFacebookAccountWithCompletion:nil];
   }
 }
 
@@ -138,26 +125,27 @@ typedef void(^completion)(BOOL validEmail);
     self.favoritesOnly = segmentedController.selectedSegmentIndex;
   }
   
-  // Show fast results
-  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
-    contacts = [[ContactsManager sharedInstance] getContactsRefreshedNecessary:NO favourites:self.favoritesOnly];
-    [self performSelectorOnMainThread:@selector(updateUI) withObject:nil waitUntilDone:NO];
-  });
-
   // Update Table with new data in the background
-  if (!segmentedController || contacts.count == 0) {
-    [fetchUsersOperation cancel];// No double fetching
-    
-    fetchUsersOperation = [NSBlockOperation blockOperationWithBlock:^{
-      contacts = [[ContactsManager sharedInstance] getContactsRefreshedNecessary:YES favourites:self.favoritesOnly];
-      [self performSelectorOnMainThread:@selector(updateUI) withObject:nil waitUntilDone:NO];
-    }];
-    
-    fetchUsersOperation.queuePriority = NSOperationQueuePriorityHigh;
-    fetchUsersOperation.qualityOfService = NSQualityOfServiceUserInteractive;
-    
-    [[[NSThread alloc] initWithTarget:fetchUsersOperation selector:@selector(start) object:nil] start];
-  }
+  [fetchUsersOperation cancel];// No double fetching
+  
+  fetchUsersOperation = [NSBlockOperation blockOperationWithBlock:^{
+    if (!fetchUsersOperation.isCancelled) {
+      contacts = [[ContactsManager sharedInstance] getContactsRefreshedNecessary:NO favourites:self.favoritesOnly];
+      
+      if (contacts.count == 0) {
+        contacts = [[ContactsManager sharedInstance] getContactsRefreshedNecessary:YES favourites:self.favoritesOnly];
+        [self performSelectorOnMainThread:@selector(updateUI) withObject:nil waitUntilDone:NO];
+        
+      } else {
+        [self performSelectorOnMainThread:@selector(updateUI) withObject:nil waitUntilDone:NO];
+      }
+    }
+  }];
+  
+  fetchUsersOperation.queuePriority = NSOperationQueuePriorityHigh;
+  fetchUsersOperation.qualityOfService = NSQualityOfServiceUserInteractive;
+  
+  [[[NSThread alloc] initWithTarget:fetchUsersOperation selector:@selector(start) object:nil] start];
 }
 
 - (void)updateUI {
@@ -247,7 +235,7 @@ typedef void(^completion)(BOOL validEmail);
   [cell.detailTextLabel setText:nil];
   [cell.imageView setImage:[UIImage imageNamed:@"Default Profile Image"]];
   
-  DUser *user = contacts[indexPath.row];
+  DUser *user = [contacts allObjects][indexPath.row];
   DMessage *message = [[ContactsManager sharedInstance] latestMessageForContact:user];
   
   // Populate the cell
@@ -256,7 +244,7 @@ typedef void(^completion)(BOOL validEmail);
   
   [cell.imageView sd_setImageWithURL:[NSURL URLWithString:user.profileImage.url] placeholderImage:[UIImage imageNamed:@"Default Profile Image"] completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
     [cell.imageView setImage:[image resizedImage:CGSizeMake(50, 50) interpolationQuality:kCGInterpolationHigh]];
-    //[cell layoutSubviews];
+    [cell layoutSubviews];
   }];
   
   return cell;
@@ -333,7 +321,7 @@ typedef void(^completion)(BOOL validEmail);
 - (void)prepareForSegue:(UIStoryboardSegue*)segue sender:(id)sender {
   if ([segue.identifier isEqualToString:@"showProfile"]) {
     UITableViewCell *cell = (UITableViewCell*)sender;
-    DUser *selectedUser = contacts[[self.tableView indexPathForCell:cell].row];
+    DUser *selectedUser = [contacts allObjects][[self.tableView indexPathForCell:cell].row];
     
     ProfileViewController *pvc = (ProfileViewController*)[segue destinationViewController];
     pvc.profileUser = selectedUser;
@@ -494,7 +482,7 @@ typedef void(^completion)(BOOL validEmail);
 
 
 #pragma mark - Email Validation
-- (void)validateEmail:(NSString*)email withAlert:(BOOL)showAlert completion:(completion)completionBlock {
+- (void)validateEmail:(NSString* _Nonnull)email withAlert:(BOOL)showAlert completion:(_Nonnull completion)completionBlock {
   dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
     BOOL validEmail = [self validateEmailFormat:email];
     

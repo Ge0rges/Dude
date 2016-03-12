@@ -54,6 +54,6 @@
 
 #pragma mark - Status Bar
 - (BOOL)prefersStatusBarHidden {return NO;}
-- (UIStatusBarStyle)preferredStatusBarStyle {return UIStatusBarStyleLightContent;}
+- (UIStatusBarStyle)preferredStatusBarStyle {return UIStatusBarStyleDefault;}
 
 @end

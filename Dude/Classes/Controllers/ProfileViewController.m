@@ -152,7 +152,7 @@
 
 #pragma mark - Actions
 - (IBAction)requestStatus:(id)sender {
-#warning connect
+#warning connect to UI
   [[ContactsManager sharedInstance] requestStatusForContact:self.profileUser inBackground:YES];
 }
 
