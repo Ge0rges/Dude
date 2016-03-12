@@ -11,8 +11,8 @@
 // Pods
 #import <Parse/PFObject+Subclass.h>
 
-NSString* const ProfileImageKey = @"profileImage"; // Defined in DUserWatch which is imported
-NSString* const FullNameKey = @"fullName"; // Defined in DUserWatch which is imported
+extern NSString* const ProfileImageKey; // Defined in DUserWatch which is imported
+extern NSString* const FullNameKey; // Defined in DUserWatch which is imported
 NSString* const BlockedEmailsKey = @"blockedEmails";
 NSString* const ContactsEmailsKey = @"contactsEmails";
 NSString* const FavouriteContactsKey = @"favouriteContactsEmails";
@@ -54,6 +54,16 @@ NSString* const LastSeensKey = @"lastSeens";
   user.lastSeens = user[LastSeensKey];
   
   return user;
+}
+
+#pragma mark - WatchOS
+- (DUserWatch* _Nonnull)watchUser {
+  DUserWatch *watchUser = [DUserWatch new];
+  watchUser.profileImage = [UIImage imageWithData:[self.profileImage getData]];
+  watchUser.fullName = self.fullName;
+  watchUser.email = self.email;
+  
+  return watchUser;
 }
 
 #pragma mark - Support NSSet

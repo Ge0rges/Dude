@@ -38,6 +38,7 @@
 		FB1FF5691B8A2119001831D9 /* WelcomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FB1FF5681B8A2119001831D9 /* WelcomeViewController.m */; };
 		FB2FAF701B514FE70055018B /* Launch Screen.xib in Resources */ = {isa = PBXBuildFile; fileRef = FB2FAF6F1B514FE70055018B /* Launch Screen.xib */; };
 		FB32F8B41C52CF3B00F8698C /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = FB32F8B31C52CF3B00F8698C /* Reachability.m */; };
+		FB4BEC6C1C94C8BD0020919C /* DUserWatch.m in Sources */ = {isa = PBXBuildFile; fileRef = FB02EF6A1C0B53650010B916 /* DUserWatch.m */; };
 		FB4C5D951BF5EFA8002B5A58 /* Interface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FB4C5D931BF5EFA8002B5A58 /* Interface.storyboard */; };
 		FB4C5D971BF5EFA8002B5A58 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FB4C5D961BF5EFA8002B5A58 /* Assets.xcassets */; };
 		FB4C5D9E1BF5EFA8002B5A58 /* Watch Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = FB4C5D9D1BF5EFA8002B5A58 /* Watch Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -848,6 +849,7 @@
 				DAEF37671B1E1A2100391DD0 /* ProfileViewController.m in Sources */,
 				DACEE7D31AAF67E200B958F0 /* ContactsManager.m in Sources */,
 				FB32F8B41C52CF3B00F8698C /* Reachability.m in Sources */,
+				FB4BEC6C1C94C8BD0020919C /* DUserWatch.m in Sources */,
 				DA6F4C4E1A1E439800D40186 /* main.m in Sources */,
 				DAB5FCAD1AC69314003D8062 /* NSStringExtensions.m in Sources */,
 				DACEE7D71AB02DB200B958F0 /* UIImageExtensions.m in Sources */,

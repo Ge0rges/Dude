@@ -30,7 +30,6 @@
   // Perform any final initialization of your application.
     
   // Parse setup
-  [DUserWatch registerSubclass];
   [Parse setApplicationId:@"Lwdk0Qnb9755omfrz9Jt1462lzCyzBSTU4lSs37S" clientKey:@"bqhjVGFBHTtfjyoRG8WlYBrjqkulOjcilhtQursd"];
 }
 

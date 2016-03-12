@@ -128,14 +128,4 @@
   [self popToRootController];
 }
 
-#pragma mark - Notification handling
-- (void)handleActionWithIdentifier:(NSString*)identifier forRemoteNotification:(NSDictionary*)remoteNotification {
-  NSString *senderEmail = remoteNotification[@"email"];
-  
-  PFQuery *senderQuery = [DUserWatch query];
-  [senderQuery whereKey:@"email" equalTo:senderEmail];
-  
-  selectedUser = (DUserWatch*)[senderQuery getFirstObject];
-}
-
 @end

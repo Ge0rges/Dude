@@ -109,7 +109,7 @@
     DUserWatch *user = [contactsLeft objectAtIndex:i];
     
     // Get Image
-    UIImage *profileImage = [UIImage imageWithData:[user.profileImage getData]];
+    UIImage *profileImage = user.profileImage;
     
     // Populate the view
     [row.leftImageViewGroup setBackgroundImage:profileImage];
@@ -124,7 +124,7 @@
       DUserWatch *user = [contactsRight objectAtIndex:i];
       
       // Get image
-      UIImage *profileImage = [UIImage imageWithData:[user.profileImage getData]];
+      UIImage *profileImage = user.profileImage;
       
       // Populate the view
       [row.rightImageViewGroup setBackgroundImage:profileImage];

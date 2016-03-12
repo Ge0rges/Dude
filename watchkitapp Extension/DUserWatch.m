@@ -19,48 +19,21 @@ NSString* const EmailKey = @"email";
 
 @dynamic profileImage, fullName, email;
 
-#pragma mark - Initializations
-+ (instancetype)object {
-  DUserWatch *user = (DUserWatch*)[super object];
-  
-  user.profileImage = (PFFile*)user[ProfileImageKey];
-  
-  user.fullName = user[FullNameKey];
-  
-  user.email = user[EmailKey];
-  
-  return user;
+#pragma mark - NSCoding
+- (void)encodeWithCoder:(NSCoder *)aCoder {
+  [aCoder encodeObject:self.email forKey:EmailKey];
+  [aCoder encodeObject:self.fullName forKey:FullNameKey];
+  [aCoder encodeObject:self.profileImage forKey:ProfileImageKey];
 }
 
-#pragma mark - Support NSSet
-- (void)setObject:(nonnull id)object forKey:(nonnull NSString*)key {
-  if ([object isKindOfClass:[NSSet class]]) {
-    NSMutableSet *objectSet = [(NSSet*)object mutableCopy];
-    
-    // Make sure we don't have our own email in any of the contact arrays
-    if (self.email) {// Check that email isn't ni, it wil lcause a crash otherwise
-      [objectSet removeObject:self.email];
-    }
-    
-    [super setObject:[objectSet allObjects] forKey:key];
+- (nullable instancetype)initWithCoder:(NSCoder *)aDecoder {
+  self = [super init];
   
-  } else {
-    [super setObject:object forKey:key];
-  }
-}
-
-- (id)objectForKey:(nonnull NSString*)key {
-  id object = [super objectForKey:key];
+  self.email = [aDecoder decodeObjectForKey:EmailKey];
+  self.fullName = [aDecoder decodeObjectForKey:FullNameKey];
+  self.profileImage = [aDecoder decodeObjectForKey:ProfileImageKey];
   
-  if ([object isKindOfClass:[NSSet class]]) {
-    NSMutableSet *objectSet = [(NSSet*)object mutableCopy];
-    [objectSet removeObject:self.email];
-    
-    return objectSet;
-    
-  }
-  
-  return object;
+  return self;
 }
 
 @end

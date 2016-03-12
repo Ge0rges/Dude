@@ -15,6 +15,9 @@
 // Frameworks
 #import <Accounts/Accounts.h>
 
+// Models
+#import "DUserWatch.h"
+
 typedef void (^AccountCompletionBlock)(BOOL success, ACAccount * _Nullable account, NSError * _Nullable error);
 
 @interface DUser : PFUser <PFSubclassing>
@@ -42,5 +45,7 @@ typedef void (^AccountCompletionBlock)(BOOL success, ACAccount * _Nullable accou
 - (void)renewCredentials;
 
 + (void)showSocialServicesAlert;
+
+- (DUserWatch* _Nonnull)watchUser;
 
 @end
