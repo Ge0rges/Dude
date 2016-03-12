@@ -128,7 +128,12 @@
     WCSession *session = [WCSession defaultSession];
     [session activateSession];
     
-    [session updateApplicationContext:@{WatchContextContactsKey: (NSSet*)watchUsers} error:nil];
+    NSError *error;
+    [session updateApplicationContext:@{WatchContextContactsKey: (NSSet*)watchUsers} error:&error];
+    
+    if (error) {
+      NSLog(@"Application context errored");
+    }
   }
 
   return users;

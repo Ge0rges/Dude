@@ -416,11 +416,7 @@
   [push sendPushInBackgroundWithBlock:handler];
   
   [PFCloud callFunctionInBackground:@"updateLastSeen" withParameters:payload block:^(id result, NSError *error) {
-    if (!error) {
-      // Save the last seen if we got a message
-#warning wut? ^
-      
-    } else {
+    if (error) {
       NSLog(@"This shouldn't happen. If it does I don't know what to do.");
     }
   }];

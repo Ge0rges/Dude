@@ -30,12 +30,12 @@
                   moduleName = "Dude"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/GeorgesKanaan/Documents/Development/iOS_Development/Apps/Dude/Pods/Bolts/Bolts/Common/BFTask.m"
-                  timestampString = "479516835.730875"
+                  timestampString = "479519303.288542"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "18"
                   endingLineNumber = "18"
-                  offsetFromSymbolStart = "0">
+                  offsetFromSymbolStart = "11">
                </Location>
             </Locations>
          </BreakpointContent>
@@ -53,6 +53,22 @@
             startingLineNumber = "58"
             endingLineNumber = "58"
             landmarkName = "-awakeWithContext:"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "watchkitapp Extension/InterfaceController.m"
+            timestampString = "479519278.995437"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "152"
+            endingLineNumber = "152"
+            landmarkName = "-session:didReceiveApplicationContext:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

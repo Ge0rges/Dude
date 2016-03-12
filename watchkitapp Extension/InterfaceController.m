@@ -134,7 +134,7 @@
 }
 
 - (void)table:(WKInterfaceTable*)table didSelectRowAtIndex:(NSInteger)lclRowIndex {
-  rowIndex = lclRowIndex;
+  rowIndex = lclRowIndex;// Set the rowindex
 }
 
 - (void)tappedLeftImageViewGroup:(WKInterfaceGroup*)imageView {
@@ -142,7 +142,7 @@
 }
 
 - (void)tappedRightImageViewGroup:(WKInterfaceGroup*)imageView {
-  if (contactsRight.count > rowIndex) {
+  if (contactsRight.count > rowIndex) {// Make sure there's an image
     [self pushControllerWithName:@"MessagesController" context:contactsRight[rowIndex]];
   }
 }
