@@ -17,7 +17,7 @@ NSString* const EmailKey = @"email";
 
 @implementation DUserWatch
 
-@dynamic profileImage, fullName, email;
+@synthesize profileImage, fullName, email;
 
 #pragma mark - NSCoding
 - (void)encodeWithCoder:(NSCoder *)aCoder {

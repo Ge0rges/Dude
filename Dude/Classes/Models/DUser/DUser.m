@@ -60,8 +60,8 @@ NSString* const LastSeensKey = @"lastSeens";
 - (DUserWatch* _Nonnull)watchUser {
   DUserWatch *watchUser = [DUserWatch new];
   watchUser.profileImage = [UIImage imageWithData:[self.profileImage getData]];
-  watchUser.fullName = self.fullName;
-  watchUser.email = self.email;
+  watchUser.fullName = [self.fullName copy];
+  watchUser.email = [self.email copy];
   
   return watchUser;
 }

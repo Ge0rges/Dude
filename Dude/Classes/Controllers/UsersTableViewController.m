@@ -119,10 +119,10 @@ typedef void(^completion)(BOOL validEmail);
 }
 
 #pragma mark - Public Methods
-- (IBAction)reloadData:(UISegmentedControl*)segmentedController {
+- (IBAction)reloadData:(id)sender {
   // Determine if favorites
-  if (segmentedController) {
-    self.favoritesOnly = segmentedController.selectedSegmentIndex;
+  if ([sender isKindOfClass:[UISegmentedControl class]]) {
+    self.favoritesOnly = ((UISegmentedControl*)sender).selectedSegmentIndex;
   }
   
   // Update Table with new data in the background
@@ -131,13 +131,12 @@ typedef void(^completion)(BOOL validEmail);
   fetchUsersOperation = [NSBlockOperation blockOperationWithBlock:^{
     if (!fetchUsersOperation.isCancelled) {
       contacts = [[ContactsManager sharedInstance] getContactsRefreshedNecessary:NO favourites:self.favoritesOnly];
-      
-      if (contacts.count == 0) {
+      [self performSelectorOnMainThread:@selector(updateUI) withObject:nil waitUntilDone:NO];
+
+      if (contacts.count == 0 || ![sender isKindOfClass:[UISegmentedControl class]] || !sender) {
         contacts = [[ContactsManager sharedInstance] getContactsRefreshedNecessary:YES favourites:self.favoritesOnly];
         [self performSelectorOnMainThread:@selector(updateUI) withObject:nil waitUntilDone:NO];
         
-      } else {
-        [self performSelectorOnMainThread:@selector(updateUI) withObject:nil waitUntilDone:NO];
       }
     }
   }];
