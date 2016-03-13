@@ -33,7 +33,7 @@
 // Models
 #import "DUserWatch.h"
 
-@interface ContactsManager ()
+@interface ContactsManager () <WCSessionDelegate>
 
 @end
 
@@ -126,6 +126,7 @@
     }
     
     WCSession *session = [WCSession defaultSession];
+    session.delegate = self;
     [session activateSession];
     
     NSError *error;
