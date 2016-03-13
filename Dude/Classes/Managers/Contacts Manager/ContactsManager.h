@@ -20,33 +20,33 @@
 
 @interface ContactsManager : NSObject
 
-+ (instancetype)sharedInstance;
++ (instancetype _Nonnull)sharedInstance;
 
 // Adding
 - (void)addDeviceContactsAndSendNotification:(BOOL)sendNotification;
-- (void)addContactToFavourites:(DUser*)user;
-- (void)addContactToContacts:(DUser*)user sendNotification:(BOOL)sendNotification;
+- (void)addContactToFavourites:(DUser* _Nonnull)user;
+- (void)addContactToContacts:(DUser* _Nonnull)user sendNotification:(BOOL)sendNotification;
 
 // Blocking and unblocking
-- (void)blockContact:(DUser*)user;
-- (void)unblockContact:(DUser*)user;
-- (BOOL)currentUserBlockedContact:(DUser*)user;
-- (BOOL)contactBlockedCurrentUser:(DUser*)user;
+- (void)blockContact:(DUser* _Nonnull)user;
+- (void)unblockContact:(DUser* _Nonnull)user;
+- (BOOL)currentUserBlockedContact:(DUser* _Nonnull)user;
+- (BOOL)contactBlockedCurrentUser:(DUser* _Nonnull)user;
 
 // Removing
-- (NSSet*)removeContact:(DUser*)user reloadContacts:(BOOL)reload;
-- (void)removeContactFromFavourites:(DUser*)user;
+- (NSSet* _Nonnull)removeContact:(DUser* _Nonnull)user reloadContacts:(BOOL)reload;
+- (void)removeContactFromFavourites:(DUser* _Nonnull)user;
 
 // Fetching contacts
-- (NSSet*)getContactsRefreshedNecessary:(BOOL)needsLatestData favourites:(BOOL)favs;
+- (NSSet* _Nonnull)getContactsRefreshedNecessary:(BOOL)needsLatestData favourites:(BOOL)favs;
 
 // Last seens
-- (DMessage*)latestMessageForContact:(DUser*)user;
+- (DMessage* _Nullable)latestMessageForContact:(DUser* _Nonnull)user;
 
 // Added notification
-- (void)sendAddedNotificationToContact:(DUser*)user;
+- (void)sendAddedNotificationToContact:(DUser* _Nonnull)user;
 
 // Requesting status
-- (void)requestStatusForContact:(DUser*)user inBackground:(BOOL)background;
+- (void)requestStatusForContact:(DUser* _Nonnull)user inBackground:(BOOL)background;
 
 @end

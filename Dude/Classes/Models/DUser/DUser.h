@@ -31,7 +31,7 @@ typedef void (^AccountCompletionBlock)(BOOL success, ACAccount * _Nullable accou
 @property (strong, nonatomic) NSSet *_Nullable contactsEmails;
 @property (strong, nonatomic) NSSet *_Nullable favouriteContactsEmails;
 
-@property (strong, nonatomic) NSDictionary *_Nullable lastSeens;
+@property (strong, nonatomic) NSArray *_Nullable lastSeens;
 
 + (instancetype _Nullable)currentUser;
 + (instancetype _Nonnull)object;

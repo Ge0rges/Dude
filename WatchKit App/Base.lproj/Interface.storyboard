@@ -8,7 +8,7 @@
         <!--Favorites-->
         <scene sceneID="aou-V4-d1y">
             <objects>
-                <controller identifier="ContactsInterface" title="Favorites" backgroundImage="backgroundWatch" id="AgC-eL-Hgc" customClass="InterfaceController">
+                <controller identifier="ContactsInterface" title="Favorites" backgroundImage="Background Watch" id="AgC-eL-Hgc" customClass="InterfaceController">
                     <items>
                         <label width="1" alignment="center" verticalAlignment="center" hidden="YES" textAlignment="center" numberOfLines="0" id="4j8-CH-T6d">
                             <fontDescription key="font" type="system" pointSize="16"/>
@@ -19,14 +19,9 @@
                                     <group key="rootItem" width="1" height="54" alignment="left" id="dQI-gS-IUr">
                                         <items>
                                             <button alignment="left" verticalAlignment="center" id="GQV-tu-TzD">
-                                                <group key="contentGroup" width="0.5" height="1" alignment="left" layout="vertical" radius="0.0" id="8gG-v8-sVU">
+                                                <group key="contentGroup" width="0.5" height="1" alignment="left" layout="vertical" radius="26" id="8gG-v8-sVU">
                                                     <items>
-                                                        <group width="52" height="52" alignment="center" radius="26" id="6F5-ja-l7a">
-                                                            <items>
-                                                                <group width="50" height="50" alignment="center" verticalAlignment="center" backgroundImage="defaultProfileImageWatch" radius="25" id="fpV-rD-Xzh"/>
-                                                            </items>
-                                                            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                                        </group>
+                                                        <group width="0.80000000000000004" height="1" alignment="center" verticalAlignment="center" backgroundImage="Default Profile Image Watch" radius="26" id="6F5-ja-l7a"/>
                                                     </items>
                                                 </group>
                                                 <accessibilityTraits key="accessibilityTraits" button="YES" image="YES"/>
@@ -34,15 +29,10 @@
                                                     <action selector="tappedLeftButton:" destination="NGO-Ze-3QE" id="Dwp-pC-R6X"/>
                                                 </connections>
                                             </button>
-                                            <button alignment="left" verticalAlignment="center" id="YRk-OA-FBi">
+                                            <button alignment="right" verticalAlignment="center" id="YRk-OA-FBi">
                                                 <group key="contentGroup" width="0.5" height="1" alignment="left" layout="vertical" radius="0.0" id="M3V-zK-dLN">
                                                     <items>
-                                                        <group width="52" height="52" alignment="center" radius="26" id="rL3-F3-Bea">
-                                                            <items>
-                                                                <group width="50" height="50" alignment="center" verticalAlignment="center" backgroundImage="defaultProfileImageWatch" radius="25" id="Ccw-36-QWo"/>
-                                                            </items>
-                                                            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                                        </group>
+                                                        <group width="0.80000000000000004" height="1" alignment="center" verticalAlignment="center" backgroundImage="Default Profile Image Watch" radius="26" id="rL3-F3-Bea"/>
                                                     </items>
                                                 </group>
                                                 <accessibilityTraits key="accessibilityTraits" button="YES" image="YES"/>
@@ -55,8 +45,8 @@
                                         <edgeInsets key="margins" left="1" right="1" top="0.0" bottom="0.0"/>
                                     </group>
                                     <connections>
-                                        <outlet property="leftImageViewGroup" destination="fpV-rD-Xzh" id="nQM-9h-a4X"/>
-                                        <outlet property="rightImageViewGroup" destination="Ccw-36-QWo" id="8Yr-OG-qSA"/>
+                                        <outlet property="leftImageViewGroup" destination="6F5-ja-l7a" id="acS-yU-z2l"/>
+                                        <outlet property="rightImageViewGroup" destination="rL3-F3-Bea" id="429-xd-vNG"/>
                                     </connections>
                                 </tableRow>
                             </items>
@@ -74,20 +64,22 @@
         <!--Messages-->
         <scene sceneID="oLp-zf-ag5">
             <objects>
-                <controller identifier="MessagesController" title="Messages" backgroundImage="backgroundWatch" id="quf-hj-OP8" customClass="MessageInterfaceController">
+                <controller identifier="MessagesController" title="Messages" backgroundImage="Background Watch" id="quf-hj-OP8" customClass="MessageInterfaceController">
                     <items>
                         <table alignment="center" id="8ZA-Uh-ene">
                             <items>
                                 <tableRow identifier="rowController" id="Rcz-Pa-e40" customClass="RowController">
-                                    <group key="rootItem" width="1" height="52.5" alignment="left" layout="vertical" id="ZB5-JP-uGB">
+                                    <group key="rootItem" width="1" height="0.0" alignment="left" id="ZB5-JP-uGB">
                                         <items>
-                                            <label width="1" height="1" alignment="center" verticalAlignment="center" text="Dude, I'm having sushi for lunch at Kasakabe" numberOfLines="0" id="VuX-gw-yVK">
+                                            <imageView width="0.29999999999999999" height="1" alignment="left" image="Badge Plane Watch" contentMode="scaleAspectFit" id="Yll-Zl-75J"/>
+                                            <label width="0.69999999999999996" alignment="center" verticalAlignment="center" text="Dude, I'm having sushi for lunch at Kasakabe" textAlignment="left" numberOfLines="0" id="VuX-gw-yVK">
                                                 <fontDescription key="font" type="system" pointSize="14"/>
                                             </label>
                                         </items>
                                         <edgeInsets key="margins" left="0.0" right="0.0" top="0.0" bottom="0.0"/>
                                     </group>
                                     <connections>
+                                        <outlet property="imageView" destination="Yll-Zl-75J" id="Emt-oo-RLC"/>
                                         <outlet property="textLabel" destination="VuX-gw-yVK" id="8SL-aM-nOf"/>
                                     </connections>
                                 </tableRow>
@@ -105,10 +97,10 @@
             </objects>
             <point key="canvasLocation" x="480" y="669"/>
         </scene>
-        <!--backgroundWatch-->
+        <!--Static Interface Scene-->
         <scene sceneID="AEw-b0-oYE">
             <objects>
-                <notificationController backgroundImage="backgroundWatch" id="YCC-NB-fut">
+                <notificationController backgroundImage="Background Watch" id="YCC-NB-fut" userLabel="Static Interface Scene">
                     <items>
                         <label width="1" alignment="left" text="Notification" textAlignment="left" numberOfLines="0" id="XkS-y5-khE">
                             <fontDescription key="font" style="UICTFontTextStyleBody"/>
@@ -126,7 +118,7 @@
         <!--Dynamic Interface-->
         <scene sceneID="KIl-fV-djm">
             <objects>
-                <controller backgroundImage="backgroundWatch" id="gdX-wl-uQE" userLabel="Dynamic Interface" customClass="NotificationController">
+                <controller backgroundImage="Background Watch" id="gdX-wl-uQE" userLabel="Dynamic Interface" customClass="NotificationController">
                     <items>
                         <label width="1" alignment="left" text="Notification" textAlignment="left" numberOfLines="0" id="6ps-O2-LY3">
                             <fontDescription key="font" style="UICTFontTextStyleBody"/>

@@ -131,11 +131,11 @@ typedef void(^completion)(BOOL validEmail);
   fetchUsersOperation = [NSBlockOperation blockOperationWithBlock:^{
     if (!fetchUsersOperation.isCancelled) {
       contacts = [[ContactsManager sharedInstance] getContactsRefreshedNecessary:NO favourites:self.favoritesOnly];
-      [self performSelectorOnMainThread:@selector(updateUI) withObject:nil waitUntilDone:NO];
+      [self performSelectorOnMainThread:@selector(updateInterface) withObject:nil waitUntilDone:NO];
 
       if (contacts.count == 0 || ![sender isKindOfClass:[UISegmentedControl class]] || !sender) {
         contacts = [[ContactsManager sharedInstance] getContactsRefreshedNecessary:YES favourites:self.favoritesOnly];
-        [self performSelectorOnMainThread:@selector(updateUI) withObject:nil waitUntilDone:NO];
+        [self performSelectorOnMainThread:@selector(updateInterface) withObject:nil waitUntilDone:NO];
         
       }
     }
@@ -147,7 +147,7 @@ typedef void(^completion)(BOOL validEmail);
   [[[NSThread alloc] initWithTarget:fetchUsersOperation selector:@selector(start) object:nil] start];
 }
 
-- (void)updateUI {
+- (void)updateInterface {
   // Update UI again on main thread
   [self.tableView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];
   

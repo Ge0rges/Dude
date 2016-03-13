@@ -36,7 +36,6 @@
 @end
 
 @implementation ComposeSheetViewController
-#warning make composing sheet, make sure any fully public messages are put in lastSeen of currentUser email
 #warning scroll shade not appearing
 
 - (void)viewDidLoad {
@@ -227,7 +226,25 @@
   self.selectedMessage.includeLocation = self.shareLocationSwitch.on;
   
   if (self.shareDudeSwitch.on) {
-    self.selectedUsers = [[ContactsManager sharedInstance] getContactsRefreshedNecessary:NO favourites:NO];
+      self.selectedUsers = [[ContactsManager sharedInstance] getContactsRefreshedNecessary:NO favourites:NO];
+    
+    NSArray *lastSeenDictionariesArray = [DUser currentUser].lastSeens;
+    
+    __block NSMutableArray *mutableLastSeenDictionariesArray = [lastSeenDictionariesArray mutableCopy];
+    [lastSeenDictionariesArray enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+      NSDictionary *lastSeen = (NSDictionary*)obj;
+      
+      if (lastSeen[[DUser currentUser].email]) {
+        stop = (bool *)YES;// Wtf apple
+        [mutableLastSeenDictionariesArray removeObject:obj];
+      }
+    }];
+    
+    // Update our own last seen
+    [mutableLastSeenDictionariesArray addObject:@{[DUser currentUser].email: [NSKeyedArchiver archivedDataWithRootObject:self.selectedMessage]}];
+    
+    [DUser currentUser].lastSeens = [mutableLastSeenDictionariesArray copy];
+    [[DUser currentUser] saveInBackground];
   }
   
   for (DUser *user in self.selectedUsers) {

@@ -50,15 +50,27 @@
   
   // Update status bar
   [self setNeedsStatusBarAppearanceUpdate];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+  [super viewDidAppear:animated];
   
-  // Update UI
+  // Tell the delegate we are the visible view
+  AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
+  appDelegate.visibleViewController = self;
+  
+  [self updateProfileInterface];
+}
+
+#pragma mark - Ui
+- (void)updateProfileInterface {
   // Status Update
   DMessage *message = [[ContactsManager sharedInstance] latestMessageForContact:(self.profileUser)?: [DUser currentUser]];
   
   
   NSString *locationErrorText = ([self.profileUser isEqual:[DUser currentUser]]) ? @"Dude, you didn't share a location yet" : @"Dude, you didn't share a location yet";
   NSString *lastSeenErrorText = ([self.profileUser isEqual:[DUser currentUser]]) ? @"Dude, you didn't share an update yet" : @"Dude, you didn't share an update yet";
-
+  
   NSString *locationText = [NSString stringWithFormat:@"%@ - %@", message.city, message.timestamp];
   
   self.locationLabel.text = (message.city && message.timestamp) ? locationText : locationErrorText;
@@ -140,15 +152,6 @@
     self.sendUpdateLabel.text = @"Compose a new Update";
   }
 }
-
-- (void)viewDidAppear:(BOOL)animated {
-  [super viewDidAppear:animated];
-  
-  // Tell the delegate we are the visible view
-  AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
-  appDelegate.visibleViewController = self;
-}
-
 
 #pragma mark - Actions
 - (IBAction)requestStatus:(id)sender {

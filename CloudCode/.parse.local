@@ -1,0 +1,10 @@
+{
+  "applications": {
+    "Dude": {
+      "applicationId": "Lwdk0Qnb9755omfrz9Jt1462lzCyzBSTU4lSs37S"
+    },
+    "_default": {
+      "link": "Dude"
+    }
+  }
+}

@@ -41,7 +41,7 @@
 
     NSDictionary *applicationContext = [session receivedApplicationContext];
     
-    NSSet *contacts = applicationContext[WatchContextContactsKey];
+    NSArray *contacts = applicationContext[WatchContactsKey];
     
     DUserWatch *sendUser;
     

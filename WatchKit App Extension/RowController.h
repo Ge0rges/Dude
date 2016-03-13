@@ -21,8 +21,11 @@
 
 @property (strong, nonatomic) id<RowControllerDelegate> delegate;
 
+// Messages
 @property (weak, nonatomic) IBOutlet WKInterfaceLabel *textLabel;
+@property (weak, nonatomic) IBOutlet WKInterfaceImage *imageView;
 
+// Contacts
 @property (weak, nonatomic) IBOutlet WKInterfaceGroup *leftImageViewGroup;
 @property (weak, nonatomic) IBOutlet WKInterfaceGroup *rightImageViewGroup;
 

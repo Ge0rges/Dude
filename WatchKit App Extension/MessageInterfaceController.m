@@ -18,6 +18,9 @@
 #import "DUserWatch.h"
 #import "DMessage.h"
 
+// Pods
+#import <SDWebImage/SDWebImageDownloader.h>
+
 // Constants
 #import "Constants.h"
 
@@ -41,7 +44,7 @@
   [super awakeWithContext:context];
   // Configure interface objects here.
   
-  selectedUser = context;
+  selectedUser = context[WatchContactsKey];
   
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
@@ -51,41 +54,13 @@
   });
   
   // Set the messages
-  messages = session.receivedApplicationContext[@"messages"];
+  messages = context[WatchMessagesKey];
   
   // Check that we have message
   if (!messages) {
     // Update UI
     [self.notLoggedInLabel setHidden:NO];
     [self.table setHidden:YES];
-    
-    
-    // Run a backup query by asking for messages (takes more time)
-    [session sendMessage:@{WatchRequestKey: WatchRequestMessagesValue} replyHandler:^(NSDictionary<NSString *,id> * _Nonnull replyMessage) {
-      messages = replyMessage[@"messages"];
-      
-      if (!messages) {
-        // Update UI
-        [self.notLoggedInLabel setHidden:NO];
-        [self.table setHidden:YES];
-        
-      } else {
-        // Update UI
-        [self.notLoggedInLabel setHidden:YES];
-        [self.table setHidden:NO];
-        
-        // Update table
-        [self configureTableWithMessages];
-      }
-      
-    } errorHandler:^(NSError * _Nonnull error) {
-      // Update UI
-      [self.notLoggedInLabel setHidden:NO];
-      [self.table setHidden:YES];
-      
-      // Try again
-      [self awakeWithContext:context];
-    }];
     
   } else {
     // Update UI
@@ -106,14 +81,28 @@
     RowController *row = [self.table rowControllerAtIndex:i];
     DMessage *message = messages[i];
 
+    // Text
     [row.textLabel setText:message.message];
+    
+    // Images
+    if (i <= 6) {// Default messages handle image differently
+      NSString *imageName = [message.imageURL.absoluteString stringByReplacingOccurrencesOfString:@"_" withString:@" "];
+      imageName = [imageName stringByReplacingOccurrencesOfString:@"http://" withString:@""];
+      imageName = [imageName stringByReplacingOccurrencesOfString:@".com" withString:@""];
+      imageName = [imageName stringByAppendingString:@" Watch"];
+      
+      [row.imageView setImageNamed:imageName];
+    
+    } else {
+#warning implement new DMessage method for UIImage storage
+    }
   }
 }
 
 - (void)table:(WKInterfaceTable*)table didSelectRowAtIndex:(NSInteger)rowIndex {
-  NSDictionary *payload =  @{WatchRequestKey: WatchRequestSendMessageValue,
-                             @"message": messages[rowIndex],
-                             @"user": selectedUser.email
+  NSDictionary *payload =  @{WatchRequestTypeKey: WatchRequestSendMessageValue,
+                             WatchMessagesKey: messages[rowIndex],
+                             WatchContactsKey: selectedUser.email
                              };
   
   if (session.reachable) {

@@ -130,18 +130,30 @@
     [session activateSession];
     
     NSError *error;
-    [session updateApplicationContext:@{WatchContextContactsKey: [watchUsers allObjects]} error:&error];
+    [session updateApplicationContext:@{WatchContactsKey: [watchUsers allObjects]} error:&error];
     
     if (error) {
       NSLog(@"Application context failed with error: %@", error);
     }
   }
 
-  return users;
+  return (users) ?: [NSSet new];
 }
 
 - (DMessage*)latestMessageForContact:(DUser*)user {
-  return [DUser currentUser].lastSeens[user.email];
+  NSArray *lastSeenDictionariesArray = [DUser currentUser].lastSeens;
+  
+  __block DMessage *message;
+  [lastSeenDictionariesArray enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+    NSDictionary *lastSeen = (NSDictionary*)obj;
+    
+    if (lastSeen[user.email]) {
+      stop = (bool *)YES;// Wtf apple
+      message = (DMessage*)[NSKeyedUnarchiver unarchiveObjectWithData:lastSeen[user.email]];
+    }
+  }];
+  
+  return message;
 }
 
 #pragma mark - Adding

@@ -37,9 +37,6 @@
   
   // Update status bar
   [self setNeedsStatusBarAppearanceUpdate];
-  
-  // Generate Messages
-  [self performSelectorInBackground:@selector(reloadData) withObject:nil];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -48,6 +45,9 @@
   // Tell the delegate we are the visible view
   AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
   appDelegate.visibleViewController = self;
+  
+  // Generate Messages
+  [self performSelectorInBackground:@selector(reloadData) withObject:nil];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -110,7 +110,7 @@
   // Configure the cell
   [cell.textLabel setText:message.message];
   
-  if (indexPath.section >= 6) {// Non-Default messages
+  if (indexPath.section > 6) {// Non-Default messages
     [cell.imageView sd_setImageWithURL:message.imageURL completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
       [cell.imageView setImage:[image resizedImage:CGSizeMake(50, 50) interpolationQuality:kCGInterpolationHigh]];
       [cell layoutSubviews];

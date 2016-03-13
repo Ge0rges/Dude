@@ -415,9 +415,12 @@
   
   [push sendPushInBackgroundWithBlock:handler];
   
-  [PFCloud callFunctionInBackground:@"updateLastSeen" withParameters:payload block:^(id result, NSError *error) {
+  NSDictionary *cloudFunctionPayload = @{@"builtDictionary": @{@"data": [NSKeyedArchiver archivedDataWithRootObject:message]},
+                            @"email": [DUser currentUser].email};
+  
+  [PFCloud callFunctionInBackground:@"updateLastSeen" withParameters:cloudFunctionPayload block:^(id result, NSError *error) {
     if (error) {
-      NSLog(@"This shouldn't happen. If it does I don't know what to do.");
+      NSLog(@"error calling 'updateLastSeen' function: %@", error);
     }
   }];
 }
@@ -560,22 +563,22 @@
 
 #pragma mark - WCSessionDelegate
 - (void)session:(WCSession *)session didReceiveMessage:(nonnull NSDictionary<NSString *,id> *)message {
-  if ([message[WatchRequestKey] isEqualToString:WatchRequestSendMessageValue]) {
+  if ([message[WatchRequestTypeKey] isEqualToString:WatchRequestSendMessageValue]) {
     PFQuery *userQuery = [DUser query];
     [userQuery fromLocalDatastore];
     
-    [userQuery whereKey:@"email" equalTo:((DUserWatch*)message[@"user"]).email];
+    [userQuery whereKey:@"email" equalTo:((DUserWatch*)message[WatchContactsKey]).email];
     
     [userQuery findObjectsInBackgroundWithBlock:^(NSArray * _Nullable objects, NSError * _Nullable error) {
-      [self sendMessage:message[@"message"] toContact:(DUser*)objects[0] withCompletion:nil];
+      [self sendMessage:message[WatchMessagesKey] toContact:(DUser*)objects[0] withCompletion:nil];
     }];
   }
 }
 
 - (void)session:(WCSession *)session didReceiveMessage:(NSDictionary<NSString *,id> *)message replyHandler:(void (^)(NSDictionary<NSString *,id> * _Nonnull))replyHandler {
-  if ([message[WatchRequestKey] isEqualToString:WatchRequestMessagesValue]) {
+  if ([message[WatchRequestTypeKey] isEqualToString:WatchRequestMessagesValue]) {
     [self setLocationForMessageGenerationWithCompletion:^(NSError *error) {
-      replyHandler(@{@"messages": [[MessagesManager sharedInstance] generateMessages:20]});
+      replyHandler(@{WatchMessagesKey: [[MessagesManager sharedInstance] generateMessages:16]});
     }];
   
   } else {

@@ -1,47 +1,34 @@
 Parse.Cloud.define("updateLastSeen", function(request, response) {
-	
+
 	//Use the master key so we can use administrative access and modify fields on user objects:
 	Parse.Cloud.useMasterKey();
 
-	//Check for the "lastSeen" key from the parameters
-	if (request.params.lastSeen) {
-		
-		//Try to access the "lastSeens" dictionary from the payload:
-		var clone = request.params.lastSeen.slice(0);//Create a mutable copy of the dictionary
-		var timeStamp = new Date().getTime();
-		var key = (email + timeStamp);
-		clone[request.params.email] = request.params.lastSeen;
-		clone[key] = timeStamp;
-		
-		//Get user using `request.params.email`
+	if (request.params.email && request.params["data"]) {
 		var query = new Parse.Query(Parse.User);
-		query.get(userID, {
-		    success: function(_user) {
-			    
-			    console.log("Found user: " + _user);
-		        
-				var relation = _user.relation("currentMeeting");
-	            relation.add(_meeting);
-	
-	            _user.save(null, {
-	                success:function(){ /*Success asigning meeting relation for user*/},
-	                error:function(error){throw "*** WARNING: Relation error: " + error.code;}
-	            });
-		        
-		    },
-		    error: function() {
-		        response.error("Failed to find user with email: `" + request.params.email + "`");
-		    }
-		});				
-					
-		//user set object: clone for key:"lastSeens"
-		
-		
-	}
-	else {
-		
-		response.error("No `lastSeen` object was delivered in the payload.");
-		
-	}
+		query.equalTo('email', request.params.email);
+		query.first({
+			success: function(user) {
+				var mutableLastSeenDictionariesArray = user.lastSeen.slice(0);
 
+				for (var i = 0; i < mutableLastSeenDictionariesArray.length; i++) {
+					var lastSeen = mutableLastSeenDictionariesArray[i];
+
+					if (lastSeen[response.params.email]) {
+						i = mutableLastSeenDictionariesArray.length+1;
+						mutableLastSeenDictionariesArray.splice(i, 1, request.params["builtDictionary"]);
+
+						user.lastSeens = mutableLastSeenDictionariesArray;
+						user.save;
+					}
+				}
+			},
+
+			error: function(error) {
+				response.error(error.code, "Error: " + error.message);
+			}
+		});
+
+	} else {
+		response.error("No 'email' pr 'data' object was delivered in the payload.");
+	}
 });

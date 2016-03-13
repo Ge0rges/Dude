@@ -1148,7 +1148,7 @@
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" image="E1C1A2CD-F643-428A-82E5-A6ABECA381F6" id="WgX-dx-Bjt">
+                                                <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" image="5F5541A5-EB49-4FAE-9D08-54FBC7BCDE12" id="WgX-dx-Bjt">
                                                     <rect key="frame" x="15" y="13" width="38" height="38"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                 </imageView>
@@ -1283,14 +1283,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="Back Indicator" width="13" height="22"/>
-        <image name="Block Person" width="162" height="20"/>
-        <image name="Blue Compose" width="24" height="24"/>
-        <image name="Compose" width="24" height="24"/>
-        <image name="Default Profile Image" width="120" height="120"/>
-        <image name="Disclosure" width="9" height="15"/>
-        <image name="Disconnected" width="210" height="213"/>
-        <image name="E1C1A2CD-F643-428A-82E5-A6ABECA381F6" width="38" height="38">
+        <image name="5F5541A5-EB49-4FAE-9D08-54FBC7BCDE12" width="38" height="38">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGPT5YJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK4HCBMU
 GR4fIyQrLjE3OlUkbnVsbNUJCgsMDQ4PEBESVk5TU2l6ZVYkY2xhc3NcTlNJbWFnZUZsYWdzVk5TUmVw
@@ -1437,6 +1430,13 @@ AKsArQCyALUAtwC5ALsAvQDCANkA2wDdIA8gFCAfICggOyA/IEogUyBYIGAgYyBoIHcgeyCCIIoglyCc
 IJ4goCClIK0gsCC1IL0gwCDSINUg2gAAAAAAAAIBAAAAAAAAAEEAAAAAAAAAAAAAAAAAACDcA
 </mutableData>
         </image>
+        <image name="Back Indicator" width="13" height="22"/>
+        <image name="Block Person" width="162" height="20"/>
+        <image name="Blue Compose" width="24" height="24"/>
+        <image name="Compose" width="24" height="24"/>
+        <image name="Default Profile Image" width="120" height="120"/>
+        <image name="Disclosure" width="9" height="15"/>
+        <image name="Disconnected" width="210" height="213"/>
         <image name="Favorite Deselected" width="30" height="28"/>
         <image name="Location" width="38" height="38"/>
         <image name="Messages Bubble" width="35" height="30"/>

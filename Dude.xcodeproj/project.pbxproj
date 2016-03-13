@@ -528,7 +528,7 @@
 				FB4C5D981BF5EFA8002B5A58 /* Info.plist */,
 			);
 			name = "Watch App";
-			path = watchkitapp;
+			path = "WatchKit App";
 			sourceTree = "<group>";
 		};
 		FB4C5DA11BF5EFA8002B5A58 /* Watch Extension */ = {
@@ -540,7 +540,7 @@
 				FB4C5DA21BF5EFA8002B5A58 /* Supporting Files */,
 			);
 			name = "Watch Extension";
-			path = "watchkitapp Extension";
+			path = "WatchKit App Extension";
 			sourceTree = "<group>";
 		};
 		FB4C5DA21BF5EFA8002B5A58 /* Supporting Files */ = {
@@ -1056,7 +1056,7 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = "watchkitapp Extension/Info.plist";
+				INFOPLIST_FILE = "WatchKit App Extension/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MTL_ENABLE_DEBUG_INFO = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.ge0rges.Dude.watchkitapp.watchkitextension;
@@ -1076,7 +1076,7 @@
 				ENABLE_BITCODE = YES;
 				ENABLE_ON_DEMAND_RESOURCES = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
-				INFOPLIST_FILE = "watchkitapp Extension/Info.plist";
+				INFOPLIST_FILE = "WatchKit App Extension/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.ge0rges.Dude.watchkitapp.watchkitextension;
 				PRODUCT_NAME = "${TARGET_NAME}";
@@ -1104,7 +1104,7 @@
 					"$(inherited)",
 				);
 				IBSC_MODULE = watchkitapp_Extension;
-				INFOPLIST_FILE = watchkitapp/Info.plist;
+				INFOPLIST_FILE = "WatchKit App/Info.plist";
 				MTL_ENABLE_DEBUG_INFO = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.ge0rges.Dude.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1127,7 +1127,7 @@
 				ENABLE_BITCODE = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
 				IBSC_MODULE = watchkitapp_Extension;
-				INFOPLIST_FILE = watchkitapp/Info.plist;
+				INFOPLIST_FILE = "WatchKit App/Info.plist";
 				PRODUCT_BUNDLE_IDENTIFIER = com.ge0rges.Dude.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";

@@ -13,8 +13,8 @@ end
 
 target :'Dude' do
   platform :ios, '9.0'
-  shared_pods
-  pod 'JCNotificationBannerPresenter'
   pod 'SDWebImage'
+  pod 'JCNotificationBannerPresenter'
   pod 'SOMotionDetector'
+  shared_pods
 end
