@@ -122,7 +122,7 @@
     NSMutableSet *watchUsers = [NSMutableSet new];
     
     for (DUser *user in users) {
-      [watchUsers addObject:[user watchUser]];
+      [watchUsers addObject:[NSKeyedArchiver archivedDataWithRootObject:[user watchUser]]];
     }
     
     WCSession *session = [WCSession defaultSession];
@@ -130,10 +130,10 @@
     [session activateSession];
     
     NSError *error;
-    [session updateApplicationContext:@{WatchContextContactsKey: (NSSet*)watchUsers} error:&error];
+    [session updateApplicationContext:@{WatchContextContactsKey: [watchUsers allObjects]} error:&error];
     
     if (error) {
-      NSLog(@"Application context errored");
+      NSLog(@"Application context failed with error: %@", error);
     }
   }
 

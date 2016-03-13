@@ -55,8 +55,16 @@
   
   NSDictionary *applicationContext = [session receivedApplicationContext];
   
-  contacts = applicationContext[WatchContextContactsKey];
-    
+  NSArray *contactsData = [(NSSet*)applicationContext[WatchContextContactsKey] allObjects];
+  
+  NSMutableArray *mutableContacts = [NSMutableArray new];
+  for (NSData *userData in contactsData) {
+    DUserWatch *watchUser = [NSKeyedUnarchiver unarchiveObjectWithData:userData];
+    [mutableContacts addObject:watchUser];
+  }
+  
+  contacts = [mutableContacts copy];
+  
     if (contacts.count > 0) {
       // Update UI
       [self.table setHidden:NO];
@@ -149,7 +157,15 @@
 
 #pragma mark - WCSessionDelegate
 - (void)session:(WCSession *)session didReceiveApplicationContext:(NSDictionary<NSString *,id> *)applicationContext {  
-  contacts = applicationContext[WatchContextContactsKey];
+  NSArray *contactsData = [(NSSet*)applicationContext[WatchContextContactsKey] allObjects];
+  
+  NSMutableArray *mutableContacts = [NSMutableArray new];
+  for (NSData *userData in contactsData) {
+    DUserWatch *watchUser = [NSKeyedUnarchiver unarchiveObjectWithData:userData];
+    [mutableContacts addObject:watchUser];
+  }
+  
+  contacts = [mutableContacts copy];
   
   if (contacts.count > 0) {
     // Update UI
