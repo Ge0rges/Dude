@@ -27,15 +27,15 @@
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
                   symbolName = "warnBlockingOperationOnMainThread"
-                  moduleName = "Dude"
+                  moduleName = "Watch Extension"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/GeorgesKanaan/Documents/Development/iOS_Development/Apps/Dude/Pods/Bolts/Bolts/Common/BFTask.m"
-                  timestampString = "479519303.288542"
+                  timestampString = "479520337.778651"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "18"
                   endingLineNumber = "18"
-                  offsetFromSymbolStart = "11">
+                  offsetFromSymbolStart = "18">
                </Location>
             </Locations>
          </BreakpointContent>

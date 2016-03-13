@@ -122,7 +122,7 @@
     NSMutableSet *watchUsers = [NSMutableSet new];
     
     for (DUser *user in users) {
-      [watchUsers addObject:user];
+      [watchUsers addObject:[user watchUser]];
     }
     
     WCSession *session = [WCSession defaultSession];
