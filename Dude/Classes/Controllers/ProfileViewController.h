@@ -17,6 +17,6 @@
 
 @interface ProfileViewController : UIViewController
 
-@property (strong, nonatomic) DUser *profileUser;
+@property (strong, nonatomic) DUser * _Nullable profileUser;
 
 @end

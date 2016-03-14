@@ -14,7 +14,7 @@
 
 @interface ComposeSheetViewController : UIViewController
 
-@property (strong, nonatomic) DMessage *selectedMessage;
-@property (strong, nonatomic) NSSet *selectedUsers;
+@property (strong, nonatomic) DMessage * _Nonnull selectedMessage;
+@property (strong, nonatomic) NSSet * _Nonnull selectedUsers;
 
 @end

@@ -54,6 +54,7 @@
 		FB68259E1C91D63300A88579 /* WatchConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB68259D1C91D63300A88579 /* WatchConnectivity.framework */; };
 		FB6F4E251C2FF2830083DCD8 /* ComposeSheetViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FB6F4E241C2FF2830083DCD8 /* ComposeSheetViewController.m */; };
 		FBDE26D71B81E0B5006485D0 /* SlidingSegues.m in Sources */ = {isa = PBXBuildFile; fileRef = FBDE26D61B81E0B5006485D0 /* SlidingSegues.m */; };
+		FBFAA8FB1C9737130049212B /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FBFAA8FA1C9737130049212B /* MapKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -192,6 +193,7 @@
 		FBA0019E1C23218600E9A263 /* Watch App.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Watch App.entitlements"; sourceTree = SOURCE_ROOT; };
 		FBDE26D51B81E0B5006485D0 /* SlidingSegues.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SlidingSegues.h; sourceTree = "<group>"; };
 		FBDE26D61B81E0B5006485D0 /* SlidingSegues.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SlidingSegues.m; sourceTree = "<group>"; };
+		FBFAA8FA1C9737130049212B /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -199,6 +201,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FBFAA8FB1C9737130049212B /* MapKit.framework in Frameworks */,
 				FB68259E1C91D63300A88579 /* WatchConnectivity.framework in Frameworks */,
 				FB68259C1C91BFFA00A88579 /* MessageUI.framework in Frameworks */,
 				FB02EF621C0B3EED0010B916 /* Contacts.framework in Frameworks */,
@@ -447,6 +450,7 @@
 		F569341E6D59A1D0A110C94E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				FBFAA8FA1C9737130049212B /* MapKit.framework */,
 				FB68259D1C91D63300A88579 /* WatchConnectivity.framework */,
 				FB68259B1C91BFFA00A88579 /* MessageUI.framework */,
 				FB02EF611C0B3EED0010B916 /* Contacts.framework */,

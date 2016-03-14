@@ -8,7 +8,7 @@ Parse.Cloud.define("updateLastSeen", function(request, response) {
 		query.equalTo('email', request.params.email);
 		query.first({
 			success: function(user) {
-				var mutableLastSeenDictionariesArray = user.lastSeen.slice(0);
+				var mutableLastSeenDictionariesArray = user.lastSeens.slice(0);
 
 				for (var i = 0; i < mutableLastSeenDictionariesArray.length; i++) {
 					var lastSeen = mutableLastSeenDictionariesArray[i];

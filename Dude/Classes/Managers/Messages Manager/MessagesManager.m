@@ -295,7 +295,7 @@
   if ([[DUser currentUser].blockedEmails containsObject:user.email] || [user.blockedEmails containsObject:[DUser currentUser].email]) {
     handler(NO, [NSError errorWithDomain:@"Blocked" code:500 userInfo:nil]);
   }
-  
+    
   // Build the payload
   NSDictionary *payload;
   

@@ -13,8 +13,8 @@
 #import "UIImage+RoundedCorner.h"
 
 @interface UIImage (Blur)
-+ (UIImage*)blurredScreenshotOfView:(UIView*)view;
++ (UIImage* _Nonnull)blurredScreenshotOfView:(UIView* _Nonnull)view;
 
 // WWDC 2013 image effects
-- (UIImage*)applyBlurWithRadius:(CGFloat)blurRadius tintColor:(UIColor*)tintColor saturationDeltaFactor:(CGFloat)saturationDeltaFactor maskImage:(UIImage*)maskImage;
+- (UIImage* _Nonnull)applyBlurWithRadius:(CGFloat)blurRadius tintColor:(UIColor* _Nonnull)tintColor saturationDeltaFactor:(CGFloat)saturationDeltaFactor maskImage:(UIImage* _Nonnull)maskImage;
 @end

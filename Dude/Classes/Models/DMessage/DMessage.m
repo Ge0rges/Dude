@@ -168,6 +168,10 @@ NSString* const IncludeLocationKey = @"includeLocation";
 }
 
 #pragma mark - Message Parsing
+- (NSString*)city {
+  return city;
+}
+
 - (NSString*)message {
   switch (self.type) {
     case DMessageTypeURL: {

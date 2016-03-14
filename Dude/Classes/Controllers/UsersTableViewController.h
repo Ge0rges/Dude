@@ -11,6 +11,6 @@
 
 @interface UsersTableViewController : UIViewController
 
-- (IBAction)reloadData:(UISegmentedControl*)segmentedControl;
+- (IBAction)reloadData:(UISegmentedControl* _Nullable)segmentedControl;
 
 @end

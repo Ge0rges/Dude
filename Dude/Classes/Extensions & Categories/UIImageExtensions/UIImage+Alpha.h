@@ -9,7 +9,7 @@
 
 @interface UIImage (Alpha)
 - (BOOL)hasAlpha;
-- (UIImage*)imageWithAlpha;
-- (UIImage*)transparentBorderImage:(NSUInteger)borderSize;
-- (CGImageRef)newBorderMask:(NSUInteger)borderSize size:(CGSize)size;
+- (UIImage* _Nonnull)imageWithAlpha;
+- (UIImage* _Nonnull)transparentBorderImage:(NSUInteger)borderSize;
+- (CGImageRef _Nonnull)newBorderMask:(NSUInteger)borderSize size:(CGSize)size;
 @end

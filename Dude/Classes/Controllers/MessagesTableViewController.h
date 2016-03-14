@@ -11,6 +11,6 @@
 
 @interface MessagesTableViewController : UITableViewController
 
-@property (strong, nonatomic) NSArray *selectedUsers;// Public so that notifications can set it
+@property (strong, nonatomic) NSArray * _Nullable selectedUsers;// Public so that notifications can set it
 
 @end

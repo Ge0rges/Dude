@@ -221,13 +221,19 @@
 
 #pragma mark - Actions
 - (IBAction)send {
+  // Set the messages send date
+  self.selectedMessage.sendDate = [NSDate date];
+  
+  // Send the message where needed
   MessagesManager *messagesManager = [MessagesManager sharedInstance];
   
-  self.selectedMessage.includeLocation = self.shareLocationSwitch.on;
+  self.selectedMessage.includeLocation = self.shareLocationSwitch.on;// Set wether the message should attach user's coordinates
   
+  // Public sharing
   if (self.shareDudeSwitch.on) {
-      self.selectedUsers = [[ContactsManager sharedInstance] getContactsRefreshedNecessary:NO favourites:NO];
-    
+    self.selectedUsers = [[ContactsManager sharedInstance] getContactsRefreshedNecessary:NO favourites:NO];
+
+    // Mimic the CloudCode method on the currentUser too
     NSArray *lastSeenDictionariesArray = [DUser currentUser].lastSeens;
     
     __block NSMutableArray *mutableLastSeenDictionariesArray = [lastSeenDictionariesArray mutableCopy];
@@ -247,18 +253,22 @@
     [[DUser currentUser] saveInBackground];
   }
   
+  // Send message to selected recipients
   for (DUser *user in self.selectedUsers) {
     [messagesManager sendMessage:self.selectedMessage toContact:user withCompletion:nil];
   }
   
+  // Share on twitter
   if (self.shareTwitterSwitch.on) {
     [messagesManager tweetMessage:self.selectedMessage withCompletion:nil];
   }
   
+  // Share on Facebook
   if (self.shareFacebookSwitch.on) {
     [messagesManager postMessage:self.selectedMessage withCompletion:nil];
   }
   
+  // Share via iMessage
   if (self.shareByMessageSwitch.on) {
     [self sendViaMessages];
   

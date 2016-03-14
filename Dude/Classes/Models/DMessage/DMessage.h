@@ -20,27 +20,27 @@ typedef NS_ENUM(NSInteger, DMessageType) {
 
 @property (nonatomic) BOOL includeLocation;
 
-@property (strong, nonatomic, readonly) NSString *message;// The full message string (Dude, I'm eating sushi for lunch at Itsu.)
-@property (strong, nonatomic, readonly) NSString *notificationMessage;// The string to be used for notifications (Gio: Dude, I'm eating sushi for lunch at Itsu.)
-@property (strong, nonatomic, readonly) NSString *notificationTitle;// The string to be used for notification titles (Gio - Message/Link/'s Location)
-@property (strong, nonatomic, readonly) NSString *venueName;// The string to be used for venue reference (Itsu)
+@property (strong, nonatomic, readonly) NSString * _Nonnull message;// The full message string (Dude, I'm eating sushi for lunch at Itsu.)
+@property (strong, nonatomic, readonly) NSString * _Nonnull notificationMessage;// The string to be used for notifications (Gio: Dude, I'm eating sushi for lunch at Itsu.)
+@property (strong, nonatomic, readonly) NSString * _Nonnull notificationTitle;// The string to be used for notification titles (Gio - Message/Link/'s Location)
+@property (strong, nonatomic, readonly) NSString * _Nonnull venueName;// The string to be used for venue reference (Itsu)
 
-@property (strong, nonatomic, readonly) NSString *lastSeen;// The last seen to be used for this message (Eating sushi for lunch at Itsu)
+@property (strong, nonatomic, readonly) NSString * _Nonnull lastSeen;// The last seen to be used for this message (Eating sushi for lunch at Itsu)
 
-@property (strong, nonatomic, readonly) NSURL *URL;// The URL associted with message (http://itsu.com)
-@property (strong, nonatomic, readonly) NSURL *imageURL;// The URL for the image associted with message (category or venue)
+@property (strong, nonatomic, readonly) NSURL * _Nonnull URL;// The URL associted with message (http://itsu.com)
+@property (strong, nonatomic, readonly) NSURL * _Nonnull imageURL;// The URL for the image associted with message (category or venue)
 
-@property (strong, nonatomic, readonly) CLLocation *location;// The location of the sender
-@property (strong, nonatomic, readonly) NSString *city;// The city of the sender (London)
+@property (strong, nonatomic, readonly) CLLocation * _Nonnull location;// The location of the sender
+@property (strong, nonatomic, readonly) NSString * _Nonnull city;// The city of the sender (London)
 
-@property (strong, nonatomic, readonly) NSString *category;// The 4sq category from which it was generated (Sushi Restaurant)
+@property (strong, nonatomic, readonly) NSString * _Nonnull category;// The 4sq category from which it was generated (Sushi Restaurant)
 
-@property (strong, nonatomic) NSDate *sendDate;// The date when the message was *sent*
-@property (strong, nonatomic, readonly) NSString *timestamp; // The timestamp to show for this message
+@property (strong, nonatomic) NSDate * _Nonnull sendDate;// The date when the message was *sent*
+@property (strong, nonatomic, readonly) NSString * _Nonnull timestamp; // The timestamp to show for this message
 @property (nonatomic, readonly) DMessageType type;// What kind of message is this
 
-- (instancetype)initWithCategory:(NSString*)messageCategory location:(CLLocation*)messageLocation venueName:(NSString*)messageVenueName venueCity:(NSString*)messageLocationCity imageURL:(NSString*)imageURLString;
-- (instancetype)initURLMessageWithLocation:(CLLocation*)messageLocation venueCity:(NSString*)messageLocationCity;
-- (instancetype)initLocationMessage:(CLLocation*)messageLocation venueCity:(NSString*)messageLocationCity;
+- (instancetype _Nullable)initWithCategory:(NSString* _Nonnull)messageCategory location:(CLLocation* _Nonnull)messageLocation venueName:(NSString* _Nonnull)messageVenueName venueCity:(NSString* _Nonnull)messageLocationCity imageURL:(NSString* _Nonnull)imageURLString;
+- (instancetype _Nullable)initURLMessageWithLocation:(CLLocation* _Nonnull)messageLocation venueCity:(NSString* _Nonnull)messageLocationCity;
+- (instancetype _Nullable)initLocationMessage:(CLLocation* _Nonnull)messageLocation venueCity:(NSString* _Nonnull)messageLocationCity;
 
 @end

@@ -11,6 +11,9 @@
 // Pods
 #import <SDWebImage/UIImageView+WebCache.h>
 
+// Frameworks
+#import <MapKit/MapKit.h>
+
 // Managers
 #import "ContactsManager.h"
 
@@ -39,8 +42,6 @@
 
 @property (strong, nonatomic) IBOutlet UIView *composeUpdateButton;
 
-@property (strong, nonatomic) IBOutlet UIBarButtonItem *titleItem;
-
 @end
 
 @implementation ProfileViewController
@@ -52,14 +53,19 @@
   [self setNeedsStatusBarAppearanceUpdate];
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+  [super viewWillAppear:animated];
+  
+  // Update UI
+  [self updateProfileInterface];
+}
+
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
   
   // Tell the delegate we are the visible view
   AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
   appDelegate.visibleViewController = self;
-  
-  [self updateProfileInterface];
 }
 
 #pragma mark - Ui
@@ -80,16 +86,23 @@
   if (message.location && message) {
     MKPointAnnotation *annotation = [MKPointAnnotation new];
     annotation.coordinate = message.location.coordinate;
+    annotation.title = (self.profileUser) ? [NSString stringWithFormat:@"%@'s Location", [self.profileUser.fullName stringBetweenString:@"" andString:@" "]] : @"Your Public Location";
     [self.statusLocationMapView addAnnotation:annotation];
+    
+    // Zoom on Pin
+    MKCoordinateRegion region;
+    MKCoordinateSpan span;
+    span.latitudeDelta = 0.01;
+    span.longitudeDelta = 0.01;
+    region.span = span;
+    region.center = message.location.coordinate;
+    
+    [self.statusLocationMapView setRegion:region animated:TRUE];
+    [self.statusLocationMapView regionThatFits:region];
     
   } else {
     [self.statusLocationMapView setFrame:CGRectMake(self.statusLocationMapView.frame.origin.x, self.statusLocationMapView.frame.origin.y, self.statusLocationMapView.frame.size.width, 0)];
   }
-  
-  // Title
-  NSDictionary *textAttributes = @{NSForegroundColorAttributeName : [UIColor whiteColor]};
-  [self.titleItem setTitleTextAttributes:textAttributes forState:UIControlStateDisabled];
-  [self.titleItem setTitleTextAttributes:textAttributes forState:UIControlStateNormal];
   
   // Variable
   if (self.profileUser) {
@@ -121,26 +134,15 @@
     // Profile Image
     [self.profileImageView sd_setImageWithURL:[NSURL URLWithString:self.profileUser.profileImage.url] placeholderImage:[UIImage imageNamed:@"Default Profile Image"]];
     
-    // Navigation Title
-    self.titleItem.title = self.profileUser.fullName;
-    
     // Name label
     [self.nameLabel setText:self.profileUser.fullName];
     
     // Send update text
     self.sendUpdateLabel.text = [NSString stringWithFormat:@"Send %@ an Update", self.profileUser.fullName];
     
-  } else {
-    // Useless buttons - favoite, request status
-    [self.favoriteButton setFrame:CGRectMake(self.favoriteButton.frame.origin.x, self.favoriteButton.frame.origin.y, self.favoriteButton.frame.size.width, 0)];
-    [self.requestStatusButton setFrame:CGRectMake(self.requestStatusButton.frame.origin.x, self.requestStatusButton.frame.origin.y, self.requestStatusButton.frame.size.width, 0)];
-    
+  } else {// Current user    
     // Secondary button - Email
-    [self.secondaryButton setImage:nil forState:UIControlStateNormal];
     [self.secondaryButton setTitle:[DUser currentUser].email forState:UIControlStateNormal];
-    
-    // Navigation Title
-    self.titleItem.title = [DUser currentUser].fullName;
     
     // Profile Image
     [self.profileImageView sd_setImageWithURL:[NSURL URLWithString:[DUser currentUser].profileImage.url] placeholderImage:[UIImage imageNamed:@"Default Profile Image"]];
@@ -155,7 +157,6 @@
 
 #pragma mark - Actions
 - (IBAction)requestStatus:(id)sender {
-#warning connect to UI
   [[ContactsManager sharedInstance] requestStatusForContact:self.profileUser inBackground:YES];
 }
 
@@ -288,6 +289,10 @@
       [self.profileImageView setFrame:self.view.frame];
     }];
   }
+}
+
+- (IBAction)changeEmail {
+#warning implement
 }
 
 - (IBAction)logout:(id)sender {

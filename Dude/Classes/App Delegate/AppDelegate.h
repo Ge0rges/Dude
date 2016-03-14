@@ -19,7 +19,7 @@
     MKMapItem *mapItem;
 }
 
-@property (strong, nonatomic) UIWindow *window;
-@property (strong, nonatomic) UIViewController *visibleViewController;
+@property (strong, nonatomic) UIWindow * _Nonnull window;
+@property (strong, nonatomic) UIViewController * _Nonnull visibleViewController;
 
 @end
