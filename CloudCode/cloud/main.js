@@ -3,7 +3,7 @@ Parse.Cloud.define("updateLastSeen", function(request, response) {
 	//Use the master key so we can use administrative access and modify fields on user objects:
 	Parse.Cloud.useMasterKey();
 
-	if (request.params.email && request.params["data"]) {
+	if (request.params.email && request.params["builtDictionary"]) {
 		var query = new Parse.Query(Parse.User);
 		query.equalTo('email', request.params.email);
 		query.first({
@@ -29,6 +29,6 @@ Parse.Cloud.define("updateLastSeen", function(request, response) {
 		});
 
 	} else {
-		response.error("No 'email' pr 'data' object was delivered in the payload.");
+		response.error("No 'email' or no 'builtDictionary' object was delivered in the payload.");
 	}
 });
