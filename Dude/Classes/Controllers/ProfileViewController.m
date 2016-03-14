@@ -25,6 +25,7 @@
 
 @interface ProfileViewController () <UINavigationControllerDelegate, UIImagePickerControllerDelegate> {
   CGRect originalProfileImageViewFrame;
+  CGFloat heightConstant;
 }
 
 @property (strong, nonatomic) IBOutlet UIImageView *profileImageView;
@@ -84,6 +85,18 @@
   
   // Map
   if (message.location && message) {
+    // modify height constraint
+    NSLayoutConstraint *heightConstraint;
+    for (NSLayoutConstraint *constraint in self.statusLocationMapView.constraints) {
+      if (constraint.firstAttribute == NSLayoutAttributeHeight) {
+        heightConstraint = constraint;
+        break;
+      }
+    }
+    
+    heightConstraint.constant = heightConstant;
+    
+    // Add Pin
     MKPointAnnotation *annotation = [MKPointAnnotation new];
     annotation.coordinate = message.location.coordinate;
     annotation.title = (self.profileUser) ? [NSString stringWithFormat:@"%@'s Location", [self.profileUser.fullName stringBetweenString:@"" andString:@" "]] : @"Your Public Location";
@@ -101,7 +114,17 @@
     [self.statusLocationMapView regionThatFits:region];
     
   } else {
-    [self.statusLocationMapView setFrame:CGRectMake(self.statusLocationMapView.frame.origin.x, self.statusLocationMapView.frame.origin.y, self.statusLocationMapView.frame.size.width, 0)];
+    // modify height constraint
+    NSLayoutConstraint *heightConstraint;
+    for (NSLayoutConstraint *constraint in self.statusLocationMapView.constraints) {
+      if (constraint.firstAttribute == NSLayoutAttributeHeight) {
+        heightConstraint = constraint;
+        break;
+      }
+    }
+    
+    heightConstant = heightConstraint.constant;
+    heightConstraint.constant = 0;
   }
   
   // Variable
@@ -157,7 +180,15 @@
 
 #pragma mark - Actions
 - (IBAction)requestStatus:(id)sender {
-  [[ContactsManager sharedInstance] requestStatusForContact:self.profileUser inBackground:YES];
+  BOOL requested = [[ContactsManager sharedInstance] requestStatusForContact:self.profileUser inBackground:YES];
+  
+  UIButton *requestStatusButton = (UIButton*)sender;
+  requestStatusButton.enabled = NO;
+  
+  UIAlertController *ac = [UIAlertController alertControllerWithTitle:(requested) ? @"Status Requested" : @"Status not Requested" message:(requested) ? @"Dude, informed them you'd like to know what they're doing." : @"Sorry Dude, but you can't request statuses more then once in under 10 minutes." preferredStyle:UIAlertControllerStyleAlert];
+  [ac addAction:[UIAlertAction actionWithTitle:(requested) ? @"Great!" : @"Okay, I'll ask again later" style:UIAlertActionStyleDefault handler:nil]];
+  
+  [self presentViewController:ac animated:YES completion:nil];
 }
 
 - (void)toggleBlock {

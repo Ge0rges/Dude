@@ -148,19 +148,61 @@ typedef void(^completion)(BOOL validEmail);
 }
 
 - (void)updateInterface {
-  // Update UI again on main thread
-  [self.tableView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];
-  
-  if (contacts.count == 0) {
-    if (self.favoritesOnly) {
-      // Show no favorites
-      [self.view bringSubviewToFront:self.nofavoritesView];
+  if (!self.searchFriendsView.hidden) {
+    // Update UI again on main thread
+    [self.tableView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];
+    
+    if (contacts.count == 0) {
+      if (self.favoritesOnly) {
+        // Show no favorites
+        [self.view bringSubviewToFront:self.nofavoritesView];
+        
+        self.nofavoritesView.alpha = 0.0;
+        self.nofavoritesView.hidden = NO;
+        
+        [UIView animateWithDuration:0.3 animations:^{
+          self.nofavoritesView.alpha = 1.0;
+        }];
+        
+        // Hide no friends
+        [UIView animateWithDuration:0.3 animations:^{
+          self.noFriendsView.alpha = 0.0;
+          
+        } completion:^(BOOL finished) {
+          self.noFriendsView.hidden = YES;
+          [self.view sendSubviewToBack:self.noFriendsView];
+        }];
+        
+      } else {
+        // Show no friends
+        [self.view bringSubviewToFront:self.noFriendsView];
+        
+        self.noFriendsView.alpha = 0.0;
+        self.noFriendsView.hidden = NO;
+        
+        [UIView animateWithDuration:0.3 animations:^{
+          self.noFriendsView.alpha = 1.0;
+        }];
+        
+        // Hide no favorites
+        [UIView animateWithDuration:0.3 animations:^{
+          self.nofavoritesView.alpha = 0.0;
+          
+        } completion:^(BOOL finished) {
+          self.nofavoritesView.hidden = YES;
+          [self.view sendSubviewToBack:self.nofavoritesView];
+        }];
+      }
       
-      self.nofavoritesView.alpha = 0.0;
-      self.nofavoritesView.hidden = NO;
-      
+    } else {
+      // Hide all:
+      // Hide no favorites
       [UIView animateWithDuration:0.3 animations:^{
-        self.nofavoritesView.alpha = 1.0;
+        self.nofavoritesView.alpha = 0.0;
+        
+      } completion:^(BOOL finished) {
+        self.nofavoritesView.hidden = YES;
+        [self.view sendSubviewToBack:self.nofavoritesView];
       }];
       
       // Hide no friends
@@ -171,47 +213,7 @@ typedef void(^completion)(BOOL validEmail);
         self.noFriendsView.hidden = YES;
         [self.view sendSubviewToBack:self.noFriendsView];
       }];
-      
-    } else {
-      // Show no friends
-      [self.view bringSubviewToFront:self.noFriendsView];
-      
-      self.noFriendsView.alpha = 0.0;
-      self.noFriendsView.hidden = NO;
-      
-      [UIView animateWithDuration:0.3 animations:^{
-        self.noFriendsView.alpha = 1.0;
-      }];
-      
-      // Hide no favorites
-      [UIView animateWithDuration:0.3 animations:^{
-        self.nofavoritesView.alpha = 0.0;
-        
-      } completion:^(BOOL finished) {
-        self.nofavoritesView.hidden = YES;
-        [self.view sendSubviewToBack:self.nofavoritesView];
-      }];
     }
-    
-  } else {
-    // Hide all:
-    // Hide no favorites
-    [UIView animateWithDuration:0.3 animations:^{
-      self.nofavoritesView.alpha = 0.0;
-      
-    } completion:^(BOOL finished) {
-      self.nofavoritesView.hidden = YES;
-      [self.view sendSubviewToBack:self.nofavoritesView];
-    }];
-    
-    // Hide no friends
-    [UIView animateWithDuration:0.3 animations:^{
-      self.noFriendsView.alpha = 0.0;
-      
-    } completion:^(BOOL finished) {
-      self.noFriendsView.hidden = YES;
-      [self.view sendSubviewToBack:self.noFriendsView];
-    }];
   }
 }
 
@@ -477,6 +479,9 @@ typedef void(^completion)(BOOL validEmail);
   // Modify the target of the button
   [addButton removeTarget:self action:@selector(exitFriendSearch:) forControlEvents:UIControlEventAllEvents];
   [addButton addTarget:self action:@selector(beginFriendSearch:) forControlEvents:UIControlEventTouchUpInside];
+  
+  // Update UI
+  [self updateInterface];
 }
 
 

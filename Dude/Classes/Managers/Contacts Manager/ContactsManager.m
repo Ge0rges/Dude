@@ -293,14 +293,21 @@
 }
 
 #pragma mark - Requesting Status Notification
-- (void)requestStatusForContact:(DUser*)user inBackground:(BOOL)background {
-  if (!user.email) return;
+- (BOOL)requestStatusForContact:(DUser*)user inBackground:(BOOL)background {
+  NSString *key = [NSString stringWithFormat:@"lastStatusRequest%@", [DUser currentUser].email];
+  
+  NSDate *lastRequestDate = [[NSUserDefaults standardUserDefaults] objectForKey:key];
+  
+  if (!user.email || (-[lastRequestDate timeIntervalSinceNow] <= 600 && lastRequestDate)) return NO;
+  
+  // Set time for status request
+  [[NSUserDefaults standardUserDefaults] setObject:[NSDate date] forKey:key];
   
   // Make sure we are allowed request the status
   BOOL isBlocked = [user.blockedEmails containsObject:[DUser currentUser].email];
   BOOL didBlocked = [[DUser currentUser].blockedEmails containsObject:user.email];
   
-  if (isBlocked || didBlocked) return;
+  if (isBlocked || didBlocked) return NO;
   
   // Build the actual push notification target query
   PFQuery *query = [PFInstallation query];
@@ -315,6 +322,8 @@
     [push sendPushInBackground];
   else
     [push sendPush:nil];
+  
+  return YES;
 }
 
 @end

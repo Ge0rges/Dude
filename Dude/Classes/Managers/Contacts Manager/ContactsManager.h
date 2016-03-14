@@ -47,6 +47,6 @@
 - (void)sendAddedNotificationToContact:(DUser* _Nonnull)user;
 
 // Requesting status
-- (void)requestStatusForContact:(DUser* _Nonnull)user inBackground:(BOOL)background;
+- (BOOL)requestStatusForContact:(DUser* _Nonnull)user inBackground:(BOOL)background;
 
 @end

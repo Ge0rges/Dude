@@ -48,6 +48,9 @@
   
   // Generate Messages
   [self performSelectorInBackground:@selector(reloadData) withObject:nil];
+  
+  // Scroll the tableView
+  [self.tableView setContentOffset:CGPointMake(0, -self.refreshControl.frame.size.height) animated:YES];
 }
 
 - (void)didReceiveMemoryWarning {

@@ -149,9 +149,7 @@
         break;
       }
         
-      case 2: {
-        if (![self isValidEmailWithAlert:YES]) return;
-        
+      case 2: {        
         user.email = self.textField.text.lowercaseString;
         user.username = self.textField.text.lowercaseString;
         
@@ -469,17 +467,22 @@
       
       } else {
         NSBlockOperation *validateEmailOperation = [NSBlockOperation blockOperationWithBlock:^{
-          self.confirmButton.enabled = [self isValidEmailWithAlert:NO];
+          BOOL isValid = [self isValidEmailWithAlert:NO];
+          dispatch_async(dispatch_get_main_queue(), ^{
+            self.confirmButton.enabled = isValid;
+          });
         }];
         
         validateEmailOperation.qualityOfService = NSOperationQualityOfServiceUserInteractive;
         validateEmailOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
         
         validateEmailOperation.completionBlock = ^{
-          self.confirmButton.backgroundColor = (self.confirmButton.enabled) ? self.confirmButton.tintColor : [UIColor lightGrayColor];
+          dispatch_async(dispatch_get_main_queue(), ^{
+            self.confirmButton.backgroundColor = (self.confirmButton.enabled) ? self.confirmButton.tintColor : [UIColor lightGrayColor];
+          });
         };
         
-        [validateEmailOperation start];
+        [[[NSThread alloc] initWithTarget:validateEmailOperation selector:@selector(start) object:nil] start];
         
       }
       
