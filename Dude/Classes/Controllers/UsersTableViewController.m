@@ -50,6 +50,8 @@ typedef void(^completion)(BOOL validEmail);
 @property (strong, nonatomic) IBOutlet UIView *nofavoritesView;
 @property (strong, nonatomic) IBOutlet UIView *noFriendsView;
 
+@property (strong, nonatomic) IBOutlet UISegmentedControl *segmentedControl;
+
 // Friends Search View
 @property (strong, nonatomic) IBOutlet UIView *searchTextfieldView;
 
@@ -120,37 +122,39 @@ typedef void(^completion)(BOOL validEmail);
 
 #pragma mark - Public Methods
 - (IBAction)reloadData:(id)sender {
-  // Determine if favorites
-  if ([sender isKindOfClass:[UISegmentedControl class]]) {
-    self.favoritesOnly = ((UISegmentedControl*)sender).selectedSegmentIndex;
-  }
-  
-  // Update Table with new data in the background
-  [fetchUsersOperation cancel];// No double fetching
-  
-  fetchUsersOperation = [NSBlockOperation blockOperationWithBlock:^{
-    if (!fetchUsersOperation.isCancelled) {
-      contacts = [[ContactsManager sharedInstance] getContactsRefreshedNecessary:NO favourites:self.favoritesOnly];
-      [self performSelectorOnMainThread:@selector(updateInterface) withObject:nil waitUntilDone:NO];
-
-      if (contacts.count == 0 || ![sender isKindOfClass:[UISegmentedControl class]] || !sender) {
-        contacts = [[ContactsManager sharedInstance] getContactsRefreshedNecessary:YES favourites:self.favoritesOnly];
+  if (self.searchFriendsView.hidden) {
+    // Determine if favorites
+    if ([sender isEqual:self.segmentedControl]) {
+      self.favoritesOnly = self.segmentedControl.selectedSegmentIndex;
+    }
+    
+    // Update Table with new data in the background
+    [fetchUsersOperation cancel];// No double fetching
+    
+    fetchUsersOperation = [NSBlockOperation blockOperationWithBlock:^{
+      if (!fetchUsersOperation.isCancelled) {
+        contacts = [[ContactsManager sharedInstance] getContactsRefreshedNecessary:NO favourites:self.favoritesOnly];
         [self performSelectorOnMainThread:@selector(updateInterface) withObject:nil waitUntilDone:NO];
         
+        if (contacts.count == 0 || ![sender isEqual:self.segmentedControl] || !sender) {
+          contacts = [[ContactsManager sharedInstance] getContactsRefreshedNecessary:YES favourites:self.favoritesOnly];
+          [self performSelectorOnMainThread:@selector(updateInterface) withObject:nil waitUntilDone:NO];
+          
+        }
       }
-    }
-  }];
-  
-  fetchUsersOperation.queuePriority = NSOperationQueuePriorityHigh;
-  fetchUsersOperation.qualityOfService = NSQualityOfServiceUserInteractive;
-  
-  [[[NSThread alloc] initWithTarget:fetchUsersOperation selector:@selector(start) object:nil] start];
+    }];
+    
+    fetchUsersOperation.queuePriority = NSOperationQueuePriorityHigh;
+    fetchUsersOperation.qualityOfService = NSQualityOfServiceUserInteractive;
+    
+    [[[NSThread alloc] initWithTarget:fetchUsersOperation selector:@selector(start) object:nil] start];
+  }
 }
 
 - (void)updateInterface {
-  if (!self.searchFriendsView.hidden) {
+  if (self.searchFriendsView.hidden) {
     // Update UI again on main thread
-    [self.tableView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];
+    [self.tableView reloadData];
     
     if (contacts.count == 0) {
       if (self.favoritesOnly) {
@@ -331,6 +335,15 @@ typedef void(^completion)(BOOL validEmail);
 
 #pragma mark - Adding Contact
 - (void)beginFriendSearch:(UIButton*)sender {
+  // We do this know to be able to use .hidden as checks
+  self.searchFriendsView.alpha = 0.0;
+  self.searchFriendsView.hidden = NO;
+
+  // Disable Segmented Control
+  self.segmentedControl.enabled = NO;
+  self.segmentedControl.userInteractionEnabled = NO;
+
+  // Clear the UI
   if (!self.nofavoritesView.hidden) {
     [UIView animateWithDuration:0.3 animations:^{
       self.nofavoritesView.alpha = 0.0;
@@ -360,8 +373,6 @@ typedef void(^completion)(BOOL validEmail);
   
   
   // Animate in
-  self.searchFriendsView.alpha = 0.0;
-  self.searchFriendsView.hidden = NO;
   self.searchTextfieldView.center = CGPointMake(self.searchTextfieldView.frame.size.width/2, -self.searchTextfieldView.frame.size.height/2);
   
   [self.view bringSubviewToFront:self.searchFriendsView];
@@ -474,14 +485,19 @@ typedef void(^completion)(BOOL validEmail);
   } completion:^(BOOL finished) {
     self.searchFriendsView.hidden = YES;
     [self.view sendSubviewToBack:self.searchFriendsView];
+    
+    // Show any views that were hidden
+    [self performSelectorOnMainThread:@selector(updateInterface) withObject:nil waitUntilDone:NO];
   }];
   
   // Modify the target of the button
   [addButton removeTarget:self action:@selector(exitFriendSearch:) forControlEvents:UIControlEventAllEvents];
   [addButton addTarget:self action:@selector(beginFriendSearch:) forControlEvents:UIControlEventTouchUpInside];
   
-  // Update UI
-  [self updateInterface];
+  // Enable Segmented Control
+  self.segmentedControl.enabled = YES;
+  self.segmentedControl.userInteractionEnabled = YES;
+
 }
 
 

@@ -333,6 +333,7 @@
                         <outlet property="searchResultLabel" destination="6cm-PH-zyO" id="iJK-TL-gng"/>
                         <outlet property="searchTextfield" destination="L3Z-xY-EU0" id="TkJ-JF-H5p"/>
                         <outlet property="searchTextfieldView" destination="dUn-T9-Y6T" id="05Y-VA-Zrz"/>
+                        <outlet property="segmentedControl" destination="IYw-Tk-PYC" id="gwl-cL-FKE"/>
                         <outlet property="tableView" destination="Pyc-bM-7sA" id="CbV-BX-UZA"/>
                     </connections>
                 </viewController>
@@ -1179,7 +1180,7 @@
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" image="1E77230A-8DF4-481B-92A9-3C34414D96CF" id="WgX-dx-Bjt">
+                                                <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" image="4A75B242-294F-4B9D-B225-54E6A3109383" id="WgX-dx-Bjt">
                                                     <rect key="frame" x="15" y="13" width="38" height="38"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                 </imageView>
@@ -1314,7 +1315,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="1E77230A-8DF4-481B-92A9-3C34414D96CF" width="38" height="38">
+        <image name="4A75B242-294F-4B9D-B225-54E6A3109383" width="38" height="38">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGPT5YJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK4HCBMU
 GR4fIyQrLjE3OlUkbnVsbNUJCgsMDQ4PEBESVk5TU2l6ZVYkY2xhc3NcTlNJbWFnZUZsYWdzVk5TUmVw
@@ -1480,8 +1481,8 @@ IJ4goCClIK0gsCC1IL0gwCDSINUg2gAAAAAAAAIBAAAAAAAAAEEAAAAAAAAAAAAAAAAAACDcA
         <image name="Tab Person" width="33" height="33"/>
     </resources>
     <inferredMetricsTieBreakers>
+        <segue reference="NF1-BU-3Xi"/>
         <segue reference="Mie-N4-Lj2"/>
-        <segue reference="3Uq-ao-rtd"/>
         <segue reference="vSt-jy-4r4"/>
         <segue reference="Nbs-OA-gvm"/>
     </inferredMetricsTieBreakers>
