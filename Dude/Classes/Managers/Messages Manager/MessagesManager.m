@@ -19,12 +19,11 @@
 
 // Frameworks
 #import <Social/Social.h>
-#import <WatchConnectivity/WatchConnectivity.h>
 
 // Pods
 #import <SOMotionDetector/SOMotionDetector.h>
 
-@interface MessagesManager () <CLLocationManagerDelegate, SOMotionDetectorDelegate, WCSessionDelegate> {
+@interface MessagesManager () <CLLocationManagerDelegate, SOMotionDetectorDelegate> {
   LocationCompletionBlock locationCompletionBlock;
   
   BOOL userIsInAutomobile;
@@ -43,10 +42,6 @@
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     sharedMessagesManager = [self new];
-    WCSession *session = [WCSession defaultSession];
-    session.delegate = sharedMessagesManager;
-    [session activateSession];
-
   });
   
   return sharedMessagesManager;
@@ -84,7 +79,7 @@
     
     // Otherwise start getting the location or call the block with a 500 not allowed error
     if ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusDenied)
-      handler([NSError errorWithDomain:@"Location" code:501 userInfo:nil]);
+      handler([NSError errorWithDomain:@"LocationAuthorization" code:501 userInfo:nil]);
     else
       [self.locationManager startUpdatingLocation];
   });
@@ -559,31 +554,6 @@
     AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
     [appDelegate.visibleViewController presentViewController:locationServicesAlertController animated:YES completion:nil];
   });
-}
-
-#pragma mark - WCSessionDelegate
-- (void)session:(WCSession *)session didReceiveMessage:(nonnull NSDictionary<NSString *,id> *)message {
-  if ([message[WatchRequestTypeKey] isEqualToString:WatchRequestSendMessageValue]) {
-    PFQuery *userQuery = [DUser query];
-    [userQuery fromLocalDatastore];
-    
-    [userQuery whereKey:@"email" equalTo:((DUserWatch*)message[WatchContactsKey]).email];
-    
-    [userQuery findObjectsInBackgroundWithBlock:^(NSArray * _Nullable objects, NSError * _Nullable error) {
-      [self sendMessage:message[WatchMessagesKey] toContact:(DUser*)objects[0] withCompletion:nil];
-    }];
-  }
-}
-
-- (void)session:(WCSession *)session didReceiveMessage:(NSDictionary<NSString *,id> *)message replyHandler:(void (^)(NSDictionary<NSString *,id> * _Nonnull))replyHandler {
-  if ([message[WatchRequestTypeKey] isEqualToString:WatchRequestMessagesValue]) {
-    [self setLocationForMessageGenerationWithCompletion:^(NSError *error) {
-      replyHandler(@{WatchMessagesKey: [[MessagesManager sharedInstance] generateMessages:16]});
-    }];
-  
-  } else {
-    replyHandler(@{});
-  }
 }
 
 @end

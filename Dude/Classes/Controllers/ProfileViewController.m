@@ -330,7 +330,7 @@
 }
 
 - (IBAction)logout:(id)sender {
-  [DUser logOut];
+  [DUser logOutInBackground];
   [self dismissViewControllerAnimated:YES completion:nil];
 }
 

@@ -142,6 +142,11 @@
   [self reloadContactsFromApplicationContext:applicationContext];
 }
 
+- (void)session:(WCSession *)session didReceiveMessage:(NSDictionary<NSString *,id> *)message {
+  messages = message[WatchMessagesKey];
+  completedMessagesFetching = YES;
+}
+
 - (void)reloadContactsFromApplicationContext:(NSDictionary<NSString *,id> *)applicationContext {
   NSArray *contactsData = applicationContext[WatchContactsKey];
   
@@ -179,11 +184,9 @@
 - (void)requestMessages {
   // Generate the messages for next interface controller
   if (session.isReachable) {
-    [session sendMessage:@{WatchRequestTypeKey: WatchRequestMessagesValue} replyHandler:^(NSDictionary<NSString *,id> * _Nonnull replyMessage) {
-      messages = replyMessage[WatchMessagesKey];
-      completedMessagesFetching = YES;
-      
-    } errorHandler:^(NSError * _Nonnull error) {
+    completedMessagesFetching = NO;
+
+    [session sendMessage:@{WatchRequestTypeKey: WatchRequestMessagesValue} replyHandler:^(NSDictionary<NSString *,id> * _Nonnull replyMessage) {} errorHandler:^(NSError * _Nonnull error) {
       if (error.code == 7012 || error.code == 7014) [self requestMessages];
       NSLog(@"error fetching messages: %@", error);
       completedMessagesFetching = YES;
