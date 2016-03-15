@@ -1112,7 +1112,7 @@
                                     </subviews>
                                 </tableViewCellContentView>
                                 <connections>
-                                    <segue destination="HfV-82-QQI" kind="show" identifier="composingSheet" id="vSt-jy-4r4">
+                                    <segue destination="HfV-82-QQI" kind="show" identifier="showComposingSheetSegue" id="vSt-jy-4r4">
                                         <segue key="commit" inheritsFrom="parent" id="W2K-kp-niK"/>
                                         <segue key="preview" inheritsFrom="commit" id="yaj-AE-mDE"/>
                                     </segue>
@@ -1174,7 +1174,7 @@
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" image="9131ED50-5508-4C0F-85F5-6A726AF144A1" id="WgX-dx-Bjt">
+                                                <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" image="A27B9FB9-E62D-4443-A968-90A644351E6F" id="WgX-dx-Bjt">
                                                     <rect key="frame" x="15" y="13" width="38" height="38"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                 </imageView>
@@ -1354,14 +1354,20 @@
                             <outlet property="delegate" destination="NkY-sI-erC" id="MeH-bK-ZnT"/>
                         </connections>
                     </tableView>
+                    <toolbarItems/>
+                    <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
+                    <connections>
+                        <segue destination="7aH-bS-ftZ" kind="unwind" identifier="unwindComposeSheet" unwindAction="unwindToComposeSheetViewController:" id="Wmi-IB-KPo"/>
+                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="3dl-mD-Rvq" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <exit id="7aH-bS-ftZ" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
             <point key="canvasLocation" x="3630" y="506"/>
         </scene>
     </scenes>
     <resources>
-        <image name="9131ED50-5508-4C0F-85F5-6A726AF144A1" width="38" height="38">
+        <image name="A27B9FB9-E62D-4443-A968-90A644351E6F" width="38" height="38">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGPT5YJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK4HCBMU
 GR4fIyQrLjE3OlUkbnVsbNUJCgsMDQ4PEBESVk5TU2l6ZVYkY2xhc3NcTlNJbWFnZUZsYWdzVk5TUmVw

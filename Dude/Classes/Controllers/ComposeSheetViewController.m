@@ -97,7 +97,7 @@
       
       case 1:
         cell = [tableView dequeueReusableCellWithIdentifier:@"detailCell"];
-        cell.textLabel.text = @"Send to Dude Friends";
+        cell.textLabel.text = @"Send to Dudes";
         cell.imageView.image = [[UIImage imageNamed:@"Tab Person"] scaleImageToSize:CGSizeMake(50, 50)];
         cell.detailTextLabel.text = [NSString stringWithFormat:@"%lu %@", self.selectedUsers.count, (self.selectedUsers.count != 1) ? @"Friends" : @"Friend"];
 
@@ -296,8 +296,14 @@
 
 #pragma mark - Navigation
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-  UsersSelectionTableViewController *usersSelectionTableVC = [segue destinationViewController];
-  usersSelectionTableVC.composeSheetViewController = self;
+  if ([segue.identifier isEqualToString:@"showComposingSheetSegue"]) {
+    UsersSelectionTableViewController *usersSelectionTableVC = [segue destinationViewController];
+    usersSelectionTableVC.composeSheetViewController = self;
+  }
+}
+
+-(IBAction)unwindToComposeSheetViewController:(UIStoryboardSegue *)segue {
+  [self.tableView reloadData];
 }
 
 #pragma mark - MFMessageComposeViewControllerDelegate

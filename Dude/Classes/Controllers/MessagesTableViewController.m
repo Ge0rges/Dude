@@ -205,7 +205,7 @@
 #pragma mark - Navigation
 - (void)prepareForSegue:(UIStoryboardSegue*)segue sender:(id)sender {
   // Pass the selected object to the compose view controller.
-  if ([segue.identifier isEqualToString:@"composingSheet"]) {
+  if ([segue.identifier isEqualToString:@"showComposingSheetSegue"]) {
     UITableViewCell *cell = (UITableViewCell*)sender;
     DMessage *message = self.messages[[self.tableView indexPathForCell:cell].section];
 

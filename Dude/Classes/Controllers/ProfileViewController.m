@@ -23,6 +23,9 @@
 // Classes
 #import "AppDelegate.h"
 
+// Controllers
+#import "MessagesTableViewController.h"
+
 @interface ProfileViewController () <UINavigationControllerDelegate, UIImagePickerControllerDelegate> {
   CGRect originalProfileImageViewFrame;
   CGFloat heightConstant;
@@ -69,7 +72,7 @@
   appDelegate.visibleViewController = self;
 }
 
-#pragma mark - Ui
+#pragma mark - UI
 - (void)updateProfileInterface {
   // Status Update
   DMessage *message = [[ContactsManager sharedInstance] latestMessageForContact:(self.profileUser)?: [DUser currentUser]];
@@ -352,6 +355,17 @@
   }
   
   [[DUser currentUser] saveInBackground];
+}
+
+#pragma mark - Navigation
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+  if ([segue.identifier isEqualToString:@"showMessages"]) {
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{// Give time to the navigation controller to present the messages table
+      UINavigationController *navigationVC = [segue destinationViewController];
+      MessagesTableViewController *messagesTableViewController  = (MessagesTableViewController*)navigationVC.visibleViewController;
+      messagesTableViewController.selectedUsers = @[self.profileUser];      
+    });
+  }
 }
 
 #pragma mark - Status Bar

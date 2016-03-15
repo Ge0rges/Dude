@@ -126,14 +126,16 @@
     cell.accessoryType = UITableViewCellAccessoryCheckmark;
     [selectedContacts addObject:user];
   }
+  
+  [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 
 #pragma mark - Navigation
-- (IBAction)done {
+- (void)done {
   self.composeSheetViewController.selectedUsers = [NSSet setWithArray:selectedContacts];
   
-  [self dismissViewControllerAnimated:YES completion:nil];
+  [self performSegueWithIdentifier:@"unwindComposeSheet" sender:self];
 }
 
 @end
