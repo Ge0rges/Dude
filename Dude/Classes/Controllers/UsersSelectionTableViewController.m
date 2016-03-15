@@ -86,6 +86,10 @@
   return [indexTitles allObjects];
 }
 
+- (NSString*)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
+  return [indexTitles allObjects][section];
+}
+
 - (NSInteger)tableView:(UITableView *)tableView sectionForSectionIndexTitle:(NSString *)title atIndex:(NSInteger)index {
   return [[indexTitles allObjects] indexOfObject:title];
 }
