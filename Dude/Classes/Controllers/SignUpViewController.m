@@ -144,6 +144,8 @@
       }
         
       case 1: {
+        user.fullName = self.textField.text;
+        
         [self animateToNextStepWithInitialScreenshot:[self screenshot] fromRight:YES];
         [self proceedToEmail];
         break;

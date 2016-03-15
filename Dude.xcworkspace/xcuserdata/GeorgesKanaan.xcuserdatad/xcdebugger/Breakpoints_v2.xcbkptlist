@@ -30,7 +30,7 @@
                   moduleName = "Dude"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/GeorgesKanaan/Documents/Development/iOS_Development/Apps/Dude/Pods/Bolts/Bolts/Common/BFTask.m"
-                  timestampString = "479677307.187988"
+                  timestampString = "479739029.908507"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "18"
@@ -38,6 +38,22 @@
                   offsetFromSymbolStart = "0">
                </Location>
             </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Dude/Classes/Extensions &amp; Categories/UIImageExtensions/UIImage+Resize.h"
+            timestampString = "479734614.600321"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "13"
+            endingLineNumber = "13"
+            landmarkName = "-resizedImage:interpolationQuality:"
+            landmarkType = "4">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
