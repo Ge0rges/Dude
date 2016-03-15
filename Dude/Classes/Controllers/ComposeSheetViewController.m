@@ -18,6 +18,9 @@
 // Extensions & Categories
 #import "UIImageExtensions.h"
 
+// Controllers
+#import "UsersSelectionTableViewController.h"
+
 // Constants
 #import "Constants.h"
 
@@ -94,7 +97,7 @@
       
       case 1:
         cell = [tableView dequeueReusableCellWithIdentifier:@"detailCell"];
-        cell.textLabel.text = @"Send to Dude Friend";
+        cell.textLabel.text = @"Send to Dude Friends";
         cell.imageView.image = [[UIImage imageNamed:@"Tab Person"] scaleImageToSize:CGSizeMake(50, 50)];
         cell.detailTextLabel.text = [NSString stringWithFormat:@"%lu %@", self.selectedUsers.count, (self.selectedUsers.count != 1) ? @"Friends" : @"Friend"];
 
@@ -192,7 +195,13 @@
     CALayer *separatorLayer = [CALayer layer];
     CGFloat separatorHeight = (1.f / [UIScreen mainScreen].scale);
   
-    separatorLayer.frame = CGRectMake(CGRectGetMinX(bounds)+10, bounds.size.height-separatorHeight, bounds.size.width-10, separatorHeight);
+    if ([cell.reuseIdentifier isEqualToString:@"titleCell"]) {
+      separatorLayer.frame = CGRectMake(CGRectGetMinX(bounds)+10, bounds.size.height-separatorHeight, bounds.size.width-20, separatorHeight);
+      
+    } else {
+      separatorLayer.frame = CGRectMake(CGRectGetMinX(bounds)+50, bounds.size.height-separatorHeight, bounds.size.width-70, separatorHeight);
+    }
+    
     separatorLayer.backgroundColor = tableView.separatorColor.CGColor;
     
     [backgroundLayer addSublayer:separatorLayer];
@@ -213,10 +222,6 @@
 
 - (void)tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
-  
-  if (indexPath.section == 1 && indexPath.row == 2) {
-    //Friend choosing
-  }
 }
 
 #pragma mark - Actions
@@ -277,10 +282,6 @@
   }
 }
 
-- (void)selectUsers {
-  #warning implement
-}
-
 - (void)sendViaMessages {
   MFMessageComposeViewController *composeVC = [[MFMessageComposeViewController alloc] init];
   composeVC.messageComposeDelegate = self;
@@ -291,6 +292,12 @@
   // Present the view controller modally.
   [self presentViewController:composeVC animated:YES completion:nil];
   
+}
+
+#pragma mark - Navigation
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+  UsersSelectionTableViewController *usersSelectionTableVC = [segue destinationViewController];
+  usersSelectionTableVC.composeSheetViewController = self;
 }
 
 #pragma mark - MFMessageComposeViewControllerDelegate

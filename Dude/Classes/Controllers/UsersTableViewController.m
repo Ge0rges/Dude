@@ -112,7 +112,6 @@ typedef void(^completion)(BOOL validEmail);
   
   if (shouldRefreshTwitter) {
     [[DUser currentUser] selectTwitterAccountWithCompletion:nil];
-    
   }
   
   if (shouldRefreshFacebook) {
@@ -303,7 +302,8 @@ typedef void(^completion)(BOOL validEmail);
     CALayer *separatorLayer = [CALayer layer];
     CGFloat separatorHeight = (1.f / [UIScreen mainScreen].scale);
     
-    separatorLayer.frame = CGRectMake(CGRectGetMinX(bounds)+10, bounds.size.height-separatorHeight, bounds.size.width-10, separatorHeight);
+    separatorLayer.frame = CGRectMake(CGRectGetMinX(bounds)+50, bounds.size.height-separatorHeight, bounds.size.width-70, separatorHeight);
+    
     separatorLayer.backgroundColor = tableView.separatorColor.CGColor;
     
     [backgroundLayer addSublayer:separatorLayer];
@@ -497,7 +497,6 @@ typedef void(^completion)(BOOL validEmail);
   // Enable Segmented Control
   self.segmentedControl.enabled = YES;
   self.segmentedControl.userInteractionEnabled = YES;
-
 }
 
 

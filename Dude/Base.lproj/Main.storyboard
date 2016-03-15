@@ -676,13 +676,13 @@
                                         </userDefinedRuntimeAttributes>
                                     </view>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Jony Ive" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YcA-57-coB">
-                                        <rect key="frame" x="284" y="35" width="120" height="22"/>
-                                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="18"/>
+                                        <rect key="frame" x="284" y="34" width="120" height="23"/>
+                                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="19"/>
                                         <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="tailTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Z5f-LX-lEB">
-                                        <rect key="frame" x="284" y="75" width="120" height="32"/>
+                                        <rect key="frame" x="284" y="65" width="120" height="32"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                         <state key="normal" title="jony@apple.com">
                                             <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
@@ -721,9 +721,9 @@
                                     <constraint firstItem="JWM-hJ-3IN" firstAttribute="trailing" secondItem="jdh-J3-bNr" secondAttribute="trailing" id="XFR-bT-XB7"/>
                                     <constraint firstItem="4ed-ym-cCv" firstAttribute="centerX" secondItem="Hkc-9w-EL2" secondAttribute="centerX" constant="-96" id="bBL-qJ-Z0O"/>
                                     <constraint firstItem="JWM-hJ-3IN" firstAttribute="leading" secondItem="Hkc-9w-EL2" secondAttribute="leading" constant="20" id="gLJ-LP-Hh4"/>
-                                    <constraint firstItem="Z5f-LX-lEB" firstAttribute="top" secondItem="YcA-57-coB" secondAttribute="bottom" constant="18" id="jzc-HI-jMd"/>
+                                    <constraint firstItem="Z5f-LX-lEB" firstAttribute="top" secondItem="YcA-57-coB" secondAttribute="bottom" constant="8" id="jzc-HI-jMd"/>
                                     <constraint firstAttribute="bottom" secondItem="jdh-J3-bNr" secondAttribute="bottom" constant="63" id="oc5-F0-IF9"/>
-                                    <constraint firstItem="JWM-hJ-3IN" firstAttribute="top" secondItem="Z5f-LX-lEB" secondAttribute="bottom" constant="66" id="qbS-h8-AHh"/>
+                                    <constraint firstItem="JWM-hJ-3IN" firstAttribute="top" secondItem="Z5f-LX-lEB" secondAttribute="bottom" constant="76" id="qbS-h8-AHh"/>
                                     <constraint firstItem="YcA-57-coB" firstAttribute="leading" secondItem="4ed-ym-cCv" secondAttribute="trailing" constant="30" id="xRd-K2-QZj"/>
                                 </constraints>
                             </scrollView>
@@ -809,7 +809,7 @@
         <!--Profile View Controller-->
         <scene sceneID="NSa-ho-dxu">
             <objects>
-                <viewController id="Np9-dY-O6G" customClass="ProfileViewController" sceneMemberID="viewController">
+                <viewController automaticallyAdjustsScrollViewInsets="NO" id="Np9-dY-O6G" customClass="ProfileViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="uOy-36-ep0"/>
                         <viewControllerLayoutGuide type="bottom" id="VzE-7j-hk5"/>
@@ -849,13 +849,16 @@
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Dude, I'm eating a sandwich at Cafe Macs, Cupertino." lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7ML-8U-qvk">
-                                                <rect key="frame" x="8" y="56" width="544" height="18"/>
+                                                <rect key="frame" x="8" y="56" width="375" height="18"/>
                                                 <fontDescription key="fontDescription" type="system" weight="medium" pointSize="15"/>
                                                 <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="lfo-lA-blx">
                                                 <rect key="frame" x="0.0" y="82" width="560" height="160"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="160" id="xYL-Fc-oxe"/>
+                                                </constraints>
                                             </mapView>
                                         </subviews>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -864,12 +867,10 @@
                                             <constraint firstItem="7ML-8U-qvk" firstAttribute="top" secondItem="slb-p3-B5c" secondAttribute="bottom" constant="13" id="9bL-zf-Qp4"/>
                                             <constraint firstItem="7ML-8U-qvk" firstAttribute="leading" secondItem="PXV-Uk-Ybs" secondAttribute="leadingMargin" id="GZW-aj-tSb"/>
                                             <constraint firstItem="g23-ou-OBh" firstAttribute="top" secondItem="PXV-Uk-Ybs" secondAttribute="topMargin" id="Lph-QH-rGM"/>
-                                            <constraint firstItem="7ML-8U-qvk" firstAttribute="centerX" secondItem="lfo-lA-blx" secondAttribute="centerX" id="MHj-Tg-eNK"/>
                                             <constraint firstItem="g23-ou-OBh" firstAttribute="top" secondItem="e7U-F4-ccl" secondAttribute="top" id="RJQ-6d-cw1"/>
                                             <constraint firstItem="e7U-F4-ccl" firstAttribute="leading" secondItem="7ML-8U-qvk" secondAttribute="leading" id="aun-K1-p3u"/>
                                             <constraint firstAttribute="bottom" secondItem="lfo-lA-blx" secondAttribute="bottom" id="hoh-n0-FkC"/>
                                             <constraint firstItem="slb-p3-B5c" firstAttribute="leading" secondItem="g23-ou-OBh" secondAttribute="leading" id="qUq-xz-oWq"/>
-                                            <constraint firstAttribute="height" constant="242" id="qlV-Dq-Gzl"/>
                                             <constraint firstItem="slb-p3-B5c" firstAttribute="top" secondItem="g23-ou-OBh" secondAttribute="bottom" constant="1" id="sLb-w4-fS1"/>
                                             <constraint firstAttribute="trailing" secondItem="lfo-lA-blx" secondAttribute="trailing" id="tXY-qt-B0X"/>
                                             <constraint firstItem="7ML-8U-qvk" firstAttribute="top" secondItem="e7U-F4-ccl" secondAttribute="bottom" constant="8" symbolic="YES" id="uit-w0-feG"/>
@@ -941,24 +942,17 @@
                                         </connections>
                                     </button>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Jony Ive" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hj3-vL-wtj">
-                                        <rect key="frame" x="284" y="35" width="162" height="23"/>
+                                        <rect key="frame" x="284" y="34" width="162" height="23"/>
                                         <fontDescription key="fontDescription" type="system" weight="medium" pointSize="19"/>
                                         <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QOe-Va-jph">
                                         <rect key="frame" x="284" y="75" width="162" height="22"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="162" id="198-N1-RVS"/>
-                                        </constraints>
+                                        <fontDescription key="fontDescription" type="system" pointSize="18"/>
                                         <state key="normal" image="Block Person">
                                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                         </state>
-                                        <variation key="default">
-                                            <mask key="constraints">
-                                                <exclude reference="198-N1-RVS"/>
-                                            </mask>
-                                        </variation>
                                     </button>
                                     <imageView clipsSubviews="YES" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="tBx-5b-1C5">
                                         <rect key="frame" x="154" y="23" width="100" height="100"/>
@@ -1003,12 +997,12 @@
                                     <constraint firstItem="PXV-Uk-Ybs" firstAttribute="top" secondItem="QOe-Va-jph" secondAttribute="bottom" constant="76" id="0gQ-eb-XcX"/>
                                     <constraint firstItem="tBx-5b-1C5" firstAttribute="top" secondItem="y6Y-OK-MQe" secondAttribute="top" constant="23" id="1Q8-Hm-RkM"/>
                                     <constraint firstItem="tBx-5b-1C5" firstAttribute="centerX" secondItem="y6Y-OK-MQe" secondAttribute="centerX" constant="-96" id="1gn-fW-gL4"/>
-                                    <constraint firstItem="PXV-Uk-Ybs" firstAttribute="top" secondItem="tBx-5b-1C5" secondAttribute="bottom" constant="50" id="1pT-lC-R8t"/>
                                     <constraint firstItem="c0p-V6-2bO" firstAttribute="leading" secondItem="SUg-WQ-8bb" secondAttribute="leading" id="3mV-Qo-td2"/>
-                                    <constraint firstItem="QOe-Va-jph" firstAttribute="top" secondItem="hj3-vL-wtj" secondAttribute="bottom" constant="17" id="5e6-oJ-Ah6"/>
+                                    <constraint firstItem="QOe-Va-jph" firstAttribute="top" secondItem="hj3-vL-wtj" secondAttribute="bottom" constant="18" id="5e6-oJ-Ah6"/>
                                     <constraint firstItem="c0p-V6-2bO" firstAttribute="top" secondItem="PXV-Uk-Ybs" secondAttribute="bottom" constant="8" symbolic="YES" id="7Gp-Tr-30c"/>
                                     <constraint firstItem="PXV-Uk-Ybs" firstAttribute="trailing" secondItem="c0p-V6-2bO" secondAttribute="trailing" id="FjL-Hi-8QP"/>
                                     <constraint firstItem="QOe-Va-jph" firstAttribute="trailing" secondItem="hj3-vL-wtj" secondAttribute="trailing" id="LGf-Q3-fYz"/>
+                                    <constraint firstItem="30I-5P-7Pv" firstAttribute="top" secondItem="tBx-5b-1C5" secondAttribute="bottom" constant="25" id="LaY-Kj-1Sk"/>
                                     <constraint firstItem="PXV-Uk-Ybs" firstAttribute="centerX" secondItem="y6Y-OK-MQe" secondAttribute="centerX" id="Leb-ZU-zfX"/>
                                     <constraint firstItem="c0p-V6-2bO" firstAttribute="trailing" secondItem="SUg-WQ-8bb" secondAttribute="trailing" id="Nia-BO-Iba"/>
                                     <constraint firstItem="E9u-iY-BsA" firstAttribute="top" secondItem="SUg-WQ-8bb" secondAttribute="bottom" constant="8" symbolic="YES" id="W4i-yV-085"/>
@@ -1166,7 +1160,7 @@
                                 <rect key="frame" x="20" y="0.0" width="560" height="527"/>
                                 <color key="backgroundColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="locationCell" textLabel="fCf-cB-Cxu" detailTextLabel="yhc-94-s9e" imageView="WgX-dx-Bjt" rowHeight="65" style="IBUITableViewCellStyleSubtitle" id="Yan-NZ-hKD">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="locationCell" textLabel="fCf-cB-Cxu" detailTextLabel="yhc-94-s9e" imageView="WgX-dx-Bjt" rowHeight="65" style="IBUITableViewCellStyleSubtitle" id="Yan-NZ-hKD">
                                         <rect key="frame" x="0.0" y="114" width="560" height="65"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Yan-NZ-hKD" id="swH-np-JKD">
@@ -1180,7 +1174,7 @@
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" image="4A75B242-294F-4B9D-B225-54E6A3109383" id="WgX-dx-Bjt">
+                                                <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" image="9131ED50-5508-4C0F-85F5-6A726AF144A1" id="WgX-dx-Bjt">
                                                     <rect key="frame" x="15" y="13" width="38" height="38"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                 </imageView>
@@ -1194,7 +1188,7 @@
                                             </subviews>
                                         </tableViewCellContentView>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="titleCell" textLabel="Lxn-6t-bMR" style="IBUITableViewCellStyleDefault" id="20M-F2-Obh">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="titleCell" textLabel="Lxn-6t-bMR" style="IBUITableViewCellStyleDefault" id="20M-F2-Obh">
                                         <rect key="frame" x="0.0" y="179" width="560" height="64"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="20M-F2-Obh" id="UHZ-Gk-cgX">
@@ -1210,7 +1204,7 @@
                                             </subviews>
                                         </tableViewCellContentView>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="switchCell" id="pDo-nM-LI0">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="switchCell" id="pDo-nM-LI0">
                                         <rect key="frame" x="0.0" y="243" width="560" height="64"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="pDo-nM-LI0" id="fd1-rA-Elw">
@@ -1235,8 +1229,8 @@
                                             <rect key="frame" x="0.0" y="0.0" width="527" height="64"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Send via Messages" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="G6b-sP-cF6">
-                                                    <rect key="frame" x="65" y="22" width="140" height="20"/>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Send to Dude Friends" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="G6b-sP-cF6">
+                                                    <rect key="frame" x="63" y="22" width="157" height="20"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
@@ -1249,12 +1243,18 @@
                                                     <color key="textColor" red="0.55686274509803924" green="0.55686274509803924" blue="0.57647058823529407" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleAspectFit" image="Messages Bubble" id="kbG-jr-meh">
-                                                    <rect key="frame" x="15" y="17" width="35" height="30"/>
+                                                <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleAspectFit" image="Tab Person" id="kbG-jr-meh">
+                                                    <rect key="frame" x="15" y="15" width="33" height="33"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                 </imageView>
                                             </subviews>
                                         </tableViewCellContentView>
+                                        <connections>
+                                            <segue destination="NkY-sI-erC" kind="show" identifier="selectFriendsSegue" id="C2E-uc-dCP">
+                                                <segue key="commit" inheritsFrom="parent" id="q3T-Ve-soV"/>
+                                                <segue key="preview" inheritsFrom="commit" id="eG4-RJ-6Ca"/>
+                                            </segue>
+                                        </connections>
                                     </tableViewCell>
                                 </prototypes>
                                 <sections/>
@@ -1313,9 +1313,55 @@
             </objects>
             <point key="canvasLocation" x="2868" y="506"/>
         </scene>
+        <!--Select Friends-->
+        <scene sceneID="dub-zk-sHN">
+            <objects>
+                <tableViewController title="Select Friends" id="NkY-sI-erC" customClass="UsersSelectionTableViewController" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="64" sectionHeaderHeight="18" sectionFooterHeight="18" id="EKR-hH-deQ">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                        <prototypes>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="cell" textLabel="cj5-Md-WaS" imageView="xXy-E0-UIO" rowHeight="64" style="IBUITableViewCellStyleDefault" id="5nc-GR-yRh">
+                                <rect key="frame" x="0.0" y="114" width="600" height="64"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="5nc-GR-yRh" id="0br-35-rRJ">
+                                    <rect key="frame" x="0.0" y="0.0" width="600" height="63"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Georges Kanaan" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="cj5-Md-WaS">
+                                            <rect key="frame" x="93" y="0.0" width="492" height="63"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                        <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" image="Default Profile Image" id="xXy-E0-UIO">
+                                            <rect key="frame" x="15" y="0.0" width="63" height="63"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                                    <integer key="value" value="25"/>
+                                                </userDefinedRuntimeAttribute>
+                                            </userDefinedRuntimeAttributes>
+                                        </imageView>
+                                    </subviews>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="NkY-sI-erC" id="nvI-zO-q6J"/>
+                            <outlet property="delegate" destination="NkY-sI-erC" id="MeH-bK-ZnT"/>
+                        </connections>
+                    </tableView>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="3dl-mD-Rvq" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3630" y="506"/>
+        </scene>
     </scenes>
     <resources>
-        <image name="4A75B242-294F-4B9D-B225-54E6A3109383" width="38" height="38">
+        <image name="9131ED50-5508-4C0F-85F5-6A726AF144A1" width="38" height="38">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGPT5YJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK4HCBMU
 GR4fIyQrLjE3OlUkbnVsbNUJCgsMDQ4PEBESVk5TU2l6ZVYkY2xhc3NcTlNJbWFnZUZsYWdzVk5TUmVw
@@ -1471,7 +1517,6 @@ IJ4goCClIK0gsCC1IL0gwCDSINUg2gAAAAAAAAIBAAAAAAAAAEEAAAAAAAAAAAAAAAAAACDcA
         <image name="Disconnected" width="210" height="213"/>
         <image name="Favorite Deselected" width="30" height="28"/>
         <image name="Location" width="38" height="38"/>
-        <image name="Messages Bubble" width="35" height="30"/>
         <image name="Name Tag" width="136" height="80"/>
         <image name="Pin" width="16" height="26"/>
         <image name="Pin Faded" width="188" height="255"/>
@@ -1481,10 +1526,11 @@ IJ4goCClIK0gsCC1IL0gwCDSINUg2gAAAAAAAAIBAAAAAAAAAEEAAAAAAAAAAAAAAAAAACDcA
         <image name="Tab Person" width="33" height="33"/>
     </resources>
     <inferredMetricsTieBreakers>
+        <segue reference="Nbs-OA-gvm"/>
         <segue reference="NF1-BU-3Xi"/>
         <segue reference="Mie-N4-Lj2"/>
         <segue reference="vSt-jy-4r4"/>
-        <segue reference="Nbs-OA-gvm"/>
+        <segue reference="C2E-uc-dCP"/>
     </inferredMetricsTieBreakers>
     <color key="tintColor" red="0.23921568627450981" green="0.59215686274509804" blue="0.85882352941176465" alpha="1" colorSpace="calibratedRGB"/>
 </document>

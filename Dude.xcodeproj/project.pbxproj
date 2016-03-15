@@ -50,6 +50,7 @@
 		FB4C5DBC1BF5F0AE002B5A58 /* MessageInterfaceController.m in Sources */ = {isa = PBXBuildFile; fileRef = FB4C5DBB1BF5F0AE002B5A58 /* MessageInterfaceController.m */; };
 		FB4C5DBF1BF5F0BA002B5A58 /* RowController.m in Sources */ = {isa = PBXBuildFile; fileRef = FB4C5DBE1BF5F0BA002B5A58 /* RowController.m */; };
 		FB4FC3C71BAD938900FC5F01 /* QNSURLConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = FB4FC3C61BAD938900FC5F01 /* QNSURLConnection.m */; };
+		FB67A3201C9860BA00FF1646 /* UsersSelectionTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FB67A31F1C9860BA00FF1646 /* UsersSelectionTableViewController.m */; };
 		FB68259C1C91BFFA00A88579 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB68259B1C91BFFA00A88579 /* MessageUI.framework */; };
 		FB68259E1C91D63300A88579 /* WatchConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB68259D1C91D63300A88579 /* WatchConnectivity.framework */; };
 		FB6F4E251C2FF2830083DCD8 /* ComposeSheetViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FB6F4E241C2FF2830083DCD8 /* ComposeSheetViewController.m */; };
@@ -185,6 +186,8 @@
 		FB4FC3C51BAD938900FC5F01 /* QNSURLConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = QNSURLConnection.h; path = QNSURLConnection/QNSURLConnection.h; sourceTree = "<group>"; };
 		FB4FC3C61BAD938900FC5F01 /* QNSURLConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = QNSURLConnection.m; path = QNSURLConnection/QNSURLConnection.m; sourceTree = "<group>"; };
 		FB4FC3C91BAD976200FC5F01 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		FB67A31E1C9860BA00FF1646 /* UsersSelectionTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UsersSelectionTableViewController.h; path = Classes/Controllers/UsersSelectionTableViewController.h; sourceTree = "<group>"; };
+		FB67A31F1C9860BA00FF1646 /* UsersSelectionTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UsersSelectionTableViewController.m; path = Classes/Controllers/UsersSelectionTableViewController.m; sourceTree = "<group>"; };
 		FB68259B1C91BFFA00A88579 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
 		FB68259D1C91D63300A88579 /* WatchConnectivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WatchConnectivity.framework; path = System/Library/Frameworks/WatchConnectivity.framework; sourceTree = SDKROOT; };
 		FB6F4E231C2FF2830083DCD8 /* ComposeSheetViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ComposeSheetViewController.h; path = Classes/Controllers/ComposeSheetViewController.h; sourceTree = "<group>"; };
@@ -349,6 +352,8 @@
 				DA6EB62A1B2351EC00362033 /* MessagesTableViewController.m */,
 				FB6F4E231C2FF2830083DCD8 /* ComposeSheetViewController.h */,
 				FB6F4E241C2FF2830083DCD8 /* ComposeSheetViewController.m */,
+				FB67A31E1C9860BA00FF1646 /* UsersSelectionTableViewController.h */,
+				FB67A31F1C9860BA00FF1646 /* UsersSelectionTableViewController.m */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -856,6 +861,7 @@
 				FB4BEC6C1C94C8BD0020919C /* DUserWatch.m in Sources */,
 				DA6F4C4E1A1E439800D40186 /* main.m in Sources */,
 				DAB5FCAD1AC69314003D8062 /* NSStringExtensions.m in Sources */,
+				FB67A3201C9860BA00FF1646 /* UsersSelectionTableViewController.m in Sources */,
 				DACEE7D71AB02DB200B958F0 /* UIImageExtensions.m in Sources */,
 				FB6F4E251C2FF2830083DCD8 /* ComposeSheetViewController.m in Sources */,
 				FB4FC3C71BAD938900FC5F01 /* QNSURLConnection.m in Sources */,
