@@ -126,7 +126,7 @@
             } else if (loggedInUser.isAuthenticated && loggedInUser.sessionToken) {
               // Go back to the redirection controller
               dispatch_async(dispatch_get_main_queue(), ^{
-                [self dismissViewControllerAnimated:NO completion:nil];
+                [self.presentingViewController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
               });
             }
           }];
@@ -182,16 +182,22 @@
         user.lastSeens = @[];
         [user signUpInBackgroundWithBlock:^(BOOL succeeded, NSError * _Nullable error) {
           if (!succeeded) {
-            [self dismissViewControllerAnimated:YES completion:nil];
+            UIAlertController *incorrectCredentialsAlertController = [UIAlertController alertControllerWithTitle:@"Dude, we couldn't sign you up" message:error.localizedDescription preferredStyle:UIAlertControllerStyleAlert];
+            [incorrectCredentialsAlertController addAction:[UIAlertAction actionWithTitle:@"Will do!" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+              [self dismissViewControllerAnimated:YES completion:nil];// Restart
+            }]];
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+              [self presentViewController:incorrectCredentialsAlertController animated:YES completion:nil];
+            });
+
             
           } else {
             // Tell the user to confirm his email
             UIAlertController *incorrectCredentialsAlertController = [UIAlertController alertControllerWithTitle:@"Dude, confirm your email" message:@"We've sent you an email to verify your you. Make sure to confirm it soon!" preferredStyle:UIAlertControllerStyleAlert];
             [incorrectCredentialsAlertController addAction:[UIAlertAction actionWithTitle:@"Will do!" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
               // Go back to the redirection controller
-              [self dismissViewControllerAnimated:YES completion:^{
-                [self.presentingViewController dismissViewControllerAnimated:NO completion:nil];
-              }];
+              [self.presentingViewController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
             }]];
             
             dispatch_async(dispatch_get_main_queue(), ^{

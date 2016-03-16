@@ -49,10 +49,9 @@
   // Generate Messages
   [self performSelectorInBackground:@selector(reloadData) withObject:nil];
   
-  // Scroll the tableView
-  if (!self.messages.count) {
-    [self.tableView setContentOffset:CGPointMake(0, -self.refreshControl.frame.size.height) animated:YES];
-  }
+  // Begin refreshing
+  [self.tableView setContentOffset:CGPointMake(0, -self.refreshControl.frame.size.height)];
+  [self.refreshControl performSelector:@selector(beginRefreshing) withObject:nil afterDelay:0.0];// Otherwise it doesn't render properly
 }
 
 - (void)didReceiveMemoryWarning {
@@ -62,7 +61,6 @@
 
 #pragma mark - Table view data source
 - (IBAction)reloadData {
-  [self.refreshControl performSelectorOnMainThread:@selector(beginRefreshing) withObject:nil waitUntilDone:NO];
   __weak MessagesManager *messagesManager = [MessagesManager sharedInstance];
 
   if (self.messages.count == 0) {
@@ -72,7 +70,6 @@
         self.messages = [messagesManager generateMessages:6];
         
         [self.tableView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];
-        
       }
     }];
   }
@@ -80,9 +77,10 @@
   [messagesManager setLocationForMessageGenerationWithCompletion:^(NSError *error) {
     if (!error) {
       self.messages = [messagesManager generateMessages:20];
-      
+
       [self.tableView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];
-      [self.refreshControl performSelectorOnMainThread:@selector(endRefreshing) withObject:nil waitUntilDone:NO];
+      
+      [self.refreshControl performSelector:@selector(endRefreshing) withObject:nil afterDelay:0.0];// Otherwise its jerky
       
     } else if (error.code == 500 && [error.domain isEqualToString:@"LocationAuthorization"]) {
       [self reloadData];

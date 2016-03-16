@@ -310,7 +310,7 @@
 
 #pragma mark - MFMessageComposeViewControllerDelegate
 - (void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result {
-  // Dismiss the mail compose view controller.
+  // Dismiss the message compose view controller.
   [controller.presentingViewController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
 }
 

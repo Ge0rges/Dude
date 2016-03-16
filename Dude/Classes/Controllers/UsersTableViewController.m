@@ -66,6 +66,8 @@ typedef void(^completion)(BOOL validEmail);
 
 @property (strong, nonatomic) IBOutlet UILabel *searchResultLabel;
 
+@property (strong, nonatomic) UIRefreshControl *refreshControl;
+
 @end
 
 @implementation UsersTableViewController
@@ -118,6 +120,17 @@ typedef void(^completion)(BOOL validEmail);
   if (shouldRefreshFacebook) {
     [[DUser currentUser] selectFacebookAccountWithCompletion:nil];
   }
+  
+  // Add refresh control
+  UITableViewController *tableViewController = [[UITableViewController alloc] init];
+  tableViewController.tableView = self.tableView;
+  
+  self.refreshControl = [[UIRefreshControl alloc] init];
+  [self.refreshControl addTarget:self action:@selector(reloadData:) forControlEvents:UIControlEventValueChanged];
+  self.refreshControl.attributedTitle = [[NSAttributedString alloc] initWithString:@"Contacting other dudes..."];
+  self.refreshControl.tintColor = self.view.tintColor;
+
+  tableViewController.refreshControl = self.refreshControl;
 }
 
 #pragma mark - Public Methods
@@ -153,6 +166,8 @@ typedef void(^completion)(BOOL validEmail);
           }
         }
       }
+      
+      [self.refreshControl performSelectorOnMainThread:@selector(endRefreshing) withObject:nil waitUntilDone:NO];
     }];
     
     fetchUsersOperation.queuePriority = NSOperationQueuePriorityHigh;
