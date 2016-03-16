@@ -55,6 +55,10 @@
   
   // Update status bar
   [self setNeedsStatusBarAppearanceUpdate];
+  
+  if (!self.profileUser) {
+    self.profileUser = [DUser currentUser];
+  }
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -77,9 +81,8 @@
   // Status Update
   DMessage *message = [[ContactsManager sharedInstance] latestMessageForContact:(self.profileUser)?: [DUser currentUser]];
   
-  
-  NSString *locationErrorText = ([self.profileUser isEqual:[DUser currentUser]]) ? @"Dude, you didn't share a location yet" : @"Dude, you didn't share a location yet";
-  NSString *lastSeenErrorText = ([self.profileUser isEqual:[DUser currentUser]]) ? @"Dude, you didn't share an update yet" : @"Dude, you didn't share an update yet";
+  NSString *locationErrorText = ([self.profileUser isEqual:[DUser currentUser]]) ? @"Dude, you didn't share a location yet" : @"Dude, they didn't share a location yet";
+  NSString *lastSeenErrorText = ([self.profileUser isEqual:[DUser currentUser]]) ? @"Dude, you didn't share an update yet" : @"Dude, they didn't share an update yet";
   
   NSString *locationText = [NSString stringWithFormat:@"%@ - %@", message.city, message.timestamp];
   
@@ -97,7 +100,7 @@
       }
     }
     
-    heightConstraint.constant = heightConstant;
+    heightConstraint.constant = (heightConstraint.constant == 0) ? heightConstant : heightConstraint.constant;
     
     // Add Pin
     MKPointAnnotation *annotation = [MKPointAnnotation new];
@@ -131,7 +134,7 @@
   }
   
   // Variable
-  if (self.profileUser) {
+  if (![self.profileUser isEqual:[DUser currentUser]]) {
     // Secondary button
     if ([[ContactsManager sharedInstance] contactBlockedCurrentUser:self.profileUser]) {
       [self.secondaryButton setImage:[UIImage imageNamed:@"Blocked"] forState:UIControlStateNormal];
@@ -166,10 +169,14 @@
     // Send update text
     self.sendUpdateLabel.text = [NSString stringWithFormat:@"Send %@ an Update", self.profileUser.fullName];
     
+    // Request Button
+    [self.requestStatusButton setTitle:[NSString stringWithFormat:@"     Ask what %@ is doing", self.profileUser.fullName] forState:UIControlStateNormal];
+    
   } else {// Current user    
     // Secondary button - Email
     [self.secondaryButton setTitle:[DUser currentUser].email forState:UIControlStateNormal];
-    
+    [self.secondaryButton setImage:nil forState:UIControlStateNormal];
+
     // Profile Image
     [self.profileImageView sd_setImageWithURL:[NSURL URLWithString:[DUser currentUser].profileImage.url] placeholderImage:[UIImage imageNamed:@"Default Profile Image"]];
     
@@ -339,7 +346,15 @@
 }
 
 - (IBAction)changeEmail {
-#warning implement
+  // Tell the user that this will be avaible in the future
+  UIAlertController *incorrectCredentialsAlertController = [UIAlertController alertControllerWithTitle:@"Can't change Email" message:@"Dude, you can't change your account's email in app yet. Contact us on getdudeapp.com" preferredStyle:UIAlertControllerStyleAlert];
+  [incorrectCredentialsAlertController addAction:[UIAlertAction actionWithTitle:@"Open Link" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+    // Open link in safari
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"https://getdudeapp.com/contact"]];
+  }]];
+  
+  [incorrectCredentialsAlertController addAction:[UIAlertAction actionWithTitle:@"Ok" style:UIAlertActionStyleCancel handler:nil]];
+
 }
 
 - (IBAction)logout:(id)sender {
@@ -373,11 +388,9 @@
 #pragma mark - Navigation
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
   if ([segue.identifier isEqualToString:@"showMessages"]) {
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{// Give time to the navigation controller to present the messages table
-      UINavigationController *navigationVC = [segue destinationViewController];
-      MessagesTableViewController *messagesTableViewController  = (MessagesTableViewController*)navigationVC.visibleViewController;
-      messagesTableViewController.selectedUsers = @[self.profileUser];      
-    });
+    UINavigationController *navigationVC = [segue destinationViewController];
+    MessagesTableViewController *messagesTableViewController  = (MessagesTableViewController*)navigationVC.visibleViewController;
+    messagesTableViewController.selectedUsers = @[self.profileUser];
   }
 }
 

@@ -144,7 +144,7 @@
     NSDictionary *lastSeen = (NSDictionary*)obj;
     
     if (lastSeen[user.email]) {
-      stop = (bool *)YES;// Wtf apple
+      stop = (BOOL *)YES;// Wtf apple
       message = (DMessage*)[NSKeyedUnarchiver unarchiveObjectWithData:lastSeen[user.email]];
     }
   }];

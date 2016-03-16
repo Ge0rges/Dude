@@ -38,13 +38,12 @@
   // Add done button
   self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(done)];
 
-  
-  // get contacts, sort, filter and save them
+  // Get contacts, sort, filter and save them
   NSArray *contacts = [[[ContactsManager sharedInstance] getContactsRefreshedNecessary:NO favourites:NO] allObjects];
   selectedContacts = [NSMutableArray arrayWithArray:[self.composeSheetViewController.selectedUsers allObjects]];
   
   NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"fullName" ascending:YES selector:@selector(caseInsensitiveCompare:)];
-  [contacts sortedArrayUsingDescriptors:@[sort]];
+  contacts = [contacts sortedArrayUsingDescriptors:@[sort]];
   
   splittedContacts = [NSMutableDictionary new];
   indexTitles = [NSMutableSet new];

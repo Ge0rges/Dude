@@ -39,7 +39,6 @@
 @end
 
 @implementation ComposeSheetViewController
-#warning scroll shade not appearing
 
 - (void)viewDidLoad {
   [super viewDidLoad];
@@ -99,7 +98,7 @@
         cell = [tableView dequeueReusableCellWithIdentifier:@"detailCell"];
         cell.textLabel.text = @"Send to Dudes";
         cell.imageView.image = [[UIImage imageNamed:@"Tab Person"] scaleImageToSize:CGSizeMake(50, 50)];
-        cell.detailTextLabel.text = [NSString stringWithFormat:@"%lu %@", self.selectedUsers.count, (self.selectedUsers.count != 1) ? @"Friends" : @"Friend"];
+        cell.detailTextLabel.text = [NSString stringWithFormat:@"%i %@", (int)self.selectedUsers.count, (self.selectedUsers.count != 1) ? @"Friends" : @"Friend"];
 
         break;
         
@@ -246,7 +245,7 @@
       NSDictionary *lastSeen = (NSDictionary*)obj;
       
       if (lastSeen[[DUser currentUser].email]) {
-        stop = (bool *)YES;// Wtf apple
+        stop = (BOOL *)YES;// Wtf apple
         [mutableLastSeenDictionariesArray removeObject:obj];
       }
     }];
@@ -296,14 +295,17 @@
 
 #pragma mark - Navigation
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-  if ([segue.identifier isEqualToString:@"showComposingSheetSegue"]) {
+  if ([segue.identifier isEqualToString:@"selectFriendsSegue"]) {
     UsersSelectionTableViewController *usersSelectionTableVC = [segue destinationViewController];
     usersSelectionTableVC.composeSheetViewController = self;
   }
 }
 
 -(IBAction)unwindToComposeSheetViewController:(UIStoryboardSegue *)segue {
-  [self.tableView reloadData];
+  // Reload the friend selection row
+  [self.tableView beginUpdates];
+  [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:1 inSection:1]] withRowAnimation:UITableViewRowAnimationNone];
+  [self.tableView endUpdates];
 }
 
 #pragma mark - MFMessageComposeViewControllerDelegate

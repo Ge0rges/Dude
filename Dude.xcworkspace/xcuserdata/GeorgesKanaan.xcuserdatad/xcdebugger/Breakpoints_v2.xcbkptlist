@@ -16,26 +16,26 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.SymbolicBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             symbolName = "warnBlockingOperationOnMainThread"
             moduleName = "">
             <Locations>
                <Location
-                  shouldBeEnabled = "Yes"
+                  shouldBeEnabled = "No"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
                   symbolName = "warnBlockingOperationOnMainThread"
-                  moduleName = "Watch Extension"
+                  moduleName = "Dude"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/GeorgesKanaan/Documents/Development/iOS_Development/Apps/Dude/Pods/Bolts/Bolts/Common/BFTask.m"
-                  timestampString = "479763395.445071"
+                  timestampString = "479838133.908323"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "18"
                   endingLineNumber = "18"
-                  offsetFromSymbolStart = "16">
+                  offsetFromSymbolStart = "0">
                </Location>
             </Locations>
          </BreakpointContent>

@@ -16,5 +16,5 @@
 + (UIImage* _Nonnull)blurredScreenshotOfView:(UIView* _Nonnull)view;
 
 // WWDC 2013 image effects
-- (UIImage* _Nonnull)applyBlurWithRadius:(CGFloat)blurRadius tintColor:(UIColor* _Nonnull)tintColor saturationDeltaFactor:(CGFloat)saturationDeltaFactor maskImage:(UIImage* _Nonnull)maskImage;
+- (UIImage* _Nonnull)applyBlurWithRadius:(CGFloat)blurRadius tintColor:(UIColor* _Nonnull)tintColor saturationDeltaFactor:(CGFloat)saturationDeltaFactor maskImage:(UIImage* _Nullable)maskImage;
 @end

@@ -51,13 +51,34 @@
 - (void)setLocationForMessageGenerationWithCompletion:(_Nonnull LocationCompletionBlock)handler {
   self.locationManager = [CLLocationManager new];
   
+  // Set the block for later use and modify to set searchedLocation
+  __weak typeof(self) weakSelf = self;
+  __weak typeof(searchedLocation) weakSearchedLocation = searchedLocation;
+  
+  locationCompletionBlock = ^( NSError * _Nullable error){
+    // Check if we already fetched the location
+    if (!weakSearchedLocation) {
+      // Get searchedLocation (current city)
+      [[CLGeocoder new] reverseGeocodeLocation:weakSelf.locationManager.location completionHandler:^(NSArray *placemarks, NSError *error) {
+        if (placemarks.count) {
+          searchedLocation = ([placemarks.firstObject locality]) ?: ([placemarks.firstObject subLocality]) ?: [placemarks.firstObject administrativeArea];
+        }
+        
+        if (!weakSearchedLocation) {
+          [weakSelf fetchNearbyVenues:0 fromOldResponse:nil];
+        }
+        
+        handler(error);
+      }];
+    } else {
+      handler(error);
+    }
+  };
+  
   if (fabs([self.locationManager.location.timestamp timeIntervalSinceNow]) < 600 && self.locationManager.location) {// Check if we have a cached location within 10min
-    handler(nil);
+    locationCompletionBlock(nil);
     return;
   }
-  
-  // Set the block for later use
-  locationCompletionBlock = [handler copy];
   
   // Set the location manager
   dispatch_async(dispatch_get_main_queue(), ^{
@@ -74,14 +95,17 @@
     // If the location permission is underterminded ask for it
     if ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusNotDetermined) {
       [self.locationManager requestWhenInUseAuthorization];
-      handler([NSError errorWithDomain:@"LocationAuthorization" code:500 userInfo:nil]);
+      locationCompletionBlock([NSError errorWithDomain:@"LocationAuthorization" code:500 userInfo:nil]);
+      locationCompletionBlock = nil;
     }
     
     // Otherwise start getting the location or call the block with a 500 not allowed error
-    if ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusDenied)
-      handler([NSError errorWithDomain:@"LocationAuthorization" code:501 userInfo:nil]);
-    else
+    if ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusDenied) {
+      locationCompletionBlock([NSError errorWithDomain:@"LocationAuthorization" code:501 userInfo:nil]);
+      locationCompletionBlock = nil;
+    } else {
       [self.locationManager startUpdatingLocation];
+    }
   });
 }
 
@@ -89,10 +113,12 @@
 - (void)locationManager:(CLLocationManager*)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status {
   [self.locationManager requestWhenInUseAuthorization];
   
-  if ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusDenied)
+  if ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusDenied) {
     locationCompletionBlock([NSError errorWithDomain:@"Location" code:500 userInfo:nil]);
-  else if ([CLLocationManager authorizationStatus] != kCLAuthorizationStatusDenied)
+    locationCompletionBlock = nil;
+  } else if ([CLLocationManager authorizationStatus] != kCLAuthorizationStatusDenied) {
     [self.locationManager startUpdatingLocation];
+  }
 }
 
 - (void)locationManager:(CLLocationManager*)manager didUpdateLocations:(NSArray*)locations {
@@ -108,6 +134,7 @@
     
     // Call the block
     locationCompletionBlock(nil);
+    locationCompletionBlock = nil;
   }
 }
 
@@ -140,15 +167,10 @@
 
 #pragma mark - Context Messaging building
 - (NSArray*)generateMessages:(NSInteger)numberOfMessagesToGenerate {// Someday this will be an API call to our server
-#warning Remaining images
   if ([CLLocationManager authorizationStatus] != kCLAuthorizationStatusDenied && self.locationManager.location) {
     
     // Array to store messages
     NSMutableArray *messages = [NSMutableArray new];
-    
-#warning find better way to get city
-    // Get searchedLocation (current city)
-    [self fetchNearbyVenues:0 fromOldResponse:nil];
     
     // Add default messages
     DMessage *messageDude = [[DMessage alloc] initWithCategory:@"Just Dude" location:self.locationManager.location venueName:@"Just Dude" venueCity:searchedLocation imageURL:@"http://Badge_Dude.com"];
@@ -201,14 +223,16 @@
 
 - (NSArray*)fetchNearbyVenues:(NSInteger)numberOfVenues fromOldResponse:(NSDictionary*)response {
   // Set a default venue count if none is provided
-  if (!numberOfVenues || numberOfVenues <= 0) numberOfVenues = 3;
+  if (!numberOfVenues || numberOfVenues <= 0) numberOfVenues = 1;
   if ([CLLocationManager authorizationStatus] != kCLAuthorizationStatusDenied) {// If we have permission
     // Only if a response wasn't passed
     if (!response) {
       response = [self queryFoursquareForNearbyVenues:numberOfVenues];
       
       if (!response) return nil;
-      searchedLocation = (response[@"headerLocation"]) ? response[@"headerLocation"] : @"Could not determine City.";
+      if (!searchedLocation) {
+        searchedLocation = (response[@"headerLocation"]) ? response[@"headerLocation"] : @"Could not determine City.";
+      }
       
       if (numberOfVenues == 0) return nil;// We just wanted the searchedLocation for default messages
     }
