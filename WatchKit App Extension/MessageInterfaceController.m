@@ -94,7 +94,7 @@
       [row.imageView setImageNamed:imageName];
     
     } else {
-#warning implement new DMessage method for UIImage storage
+// TODO: implement new DMessage method for UIImage storage
     }
   }
 }
