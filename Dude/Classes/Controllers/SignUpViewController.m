@@ -169,6 +169,10 @@
       }
         
       case 4: {
+        // Remove retake X image
+        [retakeImageView removeFromSuperview];
+        retakeImageView = nil;
+        
         [self animateToNextStepWithInitialScreenshot:[self screenshot] fromRight:YES];
         [self proceedToSocial];
         break;
@@ -281,7 +285,7 @@
   
   [self.textField setHidden:YES];
   
-  [self.confirmButton setTitle:@"ALLOW ACCESS" forState:UIControlStateNormal];
+  [self.confirmButton setTitle:@"ASK ME" forState:UIControlStateNormal];
   [self.backButton setTitle:@" Photo" forState:UIControlStateNormal];
   
   self.confirmButton.tag++;
@@ -615,6 +619,8 @@
     [self presentViewController:picker animated:YES completion:nil];
     
   }]];
+  
+  [actionSheet addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
   
   [self presentViewController:actionSheet animated:YES completion:nil];
 }

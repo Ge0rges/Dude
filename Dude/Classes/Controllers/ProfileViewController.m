@@ -79,10 +79,10 @@
 #pragma mark - UI
 - (void)updateProfileInterface {
   // Status Update
-  DMessage *message = [[ContactsManager sharedInstance] latestMessageForContact:(self.profileUser)?: [DUser currentUser]];
+  DMessage *message = [[ContactsManager sharedInstance] latestMessageForContact:self.profileUser];
   
-  NSString *locationErrorText = ([self.profileUser isEqual:[DUser currentUser]]) ? @"Dude, you didn't share a location yet" : @"Dude, they didn't share a location yet";
-  NSString *lastSeenErrorText = ([self.profileUser isEqual:[DUser currentUser]]) ? @"Dude, you didn't share an update yet" : @"Dude, they didn't share an update yet";
+  NSString *locationErrorText = ([self.profileUser isEqual:[DUser currentUser]]) ? @"Dude, you didn't share a location yet" : @"Dude, they didn't share a location with you yet";
+  NSString *lastSeenErrorText = ([self.profileUser isEqual:[DUser currentUser]]) ? @"Dude, you didn't share an update yet" : @"Dude, they didn't share an update with you yet";
   
   NSString *locationText = [NSString stringWithFormat:@"%@ - %@", message.city, message.timestamp];
   
@@ -105,7 +105,7 @@
     // Add Pin
     MKPointAnnotation *annotation = [MKPointAnnotation new];
     annotation.coordinate = message.location.coordinate;
-    annotation.title = (self.profileUser) ? [NSString stringWithFormat:@"%@'s Location", [self.profileUser.fullName stringBetweenString:@"" andString:@" "]] : @"Your Public Location";
+    annotation.title = ([self.profileUser isEqual:[DUser currentUser]]) ? @"Your Public Location" : [NSString stringWithFormat:@"%@'s Location", [self.profileUser.fullName stringBetweenString:@"" andString:@" "]];
     [self.statusLocationMapView addAnnotation:annotation];
     
     // Zoom on Pin
@@ -316,13 +316,15 @@
 }
 
 - (IBAction)toggleFullscreenProfileImage:(id)sender {
+  CGRect fullscreenRect = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height-64-self.tabBarController.tabBar.frame.size.height);
+  
   // Toggle fullscreen when profile image view clicked (only in non current user)
-  if (CGRectEqualToRect(self.profileImageView.frame, self.view.frame)) {
+  if (CGRectEqualToRect(self.profileImageView.frame, fullscreenRect)) {
     [self.profileImageView setContentMode:UIViewContentModeScaleAspectFit];
 
     [UIView animateWithDuration:0.3 animations:^{
       [self.profileImageView setFrame:originalProfileImageViewFrame];
-      self.profileImageView.layer.cornerRadius = 0;
+      self.profileImageView.layer.cornerRadius = self.profileImageView.frame.size.width/2;
     
     } completion:^(BOOL finished) {
       UIScrollView *scrollView = (UIScrollView *)self.profileImageView.superview;
@@ -335,10 +337,11 @@
     originalProfileImageViewFrame = self.profileImageView.frame;
     
     [UIView animateWithDuration:0.3 animations:^{
-      [self.profileImageView setFrame:self.view.frame];
-      self.profileImageView.layer.cornerRadius = self.profileImageView.frame.size.width/2;
+      [self.profileImageView setFrame:fullscreenRect];
     
     } completion:^(BOOL finished) {
+      self.profileImageView.layer.cornerRadius = 0;
+
       UIScrollView *scrollView = (UIScrollView *)self.profileImageView.superview;
       scrollView.scrollEnabled = NO;
     }];

@@ -32,8 +32,9 @@
 typedef void(^completion)(BOOL validEmail);
 
 @interface UsersTableViewController () <UITableViewDataSource, UITableViewDelegate> {
-  NSSet *contacts;
-  
+  NSSet *allContacts;
+  NSSet *favoriteContacts;
+
   UIImageView *leftBarButtonitemImageView;
   
   DUser *friendSearchedUser;
@@ -132,13 +133,24 @@ typedef void(^completion)(BOOL validEmail);
     
     fetchUsersOperation = [NSBlockOperation blockOperationWithBlock:^{
       if (!fetchUsersOperation.isCancelled) {
-        contacts = [[ContactsManager sharedInstance] getContactsRefreshedNecessary:NO favourites:self.favoritesOnly];
-        [self performSelectorOnMainThread:@selector(updateInterface) withObject:nil waitUntilDone:NO];
-        
-        if (contacts.count == 0 || ![sender isEqual:self.segmentedControl] || !sender) {
-          contacts = [[ContactsManager sharedInstance] getContactsRefreshedNecessary:YES favourites:self.favoritesOnly];
+        if (self.favoritesOnly) {
+          favoriteContacts = [[ContactsManager sharedInstance] getContactsRefreshedNecessary:NO favourites:self.favoritesOnly];
           [self performSelectorOnMainThread:@selector(updateInterface) withObject:nil waitUntilDone:NO];
           
+          if (favoriteContacts.count == 0 || ![sender isEqual:self.segmentedControl] || !sender) {
+            favoriteContacts = [[ContactsManager sharedInstance] getContactsRefreshedNecessary:YES favourites:self.favoritesOnly];
+            [self performSelectorOnMainThread:@selector(updateInterface) withObject:nil waitUntilDone:NO];
+          }
+        
+        } else {
+          allContacts= [[ContactsManager sharedInstance] getContactsRefreshedNecessary:NO favourites:self.favoritesOnly];
+          [self performSelectorOnMainThread:@selector(updateInterface) withObject:nil waitUntilDone:NO];
+          
+          if (allContacts.count == 0 || ![sender isEqual:self.segmentedControl] || !sender) {
+            allContacts = [[ContactsManager sharedInstance] getContactsRefreshedNecessary:YES favourites:self.favoritesOnly];
+            [self performSelectorOnMainThread:@selector(updateInterface) withObject:nil waitUntilDone:NO];
+            
+          }
         }
       }
     }];
@@ -155,47 +167,46 @@ typedef void(^completion)(BOOL validEmail);
     // Update UI again on main thread
     [self.tableView reloadData];
     
-    if (contacts.count == 0) {
-      if (self.favoritesOnly) {
-        // Show no favorites
-        [self.view bringSubviewToFront:self.nofavoritesView];
-        
-        self.nofavoritesView.alpha = 0.0;
-        self.nofavoritesView.hidden = NO;
-        
-        [UIView animateWithDuration:0.3 animations:^{
-          self.nofavoritesView.alpha = 1.0;
-        }];
-        
-        // Hide no friends
-        [UIView animateWithDuration:0.3 animations:^{
-          self.noFriendsView.alpha = 0.0;
-          
-        } completion:^(BOOL finished) {
-          self.noFriendsView.hidden = YES;
-          [self.view sendSubviewToBack:self.noFriendsView];
-        }];
-        
-      } else {
-        // Show no friends
-        [self.view bringSubviewToFront:self.noFriendsView];
-        
+    if (self.favoritesOnly && favoriteContacts.count == 0) {
+      // Show no favorites
+      [self.view bringSubviewToFront:self.nofavoritesView];
+      
+      self.nofavoritesView.alpha = 0.0;
+      self.nofavoritesView.hidden = NO;
+      
+      [UIView animateWithDuration:0.3 animations:^{
+        self.nofavoritesView.alpha = 1.0;
+      }];
+      
+      // Hide no friends
+      [UIView animateWithDuration:0.3 animations:^{
         self.noFriendsView.alpha = 0.0;
-        self.noFriendsView.hidden = NO;
         
-        [UIView animateWithDuration:0.3 animations:^{
-          self.noFriendsView.alpha = 1.0;
-        }];
+      } completion:^(BOOL finished) {
+        self.noFriendsView.hidden = YES;
+        [self.view sendSubviewToBack:self.noFriendsView];
+      }];
+      
+    } else if (allContacts.count == 0) {
+      // Show no friends
+      [self.view bringSubviewToFront:self.noFriendsView];
+      
+      self.noFriendsView.alpha = 0.0;
+      self.noFriendsView.hidden = NO;
+      
+      [UIView animateWithDuration:0.3 animations:^{
+        self.noFriendsView.alpha = 1.0;
+      }];
+      
+      // Hide no favorites
+      [UIView animateWithDuration:0.3 animations:^{
+        self.nofavoritesView.alpha = 0.0;
         
-        // Hide no favorites
-        [UIView animateWithDuration:0.3 animations:^{
-          self.nofavoritesView.alpha = 0.0;
-          
-        } completion:^(BOOL finished) {
-          self.nofavoritesView.hidden = YES;
-          [self.view sendSubviewToBack:self.nofavoritesView];
-        }];
-      }
+      } completion:^(BOOL finished) {
+        self.nofavoritesView.hidden = YES;
+        [self.view sendSubviewToBack:self.nofavoritesView];
+      }];
+      
       
     } else {
       // Hide all:
@@ -224,7 +235,7 @@ typedef void(^completion)(BOOL validEmail);
 #pragma mark - Table View data source
 - (NSInteger)tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section {
   // Return the number of rows in the section.
-  return contacts.count;
+  return (self.favoritesOnly) ? favoriteContacts.count : allContacts.count;
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView*)tableView {
@@ -239,7 +250,7 @@ typedef void(^completion)(BOOL validEmail);
   [cell.detailTextLabel setText:nil];
   [cell.imageView setImage:[UIImage imageNamed:@"Default Profile Image"]];
   
-  DUser *user = [contacts allObjects][indexPath.row];
+  DUser *user = (self.favoritesOnly) ? [favoriteContacts allObjects][indexPath.row] : [allContacts allObjects][indexPath.row];
   DMessage *message = [[ContactsManager sharedInstance] latestMessageForContact:user];
   
   // Populate the cell
@@ -326,7 +337,7 @@ typedef void(^completion)(BOOL validEmail);
 - (void)prepareForSegue:(UIStoryboardSegue*)segue sender:(id)sender {
   if ([segue.identifier isEqualToString:@"showProfile"]) {
     UITableViewCell *cell = (UITableViewCell*)sender;
-    DUser *selectedUser = [contacts allObjects][[self.tableView indexPathForCell:cell].row];
+    DUser *selectedUser = (self.favoritesOnly) ? [favoriteContacts allObjects][[self.tableView indexPathForCell:cell].row] : [allContacts allObjects][[self.tableView indexPathForCell:cell].row];
     
     ProfileViewController *pvc = (ProfileViewController*)[segue destinationViewController];
     pvc.profileUser = selectedUser;

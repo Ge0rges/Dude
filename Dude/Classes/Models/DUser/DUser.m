@@ -235,6 +235,8 @@ NSString* const LastSeensKey = @"lastSeens";
       }]];
     }
     
+    [ac addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
+    
     // Present the alert on the visible view controller
     AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
     [appDelegate.visibleViewController presentViewController:ac animated:YES completion:nil];
