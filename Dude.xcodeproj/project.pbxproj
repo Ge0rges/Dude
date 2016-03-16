@@ -54,6 +54,7 @@
 		FB68259C1C91BFFA00A88579 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB68259B1C91BFFA00A88579 /* MessageUI.framework */; };
 		FB68259E1C91D63300A88579 /* WatchConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB68259D1C91D63300A88579 /* WatchConnectivity.framework */; };
 		FB6F4E251C2FF2830083DCD8 /* ComposeSheetViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FB6F4E241C2FF2830083DCD8 /* ComposeSheetViewController.m */; };
+		FBDDF4801C9988A4001CE414 /* WatchConnectivityManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FBDDF47F1C9988A4001CE414 /* WatchConnectivityManager.m */; };
 		FBDE26D71B81E0B5006485D0 /* SlidingSegues.m in Sources */ = {isa = PBXBuildFile; fileRef = FBDE26D61B81E0B5006485D0 /* SlidingSegues.m */; };
 		FBFAA8FB1C9737130049212B /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FBFAA8FA1C9737130049212B /* MapKit.framework */; };
 /* End PBXBuildFile section */
@@ -194,6 +195,8 @@
 		FB6F4E241C2FF2830083DCD8 /* ComposeSheetViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ComposeSheetViewController.m; path = Classes/Controllers/ComposeSheetViewController.m; sourceTree = "<group>"; };
 		FBA0019D1C23217E00E9A263 /* Watch Extension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Watch Extension.entitlements"; sourceTree = SOURCE_ROOT; };
 		FBA0019E1C23218600E9A263 /* Watch App.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Watch App.entitlements"; sourceTree = SOURCE_ROOT; };
+		FBDDF47E1C9988A4001CE414 /* WatchConnectivityManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WatchConnectivityManager.h; path = "Classes/Managers/WatchConnectivity Manager/WatchConnectivityManager.h"; sourceTree = "<group>"; };
+		FBDDF47F1C9988A4001CE414 /* WatchConnectivityManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = WatchConnectivityManager.m; path = "Classes/Managers/WatchConnectivity Manager/WatchConnectivityManager.m"; sourceTree = "<group>"; };
 		FBDE26D51B81E0B5006485D0 /* SlidingSegues.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SlidingSegues.h; sourceTree = "<group>"; };
 		FBDE26D61B81E0B5006485D0 /* SlidingSegues.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SlidingSegues.m; sourceTree = "<group>"; };
 		FBFAA8FA1C9737130049212B /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
@@ -405,6 +408,7 @@
 			isa = PBXGroup;
 			children = (
 				FB32F8B11C52CEA200F8698C /* Reachability */,
+				FBDDF4821C9988AA001CE414 /* WatchConnectivity Manager */,
 				DACEE7D41AAF67EC00B958F0 /* Contacts Manager */,
 				DACEE7D01AAF67CC00B958F0 /* Messages Manager */,
 			);
@@ -568,6 +572,15 @@
 				FB4FC3C61BAD938900FC5F01 /* QNSURLConnection.m */,
 			);
 			name = QNSURLConnection;
+			sourceTree = "<group>";
+		};
+		FBDDF4821C9988AA001CE414 /* WatchConnectivity Manager */ = {
+			isa = PBXGroup;
+			children = (
+				FBDDF47E1C9988A4001CE414 /* WatchConnectivityManager.h */,
+				FBDDF47F1C9988A4001CE414 /* WatchConnectivityManager.m */,
+			);
+			name = "WatchConnectivity Manager";
 			sourceTree = "<group>";
 		};
 		FBDE26D81B81E0C3006485D0 /* Custom Segues */ = {
@@ -861,6 +874,7 @@
 				FB4BEC6C1C94C8BD0020919C /* DUserWatch.m in Sources */,
 				DA6F4C4E1A1E439800D40186 /* main.m in Sources */,
 				DAB5FCAD1AC69314003D8062 /* NSStringExtensions.m in Sources */,
+				FBDDF4801C9988A4001CE414 /* WatchConnectivityManager.m in Sources */,
 				FB67A3201C9860BA00FF1646 /* UsersSelectionTableViewController.m in Sources */,
 				DACEE7D71AB02DB200B958F0 /* UIImageExtensions.m in Sources */,
 				FB6F4E251C2FF2830083DCD8 /* ComposeSheetViewController.m in Sources */,

@@ -209,6 +209,7 @@
   [self.textField resignFirstResponder];
   [self.textField setKeyboardType:UIKeyboardTypeDefault];
   [self.textField setSecureTextEntry:NO];
+  [self.textField setAutocapitalizationType:UITextAutocapitalizationTypeWords];
   
   [self.confirmButton setTitle:@"CONTINUE" forState:UIControlStateNormal];
   [self.backButton setTitle:@" Back" forState:UIControlStateNormal];
@@ -247,7 +248,8 @@
   [self.textField resignFirstResponder];
   [self.textField setKeyboardType:UIKeyboardTypeDefault];
   [self.textField setSecureTextEntry:YES];
-  
+  [self.textField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
+
   [self.confirmButton setTitle:@"CONTINUE" forState:UIControlStateNormal];
   [self.backButton setTitle:@" Email" forState:UIControlStateNormal];
   
@@ -305,7 +307,8 @@
   [self.textField resignFirstResponder];
   [self.textField setKeyboardType:UIKeyboardTypeEmailAddress];
   [self.textField setSecureTextEntry:NO];
-  
+  [self.textField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
+
   [self.confirmButton setTitle:@"CONTINUE" forState:UIControlStateNormal];
   [self.backButton setTitle:@" Name" forState:UIControlStateNormal];
   

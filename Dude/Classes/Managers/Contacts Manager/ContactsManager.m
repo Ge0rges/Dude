@@ -12,7 +12,6 @@
 #import <Social/Social.h>
 #import <Contacts/Contacts.h>
 #import <UIKit/UIKit.h>
-#import <WatchConnectivity/WatchConnectivity.h>
 
 // Constants
 #import "Constants.h"
@@ -23,6 +22,7 @@
 
 // Managers
 #import "MessagesManager.h"
+#import "WatchConnectivityManager.h"
 
 // Classes
 #import "AppDelegate.h"
@@ -33,7 +33,7 @@
 // Models
 #import "DUserWatch.h"
 
-@interface ContactsManager () <WCSessionDelegate>
+@interface ContactsManager ()
 
 @end
 
@@ -118,19 +118,15 @@
     [DUser pinAllInBackground:[users allObjects]];
   }
   
-  if (needsLatestData && favs && [WCSession isSupported]) {
+  if (needsLatestData && favs && [WatchConnectivityManager sharedManager]) {
     NSMutableSet *watchUsers = [NSMutableSet new];
     
     for (DUser *user in users) {
       [watchUsers addObject:[NSKeyedArchiver archivedDataWithRootObject:[user watchUser]]];
     }
     
-    WCSession *session = [WCSession defaultSession];
-    session.delegate = self;
-    [session activateSession];
-    
     NSError *error;
-    [session updateApplicationContext:@{WatchContactsKey: [watchUsers allObjects]} error:&error];
+    [[WatchConnectivityManager sharedManager].session updateApplicationContext:@{WatchContactsKey: [watchUsers allObjects]} error:&error];
     
     if (error) {
       NSLog(@"Application context failed with error: %@", error);

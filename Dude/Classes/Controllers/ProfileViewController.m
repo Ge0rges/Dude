@@ -179,6 +179,9 @@
     // Send update text
     self.sendUpdateLabel.text = @"Compose a new Update";
   }
+  
+  // Round Profile Image
+  self.profileImageView.layer.cornerRadius = self.profileImageView.frame.size.width/2;
 }
 
 #pragma mark - Actions
@@ -312,6 +315,11 @@
 
     [UIView animateWithDuration:0.3 animations:^{
       [self.profileImageView setFrame:originalProfileImageViewFrame];
+      self.profileImageView.layer.cornerRadius = 0;
+    
+    } completion:^(BOOL finished) {
+      UIScrollView *scrollView = (UIScrollView *)self.profileImageView.superview;
+      scrollView.scrollEnabled = NO;
     }];
 
   } else {
@@ -321,6 +329,11 @@
     
     [UIView animateWithDuration:0.3 animations:^{
       [self.profileImageView setFrame:self.view.frame];
+      self.profileImageView.layer.cornerRadius = self.profileImageView.frame.size.width/2;
+    
+    } completion:^(BOOL finished) {
+      UIScrollView *scrollView = (UIScrollView *)self.profileImageView.superview;
+      scrollView.scrollEnabled = NO;
     }];
   }
 }

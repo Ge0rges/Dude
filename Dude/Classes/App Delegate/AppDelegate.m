@@ -15,18 +15,16 @@
 // Managers
 #import "MessagesManager.h"
 #import "ContactsManager.h"
+#import "WatchConnectivityManager.h"
 
 // Pods
 #import "JCNotificationBanner.h"
 #import "JCNotificationBannerPresenterIOS7Style.h"
 
-// Frameworks
-#import <WatchConnectivity/WatchConnectivity.h>
-
 // Models
 #import "DUser.h"
 
-@interface AppDelegate () <WCSessionDelegate>
+@interface AppDelegate ()
 
 @end
 
@@ -71,10 +69,8 @@
     [self application:application didReceiveRemoteNotification:(NSDictionary*)notification];
   }
   
-  // Start a WCSession
-  WCSession *session = [WCSession defaultSession];
-  session.delegate = self;
-  [session activateSession];
+  // Start a WCSession to receive messages
+  [[WatchConnectivityManager sharedManager] activateSession];
 
   return YES;
 }
@@ -95,6 +91,9 @@
 
 - (void)applicationDidBecomeActive:(UIApplication*)application {
   // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+  
+  // Start a WCSession to receive messages
+  [[WatchConnectivityManager sharedManager] activateSession];
 }
 
 - (void)applicationWillTerminate:(UIApplication*)application {
@@ -200,34 +199,6 @@
   [self.window.rootViewController.navigationController presentViewController:messagesTableVC animated:YES completion:nil];
   
   completionHandler();
-}
-
-#pragma mark - WCSessionDelegate
-- (void)session:(WCSession *)session didReceiveMessage:(nonnull NSDictionary<NSString *,id> *)message {
-  if ([message[WatchRequestTypeKey] isEqualToString:WatchRequestSendMessageValue]) {
-    PFQuery *userQuery = [DUser query];
-    [userQuery fromLocalDatastore];
-    
-    [userQuery whereKey:@"email" equalTo:((DUserWatch*)message[WatchContactsKey]).email];
-    
-    [userQuery findObjectsInBackgroundWithBlock:^(NSArray * _Nullable objects, NSError * _Nullable error) {
-      [[MessagesManager sharedInstance] sendMessage:message[WatchMessagesKey] toContact:(DUser*)objects[0] withCompletion:nil];
-    }];
-    
-  } else if ([message[WatchRequestTypeKey] isEqualToString:WatchRequestMessagesValue]) {
-    [[MessagesManager sharedInstance] setLocationForMessageGenerationWithCompletion:^(NSError *error) {
-      [session sendMessage:@{WatchMessagesKey: [[MessagesManager sharedInstance] generateMessages:16]} replyHandler:nil errorHandler:nil];
-    }];
-  }
-}
-
-- (void)session:(WCSession *)session didReceiveMessage:(NSDictionary<NSString *,id> *)message replyHandler:(void (^)(NSDictionary<NSString *,id> * _Nonnull))replyHandler {
-  if ([message[WatchRequestTypeKey] isEqualToString:WatchRequestMessagesValue]) {
-    replyHandler(@{@"success": @YES});
-    [[MessagesManager sharedInstance] setLocationForMessageGenerationWithCompletion:^(NSError *error) {
-      [session sendMessage:@{WatchMessagesKey: [[MessagesManager sharedInstance] generateMessages:16]} replyHandler:nil errorHandler:nil];
-    }];
-  }
 }
 
 @end
