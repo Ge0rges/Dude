@@ -132,7 +132,7 @@ NSString* const LastSeensKey = @"lastSeens";
   ACAccountStore *accountStore = [ACAccountStore new];
   ACAccount *account = [accountStore accountWithIdentifier:[[NSUserDefaults standardUserDefaults] stringForKey:@"facebookAccountID"]];
   
-  return (account) ? account.userFullName : @"No Account Selected";
+  return (account) ? account.username : @"No Account Selected";
 }
 
 - (void)selectTwitterAccountWithCompletion:(_Nullable AccountCompletionBlock)completion {
@@ -140,11 +140,11 @@ NSString* const LastSeensKey = @"lastSeens";
   ACAccountType *twitterTypeAccount = [accountStore accountTypeWithAccountTypeIdentifier:ACAccountTypeIdentifierTwitter];
   
   [accountStore requestAccessToAccountsWithType:twitterTypeAccount options:nil completion:^(BOOL granted, NSError *error) {
-    if(granted) {
+    if (granted && !error) {
       // Check if there are any Twitter accounts
       NSArray *accounts = [accountStore accountsWithAccountType:twitterTypeAccount];
       if (!accounts || accounts.count == 0) {
-        if (completion) completion(YES, nil, [NSError errorWithDomain:@"NoAccounts" code:404 userInfo:nil]);
+        if (completion) completion(YES, nil, [NSError errorWithDomain:@"No Accounts" code:404 userInfo:nil]);
         return;
       }
       
@@ -183,7 +183,7 @@ NSString* const LastSeensKey = @"lastSeens";
       // Check if there are any Faceboook accounts
       NSArray *accounts = [accountStore accountsWithAccountType:facebookTypeAccount];
       if (!accounts || accounts.count == 0) {
-        if (completion)  completion(YES, nil, [NSError errorWithDomain:@"NoAccounts" code:404 userInfo:nil]);
+        if (completion)  completion(YES, nil, [NSError errorWithDomain:@"No Accounts" code:404 userInfo:nil]);
         return;
       }
       

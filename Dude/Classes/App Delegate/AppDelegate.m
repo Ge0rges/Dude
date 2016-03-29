@@ -24,6 +24,9 @@
 // Models
 #import "DUser.h"
 
+// Frameworks
+#import <Accounts/Accounts.h>
+
 @interface AppDelegate ()
 
 @end
@@ -71,7 +74,7 @@
   
   // Start a WCSession to receive messages
   [[WatchConnectivityManager sharedManager] activateSession];
-
+  
   return YES;
 }
 

@@ -79,7 +79,7 @@
   
   // Save the blocked users
   [[DUser currentUser] setBlockedEmails:savedContacts];
-  [[DUser currentUser] save];
+  [[DUser currentUser] saveEventually];
 }
 
 - (void)unblockContact:(DUser*)user {
@@ -94,7 +94,7 @@
   
   // Save the blocked users
   [[DUser currentUser] setBlockedEmails:savedContacts];
-  [[DUser currentUser] save];
+  [[DUser currentUser] saveEventually];
 }
 
 #pragma mark - Fetching
@@ -166,7 +166,7 @@
     // Notify the user that we added him
     if (sendNotification) [self sendAddedNotificationToContact:user];
     
-    [[DUser currentUser] save];
+    [[DUser currentUser] saveEventually];
   }
 }
 
@@ -181,7 +181,7 @@
   
   [[DUser currentUser] setFavouriteContactsEmails:savedContacts];
   
-  [[DUser currentUser] save];
+  [[DUser currentUser] saveEventually];
   
   [self getContactsRefreshedNecessary:YES favourites:YES];
 }
@@ -245,7 +245,7 @@
   [savedContacts removeObject:email.lowercaseString];
   
   [[DUser currentUser] setContactsEmails:savedContacts];
-  [[DUser currentUser] save];
+  [[DUser currentUser] saveEventually];
   
   // Reload contacts if necessary
   return (reload) ? [self getContactsRefreshedNecessary:YES favourites:NO] : nil;
@@ -260,7 +260,7 @@
   
   [[DUser currentUser] setFavouriteContactsEmails:savedContacts];
   
-  [[DUser currentUser] save];
+  [[DUser currentUser] saveEventually];
   
   [self getContactsRefreshedNecessary:YES favourites:YES];
 }

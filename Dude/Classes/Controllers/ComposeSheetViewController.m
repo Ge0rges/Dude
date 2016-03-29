@@ -131,7 +131,8 @@
         cell.imageView.contentMode = UIViewContentModeScaleAspectFit;
 
         self.shareTwitterSwitch = [cell viewWithTag:3];
-
+        self.shareTwitterSwitch.enabled = (BOOL)([[NSUserDefaults standardUserDefaults] stringForKey:@"twitterAccountID"]);
+        
         break;
       
       case 5:
@@ -141,6 +142,7 @@
         cell.imageView.contentMode = UIViewContentModeScaleAspectFit;
 
         self.shareFacebookSwitch = [cell viewWithTag:3];
+        self.shareFacebookSwitch.enabled = (BOOL)([[NSUserDefaults standardUserDefaults] stringForKey:@"facebookAccountID"]);
 
         break;
     
@@ -238,10 +240,8 @@
     self.selectedUsers = [[ContactsManager sharedInstance] getContactsRefreshedNecessary:NO favourites:NO];
 
     // Mimic the CloudCode method on the currentUser too
-    NSArray *lastSeenDictionariesArray = [DUser currentUser].lastSeens;
-    
-    __block NSMutableArray *mutableLastSeenDictionariesArray = [lastSeenDictionariesArray mutableCopy];
-    [lastSeenDictionariesArray enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+    __block NSMutableArray *mutableLastSeenDictionariesArray = [[DUser currentUser].lastSeens mutableCopy];
+    [[DUser currentUser].lastSeens enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
       NSDictionary *lastSeen = (NSDictionary*)obj;
       
       if (lastSeen[[DUser currentUser].email]) {
@@ -254,7 +254,7 @@
     [mutableLastSeenDictionariesArray addObject:@{[DUser currentUser].email: [NSKeyedArchiver archivedDataWithRootObject:self.selectedMessage]}];
     
     [DUser currentUser].lastSeens = [mutableLastSeenDictionariesArray copy];
-    [[DUser currentUser] saveInBackground];
+    [[DUser currentUser] save];
   }
   
   // Send message to selected recipients
@@ -268,7 +268,7 @@
   }
   
   // Share on Facebook
-  if (self.shareFacebookSwitch.on) {
+  if (self.shareFacebookSwitch.on && (!self.selectedMessage.includeLocation && self.selectedMessage.type != DMessageTypeLocation)) {
     [messagesManager postMessage:self.selectedMessage withCompletion:nil];
   }
   
@@ -277,7 +277,7 @@
     [self sendViaMessages];
   
   } else {
-    [self dismissViewControllerAnimated:YES completion:nil];// Only dismiss if use didn't select the message sheet
+    [self dismissViewControllerAnimated:YES completion:nil];// Only dismiss if user didn't select the message sheet
   }
 }
 
@@ -290,7 +290,6 @@
   
   // Present the view controller modally.
   [self presentViewController:composeVC animated:YES completion:nil];
-  
 }
 
 #pragma mark - Navigation

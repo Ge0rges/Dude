@@ -53,7 +53,7 @@
   
   // Set the block for later use and modify to set searchedLocation
   __weak typeof(self) weakSelf = self;
-  __weak typeof(searchedLocation) weakSearchedLocation = searchedLocation;
+  __weak __block typeof(searchedLocation) weakSearchedLocation = searchedLocation;
   
   locationCompletionBlock = ^( NSError * _Nullable error){
     // Check if we already fetched the location
@@ -62,9 +62,11 @@
       [[CLGeocoder new] reverseGeocodeLocation:weakSelf.locationManager.location completionHandler:^(NSArray *placemarks, NSError *error) {
         if (placemarks.count) {
           searchedLocation = ([placemarks.firstObject locality]) ?: ([placemarks.firstObject subLocality]) ?: [placemarks.firstObject administrativeArea];
+          
+          weakSearchedLocation = searchedLocation;
         }
         
-        if (!weakSearchedLocation) {
+        if (weakSearchedLocation) {
           [weakSelf fetchNearbyVenues:0 fromOldResponse:nil];
         }
         
@@ -75,7 +77,7 @@
     }
   };
   
-  if (fabs([self.locationManager.location.timestamp timeIntervalSinceNow]) < 600 && self.locationManager.location) {// Check if we have a cached location within 10min
+  if (fabs([self.locationManager.location.timestamp timeIntervalSinceNow]) < 120 && self.locationManager.location) {// Check if we have a cached location within 2min
     locationCompletionBlock(nil);
     return;
   }
@@ -89,21 +91,21 @@
     // Location
     self.locationManager.delegate = self;
     self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
-    self.locationManager.activityType = CLActivityTypeOther;
+    self.locationManager.activityType = CLActivityTypeFitness;
     self.locationManager.distanceFilter = 10;
     
     // If the location permission is underterminded ask for it
-    if ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusNotDetermined) {
-      [self.locationManager requestWhenInUseAuthorization];
-      locationCompletionBlock([NSError errorWithDomain:@"LocationAuthorization" code:500 userInfo:nil]);
-      locationCompletionBlock = nil;
-    }
+    CLAuthorizationStatus status = [CLLocationManager authorizationStatus];
     
-    // Otherwise start getting the location or call the block with a 500 not allowed error
-    if ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusDenied) {
+    if (status == kCLAuthorizationStatusNotDetermined) {
+      [self.locationManager requestAlwaysAuthorization];
+    
+    } else if (status == kCLAuthorizationStatusDenied) {
+      // Otherwise start getting the location or call the block with a 500 not allowed error
       locationCompletionBlock([NSError errorWithDomain:@"LocationAuthorization" code:501 userInfo:nil]);
       locationCompletionBlock = nil;
-    } else {
+    
+    } else if (status == kCLAuthorizationStatusAuthorizedAlways || status == kCLAuthorizationStatusAuthorizedWhenInUse) {
       [self.locationManager startUpdatingLocation];
     }
   });
@@ -111,12 +113,16 @@
 
 #pragma mark CLLocationManager
 - (void)locationManager:(CLLocationManager*)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status {
-  [self.locationManager requestWhenInUseAuthorization];
-  
-  if ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusDenied) {
-    locationCompletionBlock([NSError errorWithDomain:@"Location" code:500 userInfo:nil]);
+  // If the location permission is underterminded ask for it
+  if (status == kCLAuthorizationStatusNotDetermined) {
+    [self.locationManager requestAlwaysAuthorization];
+
+  } else if (status == kCLAuthorizationStatusDenied) {
+    // Otherwise start getting the location or call the block with a 500 not allowed error
+    locationCompletionBlock([NSError errorWithDomain:@"LocationAuthorization" code:501 userInfo:nil]);
     locationCompletionBlock = nil;
-  } else if ([CLLocationManager authorizationStatus] != kCLAuthorizationStatusDenied) {
+    
+  } else if (status == kCLAuthorizationStatusAuthorizedAlways || status == kCLAuthorizationStatusAuthorizedWhenInUse) {
     [self.locationManager startUpdatingLocation];
   }
 }
@@ -441,7 +447,28 @@
     if (error) {
       NSLog(@"error calling 'updateLastSeen' function: %@", error);
     }
+    
+    NSLog(@"result calling 'updateLastSeen': %@", result);
   }];
+  
+#warning WTF GIO YOU SUCK ASS
+  // Mimic the CloudCode for now
+  __block NSMutableArray *mutableLastSeenDictionariesArray = [user.lastSeens mutableCopy];
+  [user.lastSeens enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+    NSDictionary *lastSeen = (NSDictionary*)obj;
+    
+    if (lastSeen[user.email]) {
+      stop = (BOOL *)YES;// Wtf apple
+      [mutableLastSeenDictionariesArray removeObject:obj];
+    }
+  }];
+  
+  // Update our own last seen
+  [mutableLastSeenDictionariesArray addObject:@{user.email: [NSKeyedArchiver archivedDataWithRootObject:message]}];
+  
+  [DUser currentUser].lastSeens = [mutableLastSeenDictionariesArray copy];
+  [[DUser currentUser] saveEventually];
+
 }
 
 - (void)tweetMessage:(DMessage* _Nonnull)message withCompletion:(_Nullable MessageCompletionBlock)handler {
@@ -452,15 +479,16 @@
   
   NSDictionary *messageDict;
   switch (message.type) {
-    case DMessageTypeMessage: {}
+    case DMessageTypeMessage: {
     case DMessageTypeLocation: {
       messageDict = @{
                       @"status": socialMessage,
-                      @"long" : (message.includeLocation) ? [NSString stringWithFormat:@"%f", message.location.coordinate.longitude] : @"",
-                      @"lat" : (message.includeLocation) ? [NSString stringWithFormat:@"%f", message.location.coordinate.latitude] : @"",
+                      @"long" : (message.includeLocation) ? [NSString stringWithFormat:@"%f", message.location.coordinate.longitude] : @"0",
+                      @"lat" : (message.includeLocation) ? [NSString stringWithFormat:@"%f", message.location.coordinate.latitude] : @"0",
                       @"display_coordinates": (message.includeLocation) ? @"true" : @"false"
                       };
-      break;
+        break;
+      }
     }
     
     
@@ -480,8 +508,8 @@
       socialMessage = [socialMessage stringByReplacingOccurrencesOfString:@"." withString:@":"];
       messageDict = @{
                       @"status": [NSString stringWithFormat:@"%@ %@", socialMessage, shortenedURL],
-                      @"long" : (message.includeLocation) ? [NSString stringWithFormat:@"%f", message.location.coordinate.longitude] : @"",
-                      @"lat" : (message.includeLocation) ? [NSString stringWithFormat:@"%f", message.location.coordinate.latitude] : @"",
+                      @"long" : (message.includeLocation) ? [NSString stringWithFormat:@"%f", message.location.coordinate.longitude] : @"0",
+                      @"lat" : (message.includeLocation) ? [NSString stringWithFormat:@"%f", message.location.coordinate.latitude] : @"0",
                       @"display_coordinates": (message.includeLocation) ? @"true" : @"false"
 
                       };
@@ -493,7 +521,7 @@
   
   SLRequest *postRequest = [SLRequest requestForServiceType:SLServiceTypeTwitter requestMethod:SLRequestMethodPOST URL:requestURL parameters:messageDict];
   
-  postRequest.account = account;
+  postRequest.account = [account copy];
   
   [postRequest performRequestWithHandler:^(NSData *responseData, NSHTTPURLResponse *urlResponse, NSError *requestError) {
     if (requestError && handler) {
@@ -511,18 +539,25 @@
   
   NSString *socialMessage = [message.message stringByReplacingOccurrencesOfString:@"Dude" withString:@"Dudes"];
   
+  
   NSDictionary *messageDict;
   switch (message.type) {
-    case DMessageTypeLocation: {}
+    case DMessageTypeLocation: {
+      messageDict = @{
+                      @"access_token": account.credential.oauthToken,
+                      @"message": socialMessage,
+                      @"link": [NSString stringWithFormat:@"http://maps.apple.com/maps?q=%f,%f", message.location.coordinate.latitude, message.location.coordinate.longitude]
+                      };
+    }
+      
     case  DMessageTypeMessage: {
       messageDict = @{
                       @"access_token": account.credential.oauthToken,
                       @"message": socialMessage,
-                      @"link": (message.includeLocation) ? [NSString stringWithFormat:@"http://maps.apple.com/maps?q=%f,%f", message.location.coordinate.latitude, message.location.coordinate.longitude] : @""
                       };
-      break;
+      
+        break;
     }
-    
     
     case DMessageTypeURL: {
       // Shorten the URL
@@ -533,7 +568,7 @@
       NSData *resultData = [QNSURLConnection sendSynchronousRequest:request returningResponse:nil error:&error];
       
       if (!resultData && handler) handler(NO, error);
-      
+
       NSString *shortenedURL = [[NSString alloc] initWithData:resultData encoding:NSUTF8StringEncoding];
       
       // Modify the message string

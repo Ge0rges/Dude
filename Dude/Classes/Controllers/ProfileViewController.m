@@ -29,6 +29,8 @@
 @interface ProfileViewController () <UINavigationControllerDelegate, UIImagePickerControllerDelegate> {
   CGRect originalProfileImageViewFrame;
   CGFloat heightConstant;
+  
+  MKPointAnnotation *userLocationAnnotation;
 }
 
 @property (strong, nonatomic) IBOutlet UIImageView *profileImageView;
@@ -102,11 +104,19 @@
     
     heightConstraint.constant = (heightConstraint.constant == 0) ? heightConstant : heightConstraint.constant;
     
-    // Add Pin
-    MKPointAnnotation *annotation = [MKPointAnnotation new];
-    annotation.coordinate = message.location.coordinate;
-    annotation.title = ([self.profileUser isEqual:[DUser currentUser]]) ? @"Your Public Location" : [NSString stringWithFormat:@"%@'s Location", [self.profileUser.fullName stringBetweenString:@"" andString:@" "]];
-    [self.statusLocationMapView addAnnotation:annotation];
+    // Remove existing pin and just update the necessry info
+    if (userLocationAnnotation) {
+      [self.statusLocationMapView removeAnnotation:userLocationAnnotation];
+      
+    } else {
+      // Create new Pin
+      userLocationAnnotation = [MKPointAnnotation new];
+      userLocationAnnotation.title = ([self.profileUser isEqual:[DUser currentUser]]) ? @"Your Public Location" : [NSString stringWithFormat:@"%@'s Location", [self.profileUser.fullName stringBetweenString:@"" andString:@" "]];
+    }
+    
+    userLocationAnnotation.coordinate = message.location.coordinate;
+    
+    [self.statusLocationMapView addAnnotation:userLocationAnnotation];
     
     // Zoom on Pin
     MKCoordinateRegion region;
@@ -115,9 +125,9 @@
     span.longitudeDelta = 0.01;
     region.span = span;
     region.center = message.location.coordinate;
-    
-    [self.statusLocationMapView setRegion:region animated:TRUE];
-    [self.statusLocationMapView regionThatFits:region];
+
+    region = [self.statusLocationMapView regionThatFits:region];
+    [self.statusLocationMapView setRegion:region animated:YES];
     
   } else {
     // modify height constraint
@@ -198,7 +208,7 @@
   UIButton *requestStatusButton = (UIButton*)sender;
   requestStatusButton.enabled = NO;
   
-  UIAlertController *ac = [UIAlertController alertControllerWithTitle:(requested) ? @"Status Requested" : @"Status not Requested" message:(requested) ? @"Dude, informed them you'd like to know what they're doing." : @"Sorry Dude, but you can't request statuses more then once in under 10 minutes." preferredStyle:UIAlertControllerStyleAlert];
+  UIAlertController *ac = [UIAlertController alertControllerWithTitle:(requested) ? @"Status Requested" : @"Status not Requested" message:(requested) ? @"Dude, we informed them you'd like to know what they're doing." : @"Sorry Dude, but you can't request statuses more then once in under 10 minutes." preferredStyle:UIAlertControllerStyleAlert];
   [ac addAction:[UIAlertAction actionWithTitle:(requested) ? @"Great!" : @"Okay, I'll ask again later" style:UIAlertActionStyleDefault handler:nil]];
   
   [self presentViewController:ac animated:YES completion:nil];

@@ -131,6 +131,33 @@ typedef void(^completion)(BOOL validEmail);
   self.refreshControl.tintColor = self.view.tintColor;
 
   tableViewController.refreshControl = self.refreshControl;
+  
+  // Renew accounts
+  ACAccountStore *accountStore = [ACAccountStore new];
+  ACAccount *twitterAccount = [accountStore accountWithIdentifier:[[NSUserDefaults standardUserDefaults] stringForKey:@"twiterAccountID"]];
+  ACAccount *facebookAccount = [accountStore accountWithIdentifier:[[NSUserDefaults standardUserDefaults] stringForKey:@"facebookAccountID"]];
+
+  if (twitterAccount) {
+  [accountStore renewCredentialsForAccount:twitterAccount completion:^(ACAccountCredentialRenewResult renewResult, NSError *error) {
+    
+    if (renewResult == ACAccountCredentialRenewResultRejected) {
+      [[NSUserDefaults standardUserDefaults] setObject:@"" forKey:@"twiterAccountID"];
+    }
+    
+    [accountStore renewCredentialsForAccount:facebookAccount completion:^(ACAccountCredentialRenewResult renewResult, NSError *error) {
+      if (renewResult == ACAccountCredentialRenewResultRejected) {
+        [[NSUserDefaults standardUserDefaults] setObject:@"" forKey:@"facebookAccountID"];
+      }
+    }];
+  }];
+  
+  } else if (facebookAccount) {
+    [accountStore renewCredentialsForAccount:facebookAccount completion:^(ACAccountCredentialRenewResult renewResult, NSError *error) {
+      if (renewResult == ACAccountCredentialRenewResultRejected) {
+        [[NSUserDefaults standardUserDefaults] setObject:@"" forKey:@"facebookAccountID"];
+      }
+    }];
+  }
 }
 
 #pragma mark - Public Methods

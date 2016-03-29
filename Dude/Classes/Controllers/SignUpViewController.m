@@ -92,7 +92,7 @@
         user.email = self.textField.text.lowercaseString;
         user.username = self.textField.text.lowercaseString;
         
-        [self animateToNextStepWithInitialScreenshot:[self screenshot] fromRight:YES];
+        [self animateToStepWithInitialScreenshot:[self screenshot] fromRight:YES];
         [self proceedToPassword];
         
         break;
@@ -100,7 +100,7 @@
         
       case 2: {
         user.password = self.textField.text;
-        [self animateToNextStepWithInitialScreenshot:[self screenshot] fromRight:YES];
+        [self animateToStepWithInitialScreenshot:[self screenshot] fromRight:YES];
         [self proceedToSocial];
         break;
       }
@@ -114,7 +114,13 @@
             if (!loggedInUser || error) {
               UIAlertController *incorrectCredentialsAlertController = [UIAlertController alertControllerWithTitle:@"Dude, who are you!?" message:@"Your credentials don't match anyone we know! Check for typos and try again." preferredStyle:UIAlertControllerStyleAlert];
               [incorrectCredentialsAlertController addAction:[UIAlertAction actionWithTitle:@"Will do!" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-                [self back];
+                
+                // Back 2 steps
+                [self animateToStepWithInitialScreenshot:[self screenshot] fromRight:NO];
+                [self proceedToEmail];
+                
+                self.confirmButton.tag -=3;
+                
               }]];
               
               dispatch_async(dispatch_get_main_queue(), ^{
@@ -146,7 +152,7 @@
       case 1: {
         user.fullName = self.textField.text;
         
-        [self animateToNextStepWithInitialScreenshot:[self screenshot] fromRight:YES];
+        [self animateToStepWithInitialScreenshot:[self screenshot] fromRight:YES];
         [self proceedToEmail];
         break;
       }
@@ -155,7 +161,7 @@
         user.email = self.textField.text.lowercaseString;
         user.username = self.textField.text.lowercaseString;
         
-        [self animateToNextStepWithInitialScreenshot:[self screenshot] fromRight:YES];
+        [self animateToStepWithInitialScreenshot:[self screenshot] fromRight:YES];
         [self proceedToPassword];
         break;
       }
@@ -163,7 +169,7 @@
       case 3: {
         user.password = self.textField.text;
         
-        [self animateToNextStepWithInitialScreenshot:[self screenshot] fromRight:YES];
+        [self animateToStepWithInitialScreenshot:[self screenshot] fromRight:YES];
         [self proceedToPhoto];
         break;
       }
@@ -173,7 +179,7 @@
         [retakeImageView removeFromSuperview];
         retakeImageView = nil;
         
-        [self animateToNextStepWithInitialScreenshot:[self screenshot] fromRight:YES];
+        [self animateToStepWithInitialScreenshot:[self screenshot] fromRight:YES];
         [self proceedToSocial];
         break;
       }
@@ -194,7 +200,8 @@
             
           } else {
             // Tell the user to confirm his email
-            UIAlertController *incorrectCredentialsAlertController = [UIAlertController alertControllerWithTitle:@"Dude, confirm your email" message:@"We've sent you an email to verify your you. Make sure to confirm it soon!" preferredStyle:UIAlertControllerStyleAlert];
+            UIAlertController *incorrectCredentialsAlertController = [UIAlertController alertControllerWithTitle:@"Dude, confirm your email" message:@"We've sent you an email to verify your you. Confirm it to log in." preferredStyle:UIAlertControllerStyleAlert];
+            
             [incorrectCredentialsAlertController addAction:[UIAlertAction actionWithTitle:@"Will do!" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
               // Go back to the redirection controller
               [self.presentingViewController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
@@ -423,7 +430,7 @@
   return image;
 }
 
-- (void)animateToNextStepWithInitialScreenshot:(UIImage*)screenshot fromRight:(BOOL)fromRight {
+- (void)animateToStepWithInitialScreenshot:(UIImage*)screenshot fromRight:(BOOL)fromRight {
   if (fromRight) {
     __block UIImageView *sourceImageView = [[UIImageView alloc] initWithImage:screenshot];
     __block UIView *destinationView = self.view;
@@ -551,7 +558,7 @@
     }
       
     case 2: {
-      [self animateToNextStepWithInitialScreenshot:[self screenshot] fromRight:NO];
+      [self animateToStepWithInitialScreenshot:[self screenshot] fromRight:NO];
       if (self.logIn) {
         [self proceedToEmail];
      
@@ -563,7 +570,7 @@
     }
       
     case 3: {
-      [self animateToNextStepWithInitialScreenshot:[self screenshot] fromRight:NO];
+      [self animateToStepWithInitialScreenshot:[self screenshot] fromRight:NO];
       if (self.logIn) {
         [self proceedToPassword];
         
@@ -575,31 +582,28 @@
     }
       
     case 4: {
-      [self animateToNextStepWithInitialScreenshot:[self screenshot] fromRight:NO];
+      [self animateToStepWithInitialScreenshot:[self screenshot] fromRight:NO];
       [self proceedToPassword];
       
       break;
     }
       
     case 5: {
-      [self animateToNextStepWithInitialScreenshot:[self screenshot] fromRight:NO];
+      [self animateToStepWithInitialScreenshot:[self screenshot] fromRight:NO];
       [self proceedToPhoto];
       
       break;
     }
       
     case 6: {
-      [self animateToNextStepWithInitialScreenshot:[self screenshot] fromRight:NO];
+      [self animateToStepWithInitialScreenshot:[self screenshot] fromRight:NO];
       [self proceedToSocial];
       
       break;
     }
   }
   
-  self.confirmButton.tag--;// One to compensate for the ++ the proceed command does
-  self.confirmButton.tag--;// One to actually go back
-  
-  [self checkConfirmButton];
+  self.confirmButton.tag -= 2;// One to compensate for the ++ the proceed command does and one to actually go back
 }
 
 #pragma mark - UIImagePickerController

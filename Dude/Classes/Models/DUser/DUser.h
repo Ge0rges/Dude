@@ -22,22 +22,22 @@ typedef void (^AccountCompletionBlock)(BOOL success, ACAccount * _Nullable accou
 
 @interface DUser : PFUser <PFSubclassing>
 
-@property (strong, nonatomic) PFFile *_Nullable profileImage;
+@property (strong, nonatomic) PFFile * _Nullable profileImage;
 
-@property (strong, nonatomic) NSString *_Nullable fullName;
+@property (strong, nonatomic) NSString * _Nullable fullName;
 
 // Set of user emails
-@property (strong, nonatomic) NSSet *_Nullable blockedEmails;
-@property (strong, nonatomic) NSSet *_Nullable contactsEmails;
-@property (strong, nonatomic) NSSet *_Nullable favouriteContactsEmails;
+@property (strong, nonatomic) NSSet * _Nullable blockedEmails;
+@property (strong, nonatomic) NSSet * _Nullable contactsEmails;
+@property (strong, nonatomic) NSSet * _Nullable favouriteContactsEmails;
 
-@property (strong, nonatomic) NSArray *_Nullable lastSeens;
+@property (strong, nonatomic) NSArray * _Nullable lastSeens;
 
 + (instancetype _Nullable)currentUser;
 + (instancetype _Nonnull)object;
 
-@property (strong, nonatomic, readonly) NSString *_Nullable facebookUsername;
-@property (strong, nonatomic, readonly) NSString *_Nullable twitterUsername;
+@property (strong, nonatomic, readonly) NSString * _Nullable facebookUsername;
+@property (strong, nonatomic, readonly) NSString * _Nullable twitterUsername;
 
 - (void)selectTwitterAccountWithCompletion:(_Nullable AccountCompletionBlock)completion;
 - (void)selectFacebookAccountWithCompletion:(_Nullable AccountCompletionBlock)completion;
