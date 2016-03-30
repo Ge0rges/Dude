@@ -61,13 +61,22 @@
   if (!self.profileUser) {
     self.profileUser = [DUser currentUser];
   }
+  
+  // Update UI
+  [self updateProfileInterface];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
   
-  // Update UI
-  [self updateProfileInterface];
+  if (!self.profileUser) {
+    [[DUser currentUser] fetchInBackgroundWithBlock:^(PFObject * _Nullable object, NSError * _Nullable error) {
+      self.profileUser = [DUser currentUser];
+      
+      // Update UI
+      [self updateProfileInterface];
+    }];
+  }
 }
 
 - (void)viewDidAppear:(BOOL)animated {

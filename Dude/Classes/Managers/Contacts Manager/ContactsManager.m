@@ -136,11 +136,9 @@
   return (users) ?: [NSSet new];
 }
 
-- (DMessage*)latestMessageForContact:(DUser*)user {
-  NSArray *lastSeenDictionariesArray = [DUser currentUser].lastSeens;
-  
+- (DMessage*)latestMessageForContact:(DUser*)user {  
   __block DMessage *message;
-  [lastSeenDictionariesArray enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+  [[DUser currentUser].lastSeens enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
     NSDictionary *lastSeen = (NSDictionary*)obj;
     
     if (lastSeen[user.email]) {

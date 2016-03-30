@@ -441,7 +441,9 @@
   [push sendPushInBackgroundWithBlock:handler];
   
   NSDictionary *cloudFunctionPayload = @{@"builtDictionary": @{@"data": [NSKeyedArchiver archivedDataWithRootObject:message]},
-                            @"email": [DUser currentUser].email};
+                                         @"senderEmail": [DUser currentUser].email,
+                                         @"receiverEmail": user.email
+                                        };
   
   [PFCloud callFunctionInBackground:@"updateLastSeen" withParameters:cloudFunctionPayload block:^(id result, NSError *error) {
     if (error) {
@@ -450,25 +452,6 @@
     
     NSLog(@"result calling 'updateLastSeen': %@", result);
   }];
-  
-#warning WTF GIO YOU SUCK ASS
-  // Mimic the CloudCode for now
-  __block NSMutableArray *mutableLastSeenDictionariesArray = [user.lastSeens mutableCopy];
-  [user.lastSeens enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-    NSDictionary *lastSeen = (NSDictionary*)obj;
-    
-    if (lastSeen[user.email]) {
-      stop = (BOOL *)YES;// Wtf apple
-      [mutableLastSeenDictionariesArray removeObject:obj];
-    }
-  }];
-  
-  // Update our own last seen
-  [mutableLastSeenDictionariesArray addObject:@{user.email: [NSKeyedArchiver archivedDataWithRootObject:message]}];
-  
-  [DUser currentUser].lastSeens = [mutableLastSeenDictionariesArray copy];
-  [[DUser currentUser] saveEventually];
-
 }
 
 - (void)tweetMessage:(DMessage* _Nonnull)message withCompletion:(_Nullable MessageCompletionBlock)handler {

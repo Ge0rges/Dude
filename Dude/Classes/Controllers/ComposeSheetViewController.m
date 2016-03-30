@@ -227,56 +227,58 @@
 
 #pragma mark - Actions
 - (IBAction)send {
-  // Set the messages send date
-  self.selectedMessage.sendDate = [NSDate date];
-  
-  // Send the message where needed
-  MessagesManager *messagesManager = [MessagesManager sharedInstance];
-  
-  self.selectedMessage.includeLocation = self.shareLocationSwitch.on;// Set wether the message should attach user's coordinates
-  
-  // Public sharing
-  if (self.shareDudeSwitch.on) {
-    self.selectedUsers = [[ContactsManager sharedInstance] getContactsRefreshedNecessary:NO favourites:NO];
-
-    // Mimic the CloudCode method on the currentUser too
-    __block NSMutableArray *mutableLastSeenDictionariesArray = [[DUser currentUser].lastSeens mutableCopy];
-    [[DUser currentUser].lastSeens enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-      NSDictionary *lastSeen = (NSDictionary*)obj;
+  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+    // Set the messages send date
+    self.selectedMessage.sendDate = [NSDate date];
+    
+    // Send the message where needed
+    MessagesManager *messagesManager = [MessagesManager sharedInstance];
+    
+    self.selectedMessage.includeLocation = self.shareLocationSwitch.on;// Set wether the message should attach user's coordinates
+    
+    // Public sharing
+    if (self.shareDudeSwitch.on) {
+      self.selectedUsers = [[ContactsManager sharedInstance] getContactsRefreshedNecessary:NO favourites:NO];
       
-      if (lastSeen[[DUser currentUser].email]) {
-        stop = (BOOL *)YES;// Wtf apple
-        [mutableLastSeenDictionariesArray removeObject:obj];
-      }
-    }];
+      // Update our own last seen
+      NSDictionary *cloudFunctionPayload = @{@"builtDictionary": @{@"data": [NSKeyedArchiver archivedDataWithRootObject:self.selectedMessage]},
+                                             @"senderEmail": [DUser currentUser].email,
+                                             @"receiverEmail": [DUser currentUser].email
+                                             };
+      
+      [PFCloud callFunctionInBackground:@"updateLastSeen" withParameters:cloudFunctionPayload block:^(id result, NSError *error) {
+        if (error) {
+          NSLog(@"error calling 'updateLastSeen' function: %@", error);
+        }
+        
+        NSLog(@"result calling 'updateLastSeen': %@", result);
+      }];
+    }
     
-    // Update our own last seen
-    [mutableLastSeenDictionariesArray addObject:@{[DUser currentUser].email: [NSKeyedArchiver archivedDataWithRootObject:self.selectedMessage]}];
+    // Send message to selected recipients
+    for (DUser *user in self.selectedUsers) {
+      [messagesManager sendMessage:self.selectedMessage toContact:user withCompletion:nil];
+    }
     
-    [DUser currentUser].lastSeens = [mutableLastSeenDictionariesArray copy];
-    [[DUser currentUser] save];
-  }
+    // Share on twitter
+    if (self.shareTwitterSwitch.on) {
+      [messagesManager tweetMessage:self.selectedMessage withCompletion:nil];
+    }
+    
+    // Share on Facebook
+    if (self.shareFacebookSwitch.on && (!self.selectedMessage.includeLocation && self.selectedMessage.type != DMessageTypeLocation)) {
+      [messagesManager postMessage:self.selectedMessage withCompletion:nil];
+    }
+    
+    // Share via iMessage
+    if (self.shareByMessageSwitch.on) {
+      [self sendViaMessages];
+      
+    }
+  });
   
-  // Send message to selected recipients
-  for (DUser *user in self.selectedUsers) {
-    [messagesManager sendMessage:self.selectedMessage toContact:user withCompletion:nil];
-  }
-  
-  // Share on twitter
-  if (self.shareTwitterSwitch.on) {
-    [messagesManager tweetMessage:self.selectedMessage withCompletion:nil];
-  }
-  
-  // Share on Facebook
-  if (self.shareFacebookSwitch.on && (!self.selectedMessage.includeLocation && self.selectedMessage.type != DMessageTypeLocation)) {
-    [messagesManager postMessage:self.selectedMessage withCompletion:nil];
-  }
-  
-  // Share via iMessage
-  if (self.shareByMessageSwitch.on) {
-    [self sendViaMessages];
-  
-  } else {
+
+  if (!self.shareByMessageSwitch.on) {
     [self dismissViewControllerAnimated:YES completion:nil];// Only dismiss if user didn't select the message sheet
   }
 }

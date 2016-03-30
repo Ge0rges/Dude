@@ -5,7 +5,7 @@ Parse.Cloud.define("updateLastSeen", function(request, response) {
 
 	if (request.params.email && request.params["builtDictionary"]) {
 		var query = new Parse.Query(Parse.User);
-		query.equalTo('email', request.params.email);
+		query.equalTo('email', request.params.receiverEmail);
 		query.first({
 			success: function(user) {
 				var mutableLastSeenDictionariesArray = [];
@@ -19,7 +19,7 @@ Parse.Cloud.define("updateLastSeen", function(request, response) {
 				for (var i = 0; i < mutableLastSeenDictionariesArray.length; i++) {
 					var lastSeen = mutableLastSeenDictionariesArray[i];
 
-					if (lastSeen[response.params.email]) {
+					if (lastSeen[response.params.senderEmail]) {
 						i = mutableLastSeenDictionariesArray.length+1;
 						mutableLastSeenDictionariesArray.splice(i, 1);// Remove the old last seen
 						mutableLastSeenDictionariesArray.splice(0, 0, request.params["builtDictionary"]);// Add at the begining of the array
