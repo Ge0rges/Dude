@@ -240,19 +240,24 @@
     if (self.shareDudeSwitch.on) {
       self.selectedUsers = [[ContactsManager sharedInstance] getContactsRefreshedNecessary:NO favourites:NO];
       
-      // Update our own last seen
-      NSDictionary *cloudFunctionPayload = @{@"builtDictionary": @{@"data": [NSKeyedArchiver archivedDataWithRootObject:self.selectedMessage]},
-                                             @"senderEmail": [DUser currentUser].email,
-                                             @"receiverEmail": [DUser currentUser].email
-                                             };
+      // Update the our lastSeen in our own user.
+      NSMutableArray *mutableReceiverLastSeens = [[NSMutableArray alloc] initWithArray:[DUser currentUser].lastSeens];
       
-      [PFCloud callFunctionInBackground:@"updateLastSeen" withParameters:cloudFunctionPayload block:^(id result, NSError *error) {
-        if (error) {
-          NSLog(@"error calling 'updateLastSeen' function: %@", error);
-        }
+      [[DUser currentUser].lastSeens enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        NSDictionary *lastSeen = (NSDictionary*)obj;
         
-        NSLog(@"result calling 'updateLastSeen': %@", result);
+        if (lastSeen[[DUser currentUser].email]) {
+          stop = (BOOL *)YES;// Wtf apple
+          lastSeen = @{[DUser currentUser].email: [NSKeyedArchiver archivedDataWithRootObject:self.selectedMessage]};
+          
+          [mutableReceiverLastSeens removeObjectAtIndex:idx];
+          [mutableReceiverLastSeens insertObject:lastSeen atIndex:0];
+          
+          [DUser currentUser].lastSeens = mutableReceiverLastSeens;
+          [[DUser currentUser] saveEventually];
+        }
       }];
+      
     }
     
     // Send message to selected recipients

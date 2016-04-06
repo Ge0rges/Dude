@@ -50,6 +50,7 @@
 		FB4C5DBC1BF5F0AE002B5A58 /* MessageInterfaceController.m in Sources */ = {isa = PBXBuildFile; fileRef = FB4C5DBB1BF5F0AE002B5A58 /* MessageInterfaceController.m */; };
 		FB4C5DBF1BF5F0BA002B5A58 /* RowController.m in Sources */ = {isa = PBXBuildFile; fileRef = FB4C5DBE1BF5F0BA002B5A58 /* RowController.m */; };
 		FB4FC3C71BAD938900FC5F01 /* QNSURLConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = FB4FC3C61BAD938900FC5F01 /* QNSURLConnection.m */; };
+		FB57A6171CAD567D0069528F /* UserTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FB57A6161CAD567D0069528F /* UserTableViewCell.m */; };
 		FB67A3201C9860BA00FF1646 /* UsersSelectionTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FB67A31F1C9860BA00FF1646 /* UsersSelectionTableViewController.m */; };
 		FB68259C1C91BFFA00A88579 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB68259B1C91BFFA00A88579 /* MessageUI.framework */; };
 		FB68259E1C91D63300A88579 /* WatchConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB68259D1C91D63300A88579 /* WatchConnectivity.framework */; };
@@ -187,6 +188,8 @@
 		FB4FC3C51BAD938900FC5F01 /* QNSURLConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = QNSURLConnection.h; path = QNSURLConnection/QNSURLConnection.h; sourceTree = "<group>"; };
 		FB4FC3C61BAD938900FC5F01 /* QNSURLConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = QNSURLConnection.m; path = QNSURLConnection/QNSURLConnection.m; sourceTree = "<group>"; };
 		FB4FC3C91BAD976200FC5F01 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		FB57A6151CAD567D0069528F /* UserTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UserTableViewCell.h; path = Classes/Models/UserTableViewCell/UserTableViewCell.h; sourceTree = "<group>"; };
+		FB57A6161CAD567D0069528F /* UserTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UserTableViewCell.m; path = Classes/Models/UserTableViewCell/UserTableViewCell.m; sourceTree = "<group>"; };
 		FB67A31E1C9860BA00FF1646 /* UsersSelectionTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UsersSelectionTableViewController.h; path = Classes/Controllers/UsersSelectionTableViewController.h; sourceTree = "<group>"; };
 		FB67A31F1C9860BA00FF1646 /* UsersSelectionTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UsersSelectionTableViewController.m; path = Classes/Controllers/UsersSelectionTableViewController.m; sourceTree = "<group>"; };
 		FB68259B1C91BFFA00A88579 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
@@ -418,6 +421,7 @@
 		DAEF37691B1E1C6E00391DD0 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				FB57A6181CAD56830069528F /* UserTableViewCell */,
 				DAF7FC4E1B31FED6008F7A96 /* DMessage */,
 				DAF7FC491B31FE34008F7A96 /* DUser */,
 			);
@@ -572,6 +576,15 @@
 				FB4FC3C61BAD938900FC5F01 /* QNSURLConnection.m */,
 			);
 			name = QNSURLConnection;
+			sourceTree = "<group>";
+		};
+		FB57A6181CAD56830069528F /* UserTableViewCell */ = {
+			isa = PBXGroup;
+			children = (
+				FB57A6151CAD567D0069528F /* UserTableViewCell.h */,
+				FB57A6161CAD567D0069528F /* UserTableViewCell.m */,
+			);
+			name = UserTableViewCell;
 			sourceTree = "<group>";
 		};
 		FBDDF4821C9988AA001CE414 /* WatchConnectivity Manager */ = {
@@ -867,6 +880,7 @@
 				DA4262921B1EE4B100560925 /* UsersTableViewController.m in Sources */,
 				DAC3B8271B21B67200C303CD /* SignUpViewController.m in Sources */,
 				DA8E11C91AD6A3DD005F9CF2 /* UIImage+Alpha.m in Sources */,
+				FB57A6171CAD567D0069528F /* UserTableViewCell.m in Sources */,
 				DAB605F11B2002FA00341828 /* DUser.m in Sources */,
 				DAEF37671B1E1A2100391DD0 /* ProfileViewController.m in Sources */,
 				DACEE7D31AAF67E200B958F0 /* ContactsManager.m in Sources */,

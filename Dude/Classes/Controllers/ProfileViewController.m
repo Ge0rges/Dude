@@ -48,6 +48,10 @@
 
 @property (strong, nonatomic) IBOutlet UIView *composeUpdateButton;
 
+@property (strong, nonatomic) IBOutlet UIScrollView *scrollView;
+
+@property (strong, nonatomic) IBOutlet UIToolbar *toolbar;
+
 @end
 
 @implementation ProfileViewController
@@ -208,6 +212,13 @@
   
   // Round Profile Image
   self.profileImageView.layer.cornerRadius = self.profileImageView.frame.size.width/2;
+  
+  // ScrollView contentsize and insets
+  float topInset = (self.toolbar) ? self.toolbar.frame.size.height : self.navigationController.navigationBar.frame.size.height+20;
+  self.scrollView.contentInset = UIEdgeInsetsMake(topInset, 0, self.tabBarController.tabBar.frame.size.height, 0);
+  
+  float contentSizeHeight = self.composeUpdateButton.frame.origin.x + self.composeUpdateButton.frame.size.height;
+  self.scrollView.contentSize = CGSizeMake(self.statusLocationMapView.frame.size.width, contentSizeHeight);
 }
 
 #pragma mark - Actions
@@ -301,7 +312,7 @@
 }
 
 - (IBAction)composeUpdate:(id)sender {
-  [self performSegueWithIdentifier:@"showMessages" sender:self.profileUser];
+  [self performSegueWithIdentifier:@"showMessages" sender:(![self.profileUser isEqual:[DUser currentUser]]) ? self.profileUser : nil];
 }
 
 - (IBAction)editProfileImage:(id)sender {
@@ -347,7 +358,7 @@
     
     } completion:^(BOOL finished) {
       UIScrollView *scrollView = (UIScrollView *)self.profileImageView.superview;
-      scrollView.scrollEnabled = NO;
+      scrollView.scrollEnabled = YES;
     }];
 
   } else {
@@ -412,7 +423,7 @@
   if ([segue.identifier isEqualToString:@"showMessages"]) {
     UINavigationController *navigationVC = [segue destinationViewController];
     MessagesTableViewController *messagesTableViewController  = (MessagesTableViewController*)navigationVC.visibleViewController;
-    messagesTableViewController.selectedUsers = @[self.profileUser];
+    messagesTableViewController.selectedUsers = (sender) ? @[sender] : @[];
   }
 }
 

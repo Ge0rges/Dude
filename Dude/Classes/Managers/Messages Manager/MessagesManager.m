@@ -440,17 +440,22 @@
   
   [push sendPushInBackgroundWithBlock:handler];
   
-  NSDictionary *cloudFunctionPayload = @{@"builtDictionary": @{@"data": [NSKeyedArchiver archivedDataWithRootObject:message]},
-                                         @"senderEmail": [DUser currentUser].email,
-                                         @"receiverEmail": user.email
-                                        };
+  // Update the the current user's lastSeen on the sender user
+  NSMutableArray *mutableReceiverLastSeens = [[NSMutableArray alloc] initWithArray:user.lastSeens];
   
-  [PFCloud callFunctionInBackground:@"updateLastSeen" withParameters:cloudFunctionPayload block:^(id result, NSError *error) {
-    if (error) {
-      NSLog(@"error calling 'updateLastSeen' function: %@", error);
-    }
+  [user.lastSeens enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+    NSDictionary *lastSeen = (NSDictionary*)obj;
     
-    NSLog(@"result calling 'updateLastSeen': %@", result);
+    if (lastSeen[[DUser currentUser].email]) {
+      stop = (BOOL *)YES;// Wtf apple
+      lastSeen = @{[DUser currentUser].email: [NSKeyedArchiver archivedDataWithRootObject:message]};
+      
+      [mutableReceiverLastSeens removeObjectAtIndex:idx];
+      [mutableReceiverLastSeens insertObject:lastSeen atIndex:0];
+      
+      user.lastSeens = mutableReceiverLastSeens;
+      [user saveInBackground];
+    }
   }];
 }
 

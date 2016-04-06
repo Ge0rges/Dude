@@ -65,6 +65,11 @@
       [splittedContacts setObject:(NSArray*)existingArray forKey:firstLetter];
     }
   }
+  
+  // TableView UI
+  self.tableView.sectionIndexBackgroundColor = [UIColor clearColor];
+  self.tableView.sectionIndexTrackingBackgroundColor = [UIColor whiteColor];
+
 }
 
 - (void)didReceiveMemoryWarning {
