@@ -175,21 +175,24 @@ typedef void(^completion)(BOOL validEmail);
       if (!fetchUsersOperation.isCancelled) {
         if (self.favoritesOnly) {
           favoriteContacts = [[ContactsManager sharedInstance] getContactsRefreshedNecessary:NO favourites:self.favoritesOnly];
+          
           [self performSelectorOnMainThread:@selector(updateInterface) withObject:nil waitUntilDone:NO];
           
           if (favoriteContacts.count == 0 || ![sender isEqual:self.segmentedControl] || !sender) {
             favoriteContacts = [[ContactsManager sharedInstance] getContactsRefreshedNecessary:YES favourites:self.favoritesOnly];
+         
             [self performSelectorOnMainThread:@selector(updateInterface) withObject:nil waitUntilDone:NO];
           }
         
         } else {
-          allContacts= [[ContactsManager sharedInstance] getContactsRefreshedNecessary:NO favourites:self.favoritesOnly];
+          allContacts = [[ContactsManager sharedInstance] getContactsRefreshedNecessary:NO favourites:self.favoritesOnly];
+         
           [self performSelectorOnMainThread:@selector(updateInterface) withObject:nil waitUntilDone:NO];
           
           if (allContacts.count == 0 || ![sender isEqual:self.segmentedControl] || !sender) {
             allContacts = [[ContactsManager sharedInstance] getContactsRefreshedNecessary:YES favourites:self.favoritesOnly];
+
             [self performSelectorOnMainThread:@selector(updateInterface) withObject:nil waitUntilDone:NO];
-            
           }
         }
       }

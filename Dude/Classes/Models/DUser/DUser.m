@@ -72,7 +72,7 @@ NSString* const LastSeensKey = @"lastSeens";
     NSMutableSet *objectSet = [(NSSet*)object mutableCopy];
     
     // Make sure we don't have our own email in any of the contact arrays
-    if (self.email) {// Check that email isn't ni, it wil lcause a crash otherwise
+    if (self.email) {// Check that email isn't nil, it will cause a crash otherwise
       [objectSet removeObject:self.email];
     }
     
@@ -114,6 +114,10 @@ NSString* const LastSeensKey = @"lastSeens";
   
   // Sync NSUserDefaults
   [[NSUserDefaults standardUserDefaults] synchronize];
+  
+  // Disassociate this user from this device
+  [[PFInstallation currentInstallation] setObject:@"" forKey:@"user"];
+  [[PFInstallation currentInstallation] save];
   
   [super logOut];
 }

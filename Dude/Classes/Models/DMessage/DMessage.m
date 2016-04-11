@@ -76,15 +76,11 @@ NSString* const IncludeLocationKey = @"includeLocation";
         [innerQuery whereKey:@"email" equalTo:@"ge0rges@ge0rges.com"];
         
         // Build the query for this user's installation
-        PFQuery *query = [PFInstallation query];
-        [query whereKey:@"user" matchesQuery:innerQuery];
+        PFQuery *pushQuery = [PFInstallation query];
+        [pushQuery whereKey:@"user" matchesQuery:innerQuery];
         
         // Send the notification.
-        PFPush *push = [PFPush push];
-        [push setMessage:[NSString stringWithFormat:@"Dude, unsupported category: [%@]", self.category]];
-        [push setQuery:query];
-        
-        [push sendPushInBackground];
+        [PFPush sendPushMessageToQueryInBackground:pushQuery withMessage:[NSString stringWithFormat:@"Dude, unsupported category: [%@]", self.category]];
       }];
       
       notifyDevOperation.queuePriority = NSOperationQueuePriorityVeryLow;

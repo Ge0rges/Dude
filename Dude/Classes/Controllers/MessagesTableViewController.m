@@ -80,13 +80,18 @@
 
       [self.tableView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];
       
-      [self.refreshControl performSelector:@selector(endRefreshing) withObject:nil afterDelay:0.0];// Otherwise its jerky
+      dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{// Otherwise its jerky
+        [self.refreshControl endRefreshing];
+      });
       
     } else if (error.code == 500 && [error.domain isEqualToString:@"LocationAuthorization"]) {
       [self reloadData];
       
     } else {
       [DUser showSocialServicesAlert];
+      dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{// Otherwise its jerky
+        [self.refreshControl endRefreshing];
+      });
     }
   }];
 }

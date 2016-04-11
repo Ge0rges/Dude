@@ -136,14 +136,16 @@
   return (users) ?: [NSSet new];
 }
 
-- (DMessage*)latestMessageForContact:(DUser*)user {  
-  __block DMessage *message;
+- (DMessage*)latestMessageForContact:(DUser*)user {
+  __block DMessage *message = nil;
   [[DUser currentUser].lastSeens enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-    NSDictionary *lastSeen = (NSDictionary*)obj;
-    
-    if (lastSeen[user.email]) {
-      stop = (BOOL *)YES;// Wtf apple
-      message = (DMessage*)[NSKeyedUnarchiver unarchiveObjectWithData:lastSeen[user.email]];
+    if ([obj isKindOfClass:[NSArray class]]) {
+      NSArray *lastSeenArray = (NSArray *)obj;
+      
+      if ([lastSeenArray[0] isEqualToString:user.email]) {
+        stop = (BOOL *)YES;// Wtf apple
+        message = (DMessage*)[NSKeyedUnarchiver unarchiveObjectWithData:lastSeenArray[1]];
+      }
     }
   }];
   
@@ -275,15 +277,11 @@
   if (isAddedByUser || isBlocked || didBlocked) return;
   
   // Build the actual push notification target query
-  PFQuery *query = [PFInstallation query];
-  [query whereKey:@"user" equalTo:user];
+  PFQuery *pushQuery = [PFInstallation query];
+  [pushQuery whereKey:@"user" equalTo:user];
   
   // Send the notification.
-  PFPush *push = [PFPush push];
-  [push setMessage:[NSString stringWithFormat:@"Duderino, %@ just added you. Why not add them back?", [DUser currentUser].username]];
-  [push setQuery:query];
-  
-  [push sendPushInBackground];
+  [PFPush sendPushMessageToQueryInBackground:pushQuery withMessage:[NSString stringWithFormat:@"Duderino, %@ just added you. Why not add them back?", [DUser currentUser].username]];
 }
 
 #pragma mark - Requesting Status Notification
@@ -304,20 +302,17 @@
   if (isBlocked || didBlocked) return NO;
   
   // Build the actual push notification target query
-  PFQuery *query = [PFInstallation query];
-  [query whereKey:@"user" equalTo:user];
+  PFQuery *pushQuery = [PFInstallation query];
+  [pushQuery whereKey:@"user" equalTo:user];
   
-  // Send the notification.
-  PFPush *push = [PFPush push];
-  [push setMessage:[NSString stringWithFormat:@"Duderino, %@ would like to know what you're up to.", [DUser currentUser].username]];
-  [push setQuery:query];
-  
-  if (background)
-    [push sendPushInBackground];
-  else
-    [push sendPush:nil];
-  
-  return YES;
+  // Send the notification.  
+  if (background) {
+    [PFPush sendPushMessageToQueryInBackground:pushQuery withMessage:[NSString stringWithFormat:@"Duderino, %@ would like to know what you're up to.", [DUser currentUser].username]];
+    return YES;
+
+  } else {
+    return [PFPush sendPushMessageToQuery:pushQuery withMessage:[NSString stringWithFormat:@"Duderino, %@ would like to know what you're up to.", [DUser currentUser].username] error:nil];
+  }
 }
 
 @end

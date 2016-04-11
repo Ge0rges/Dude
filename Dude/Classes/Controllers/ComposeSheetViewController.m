@@ -240,24 +240,15 @@
     if (self.shareDudeSwitch.on) {
       self.selectedUsers = [[ContactsManager sharedInstance] getContactsRefreshedNecessary:NO favourites:NO];
       
-      // Update the our lastSeen in our own user.
-      NSMutableArray *mutableReceiverLastSeens = [[NSMutableArray alloc] initWithArray:[DUser currentUser].lastSeens];
+      // Update our lastSeen in our own user.
+      NSData *messageData = [NSKeyedArchiver archivedDataWithRootObject:self.selectedMessage];
       
-      [[DUser currentUser].lastSeens enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        NSDictionary *lastSeen = (NSDictionary*)obj;
-        
-        if (lastSeen[[DUser currentUser].email]) {
-          stop = (BOOL *)YES;// Wtf apple
-          lastSeen = @{[DUser currentUser].email: [NSKeyedArchiver archivedDataWithRootObject:self.selectedMessage]};
-          
-          [mutableReceiverLastSeens removeObjectAtIndex:idx];
-          [mutableReceiverLastSeens insertObject:lastSeen atIndex:0];
-          
-          [DUser currentUser].lastSeens = mutableReceiverLastSeens;
-          [[DUser currentUser] saveEventually];
-        }
-      }];
+      NSDictionary *params = @{@"receiverEmail": [DUser currentUser].email,
+                               @"senderEmail": [DUser currentUser].email,
+                               @"data": @[[DUser currentUser].email, messageData]
+                               };
       
+      [PFCloud callFunction:@"updateLastSeen" withParameters:params];
     }
     
     // Send message to selected recipients
@@ -278,7 +269,6 @@
     // Share via iMessage
     if (self.shareByMessageSwitch.on) {
       [self sendViaMessages];
-      
     }
   });
   

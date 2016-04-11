@@ -130,6 +130,10 @@
               });
               
             } else if (loggedInUser.isAuthenticated && loggedInUser.sessionToken) {
+              // Update this installation's user
+              [[PFInstallation currentInstallation] setObject:[DUser currentUser] forKey:@"user"];
+              [[PFInstallation currentInstallation] save];
+              
               // Go back to the redirection controller
               dispatch_async(dispatch_get_main_queue(), ^{
                 [self.presentingViewController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
@@ -185,7 +189,6 @@
       }
         
       case 5: {
-        user.lastSeens = @[];
         [user signUpInBackgroundWithBlock:^(BOOL succeeded, NSError * _Nullable error) {
           if (!succeeded) {
             UIAlertController *incorrectCredentialsAlertController = [UIAlertController alertControllerWithTitle:@"Dude, we couldn't sign you up" message:error.localizedDescription preferredStyle:UIAlertControllerStyleAlert];
@@ -200,20 +203,24 @@
             
           } else {
             // Tell the user to confirm his email
-            UIAlertController *incorrectCredentialsAlertController = [UIAlertController alertControllerWithTitle:@"Dude, confirm your email" message:@"We've sent you an email to verify your you. Confirm it to log in." preferredStyle:UIAlertControllerStyleAlert];
+            UIAlertController *confirmEmailAlertController = [UIAlertController alertControllerWithTitle:@"Dude, confirm your email" message:@"We've sent you an email to verify your you. Confirm it to log in." preferredStyle:UIAlertControllerStyleAlert];
             
-            [incorrectCredentialsAlertController addAction:[UIAlertAction actionWithTitle:@"Will do!" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            [confirmEmailAlertController addAction:[UIAlertAction actionWithTitle:@"Will do!" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
               // Go back to the redirection controller
               [self.presentingViewController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
             }]];
             
             dispatch_async(dispatch_get_main_queue(), ^{
-              [self presentViewController:incorrectCredentialsAlertController animated:YES completion:nil];
+              [self presentViewController:confirmEmailAlertController animated:YES completion:nil];
             });
           }
           
           [user selectFacebookAccountWithCompletion:nil];
           [user selectTwitterAccountWithCompletion:nil];
+          
+          // Update this installation's user
+          [[PFInstallation currentInstallation] setObject:[DUser currentUser] forKey:@"user"];
+          [[PFInstallation currentInstallation] save];
         }];
       }
     }

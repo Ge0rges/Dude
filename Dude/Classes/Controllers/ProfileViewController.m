@@ -73,7 +73,7 @@
 - (void)viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
   
-  if (!self.profileUser) {
+  if ([self.profileUser isEqual:[DUser currentUser]]) {
     [[DUser currentUser] fetchInBackgroundWithBlock:^(PFObject * _Nullable object, NSError * _Nullable error) {
       self.profileUser = [DUser currentUser];
       
@@ -105,8 +105,12 @@
   self.statusLabel.text = (message.lastSeen) ? message.lastSeen : lastSeenErrorText;
   
   // Map
-  if (message.location && message) {
-    // modify height constraint
+  BOOL sameCoordinate = (message.location.coordinate.latitude == userLocationAnnotation.coordinate.latitude && message.location.coordinate.longitude == userLocationAnnotation.coordinate.longitude);
+  
+  if (message.location && message && !sameCoordinate) {
+    self.statusLocationMapView.hidden = NO;
+    
+    // Modify height constraint
     NSLayoutConstraint *heightConstraint;
     for (NSLayoutConstraint *constraint in self.statusLocationMapView.constraints) {
       if (constraint.firstAttribute == NSLayoutAttributeHeight) {
@@ -142,7 +146,7 @@
     region = [self.statusLocationMapView regionThatFits:region];
     [self.statusLocationMapView setRegion:region animated:YES];
     
-  } else {
+  } else if (!message) {
     // modify height constraint
     NSLayoutConstraint *heightConstraint;
     for (NSLayoutConstraint *constraint in self.statusLocationMapView.constraints) {
@@ -154,6 +158,8 @@
     
     heightConstant = heightConstraint.constant;
     heightConstraint.constant = 0;
+    
+    self.statusLocationMapView.hidden = YES;
   }
   
   // Variable
@@ -218,15 +224,14 @@
   self.scrollView.contentInset = UIEdgeInsetsMake(topInset, 0, self.tabBarController.tabBar.frame.size.height, 0);
   
   float contentSizeHeight = self.composeUpdateButton.frame.origin.x + self.composeUpdateButton.frame.size.height;
+  if (!self.statusLocationMapView.hidden) contentSizeHeight += heightConstant;
+  
   self.scrollView.contentSize = CGSizeMake(self.statusLocationMapView.frame.size.width, contentSizeHeight);
 }
 
 #pragma mark - Actions
 - (IBAction)requestStatus:(id)sender {
-  BOOL requested = [[ContactsManager sharedInstance] requestStatusForContact:self.profileUser inBackground:YES];
-  
-  UIButton *requestStatusButton = (UIButton*)sender;
-  requestStatusButton.enabled = NO;
+  BOOL requested = [[ContactsManager sharedInstance] requestStatusForContact:self.profileUser inBackground:NO];
   
   UIAlertController *ac = [UIAlertController alertControllerWithTitle:(requested) ? @"Status Requested" : @"Status not Requested" message:(requested) ? @"Dude, we informed them you'd like to know what they're doing." : @"Sorry Dude, but you can't request statuses more then once in under 10 minutes." preferredStyle:UIAlertControllerStyleAlert];
   [ac addAction:[UIAlertAction actionWithTitle:(requested) ? @"Great!" : @"Okay, I'll ask again later" style:UIAlertActionStyleDefault handler:nil]];

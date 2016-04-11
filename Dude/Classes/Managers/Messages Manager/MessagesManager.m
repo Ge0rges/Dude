@@ -144,27 +144,6 @@
   }
 }
 
-
-- (void)locationManager:(CLLocationManager*)manager didEnterRegion:(CLRegion*)region {
-  // Stop monitoring region
-  [manager stopMonitoringForRegion:region];
-  
-  // Get the UID
-  NSString *uniqueIdentifier = region.identifier;
-  
-  // Send the push for the identifier of this region
-  NSDictionary *pushDict = [NSDictionary dictionaryWithDictionary:[[NSUserDefaults standardUserDefaults] dictionaryForKey:@"pushesForGeoFence"]];
-  
-  // Get push
-  PFPush *push = pushDict[uniqueIdentifier];
-  [push sendPush:nil];
-  
-  // Remove the push
-  NSMutableDictionary *mutablePushDict = [pushDict mutableCopy];
-  [mutablePushDict removeObjectForKey:uniqueIdentifier];
-  [[NSUserDefaults standardUserDefaults] setObject:[mutablePushDict copy] forKey:@"pushesForGeoFence"];
-}
-
 #pragma mark SOMotionDetector
 - (void)motionDetector:(SOMotionDetector*)motionDetector motionTypeChanged:(SOMotionType)motionType {
   if (motionType == MotionTypeAutomotive) userIsInAutomobile = YES;
@@ -430,33 +409,21 @@
   }
   
   // Build the query for this user's installation
-  PFQuery *query = [PFInstallation query];
-  [query whereKey:@"user" equalTo:user];
+  PFQuery *pushQuery = [PFInstallation query];
+  [pushQuery whereKey:@"user" equalTo:user];
   
   // Send the notification.
-  PFPush *push = [PFPush push];
-  [push setData:payload];
-  [push setQuery:query];
-  
-  [push sendPushInBackgroundWithBlock:handler];
+  [PFPush sendPushDataToQueryInBackground:pushQuery withData:payload];
   
   // Update the the current user's lastSeen on the sender user
-  NSMutableArray *mutableReceiverLastSeens = [[NSMutableArray alloc] initWithArray:user.lastSeens];
+  NSData *messageData = [NSKeyedArchiver archivedDataWithRootObject:message];
+
+  NSDictionary *params = @{@"receiverEmail": user.email,
+                           @"senderEmail": [DUser currentUser].email,
+                           @"data": @[[DUser currentUser].email, messageData]
+                           };
   
-  [user.lastSeens enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-    NSDictionary *lastSeen = (NSDictionary*)obj;
-    
-    if (lastSeen[[DUser currentUser].email]) {
-      stop = (BOOL *)YES;// Wtf apple
-      lastSeen = @{[DUser currentUser].email: [NSKeyedArchiver archivedDataWithRootObject:message]};
-      
-      [mutableReceiverLastSeens removeObjectAtIndex:idx];
-      [mutableReceiverLastSeens insertObject:lastSeen atIndex:0];
-      
-      user.lastSeens = mutableReceiverLastSeens;
-      [user saveInBackground];
-    }
-  }];
+  [PFCloud callFunction:@"updateLastSeen" withParameters:params];
 }
 
 - (void)tweetMessage:(DMessage* _Nonnull)message withCompletion:(_Nullable MessageCompletionBlock)handler {
