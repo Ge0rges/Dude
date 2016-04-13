@@ -241,11 +241,13 @@
       self.selectedUsers = [[ContactsManager sharedInstance] getContactsRefreshedNecessary:NO favourites:NO];
       
       // Update our lastSeen in our own user.
-      NSData *messageData = [NSKeyedArchiver archivedDataWithRootObject:self.selectedMessage];
+      DUser *currentUser = [DUser currentUser];
+
+      NSData *messageData = [NSKeyedArchiver archivedDataWithRootObject:self.selectedMessage];      
       
-      NSDictionary *params = @{@"receiverEmail": [DUser currentUser].email,
-                               @"senderEmail": [DUser currentUser].email,
-                               @"data": @[[DUser currentUser].email, messageData]
+      NSDictionary *params = @{@"receiverEmail": currentUser.email,
+                               @"senderEmail": currentUser.email,
+                               @"data": @[currentUser.email, messageData]
                                };
       
       [PFCloud callFunction:@"updateLastSeen" withParameters:params];

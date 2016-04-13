@@ -106,6 +106,8 @@ typedef void(^completion)(BOOL validEmail);
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
   
+  DUser *currentUser = [DUser currentUser];
+
   // Tell the delegate we are the visible view
   AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
   appDelegate.visibleViewController = self;
@@ -114,11 +116,11 @@ typedef void(^completion)(BOOL validEmail);
   BOOL shouldRefreshFacebook = [[NSUserDefaults standardUserDefaults] boolForKey:@"askFacebook"];
   
   if (shouldRefreshTwitter) {
-    [[DUser currentUser] selectTwitterAccountWithCompletion:nil];
+    [currentUser selectTwitterAccountWithCompletion:nil];
   }
   
   if (shouldRefreshFacebook) {
-    [[DUser currentUser] selectFacebookAccountWithCompletion:nil];
+    [currentUser selectFacebookAccountWithCompletion:nil];
   }
   
   // Add refresh control
@@ -174,25 +176,50 @@ typedef void(^completion)(BOOL validEmail);
     fetchUsersOperation = [NSBlockOperation blockOperationWithBlock:^{
       if (!fetchUsersOperation.isCancelled) {
         if (self.favoritesOnly) {
-          favoriteContacts = [[ContactsManager sharedInstance] getContactsRefreshedNecessary:NO favourites:self.favoritesOnly];
           
-          [self performSelectorOnMainThread:@selector(updateInterface) withObject:nil waitUntilDone:NO];
-          
-          if (favoriteContacts.count == 0 || ![sender isEqual:self.segmentedControl] || !sender) {
+          // If this is a user performed refresh or a system fetch
+          if (![sender isEqual:self.segmentedControl] || !sender || [sender isKindOfClass:[NSTimer class]]) {
+            // Get the latest favorites
             favoriteContacts = [[ContactsManager sharedInstance] getContactsRefreshedNecessary:YES favourites:self.favoritesOnly];
-         
+          
+            // Update the UI
             [self performSelectorOnMainThread:@selector(updateInterface) withObject:nil waitUntilDone:NO];
+          
+          } else {
+            // Get cached favs
+            favoriteContacts = [[ContactsManager sharedInstance] getContactsRefreshedNecessary:NO favourites:self.favoritesOnly];
+            
+            // If there are no cached favs or this is a user performed refresh get the latest favs
+            if (favoriteContacts.count == 0) {
+              favoriteContacts = [[ContactsManager sharedInstance] getContactsRefreshedNecessary:YES favourites:self.favoritesOnly];
+            }
+            
+            // Update the UI
+            [self performSelectorOnMainThread:@selector(updateInterface) withObject:nil waitUntilDone:NO];
+
           }
         
         } else {
-          allContacts = [[ContactsManager sharedInstance] getContactsRefreshedNecessary:NO favourites:self.favoritesOnly];
-         
-          [self performSelectorOnMainThread:@selector(updateInterface) withObject:nil waitUntilDone:NO];
-          
-          if (allContacts.count == 0 || ![sender isEqual:self.segmentedControl] || !sender) {
+          // If this is a user performed refresh
+          if (![sender isEqual:self.segmentedControl] || !sender || [sender isKindOfClass:[NSTimer class]]) {
+            // Get the latest favorites
             allContacts = [[ContactsManager sharedInstance] getContactsRefreshedNecessary:YES favourites:self.favoritesOnly];
-
+            
+            // Update the UI
             [self performSelectorOnMainThread:@selector(updateInterface) withObject:nil waitUntilDone:NO];
+            
+          } else {
+            // Get cached contacts
+            allContacts = [[ContactsManager sharedInstance] getContactsRefreshedNecessary:NO favourites:self.favoritesOnly];
+            
+            // If there are no cached favs or this is a user performed refresh get the latest contacts
+            if (allContacts.count == 0) {
+              allContacts = [[ContactsManager sharedInstance] getContactsRefreshedNecessary:YES favourites:self.favoritesOnly];
+            }
+            
+            // Update the UI
+            [self performSelectorOnMainThread:@selector(updateInterface) withObject:nil waitUntilDone:NO];
+            
           }
         }
       }
@@ -296,11 +323,19 @@ typedef void(^completion)(BOOL validEmail);
   [cell.imageView setImage:[UIImage imageNamed:@"Default Profile Image"]];
   
   DUser *user = (self.favoritesOnly) ? [favoriteContacts allObjects][indexPath.row] : [allContacts allObjects][indexPath.row];
-  DMessage *message = [[ContactsManager sharedInstance] latestMessageForContact:user];
   
   // Populate the cell
   cell.textLabel.text = user.fullName;
-  cell.detailTextLabel.text = (message) ? [NSString stringWithFormat:@"%@ - %@", message.lastSeen, message.timestamp] : @"Dude didn't share an update yet";
+  cell.detailTextLabel.text = @"Asking what's up...";
+
+  // This can take time do it on another thread
+  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+    DMessage *message = [[ContactsManager sharedInstance] latestMessageForContact:user];
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+      cell.detailTextLabel.text = (message) ? [NSString stringWithFormat:@"%@ - %@", message.lastSeen, message.timestamp] : @"Dude didn't share an update yet";
+    });
+  });
   
   [cell.imageView sd_setImageWithURL:[NSURL URLWithString:user.profileImage.url] placeholderImage:[UIImage imageNamed:@"Default Profile Image"] completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
     [cell.imageView setImage:[image resizedImage:CGSizeMake(50, 50) interpolationQuality:kCGInterpolationHigh]];
@@ -451,13 +486,15 @@ typedef void(^completion)(BOOL validEmail);
 }
 
 - (IBAction)textfieldValueChanged:(UITextField*)textfield {
+  DUser *currentUser = [DUser currentUser];
+
   [self.searchResultButton removeTarget:self action:@selector(addFriend) forControlEvents:UIControlEventTouchUpInside];
 
-  if ([textfield.text isEqualToString:[DUser currentUser].email]) {
+  if ([textfield.text isEqualToString:currentUser.email]) {
     [self.searchResultButton setImage:nil forState:UIControlStateNormal];
     [self.searchResultButton setTitle:@"You" forState:UIControlStateNormal];
     [self.searchResultLabel setText:@"Dude you can't add yourself :p"];
-    [self.searchResultImageView sd_setImageWithURL:[NSURL URLWithString:[DUser currentUser].profileImage.url] placeholderImage:[UIImage imageNamed:@"Default Profile Image"]];
+    [self.searchResultImageView sd_setImageWithURL:[NSURL URLWithString:currentUser.profileImage.url] placeholderImage:[UIImage imageNamed:@"Default Profile Image"]];
     
     [self.searchResultButton sizeToFit];
 
@@ -490,7 +527,7 @@ typedef void(^completion)(BOOL validEmail);
               if ([[ContactsManager sharedInstance] contactBlockedCurrentUser:friendSearchedUser]) {
                 imageName = @"Blocked Friend Search";
                 
-              } else if ([[DUser currentUser].contactsEmails containsObject:friendSearchedUser.email.lowercaseString]) {
+              } else if ([currentUser.contactsEmails containsObject:friendSearchedUser.email.lowercaseString]) {
                 imageName = @"Friends Friend Search";
                 
               } else {

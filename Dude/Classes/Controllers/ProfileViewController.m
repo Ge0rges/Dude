@@ -31,6 +31,8 @@
   CGFloat heightConstant;
   
   MKPointAnnotation *userLocationAnnotation;
+  
+  NSTimer *updateTimestampTimer;
 }
 
 @property (strong, nonatomic) IBOutlet UIImageView *profileImageView;
@@ -68,14 +70,17 @@
   
   // Update UI
   [self updateProfileInterface];
+  
+  // Refresh the timestamp and message
+  [NSTimer scheduledTimerWithTimeInterval:60.0 target:self selector:@selector(updateProfileInterface) userInfo:nil repeats:YES];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
   
   if ([self.profileUser isEqual:[DUser currentUser]]) {
-    [[DUser currentUser] fetchInBackgroundWithBlock:^(PFObject * _Nullable object, NSError * _Nullable error) {
-      self.profileUser = [DUser currentUser];
+    [self.profileUser fetchInBackgroundWithBlock:^(PFObject * _Nullable object, NSError * _Nullable error) {
+      self.profileUser = (DUser*)object;
       
       // Update UI
       [self updateProfileInterface];
@@ -89,20 +94,29 @@
   // Tell the delegate we are the visible view
   AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
   appDelegate.visibleViewController = self;
+  
+  // ScrollView content size and insets
+  [self updateScrollviewContentSizeAndInsets];
 }
 
 #pragma mark - UI
 - (void)updateProfileInterface {
-  // Status Update
+  // Do this asyncly
   DMessage *message = [[ContactsManager sharedInstance] latestMessageForContact:self.profileUser];
-  
-  NSString *locationErrorText = ([self.profileUser isEqual:[DUser currentUser]]) ? @"Dude, you didn't share a location yet" : @"Dude, they didn't share a location with you yet";
-  NSString *lastSeenErrorText = ([self.profileUser isEqual:[DUser currentUser]]) ? @"Dude, you didn't share an update yet" : @"Dude, they didn't share an update with you yet";
+
+  // Status Update
+  NSString *locationErrorText = ([self.profileUser isEqual:[DUser currentUser]]) ? @"Dude, you haven't shared a location yet" : @"Dude, they didn't share a location with you yet";
+  NSString *lastSeenErrorText = ([self.profileUser isEqual:[DUser currentUser]]) ? @"Dude, you haven't shared an update yet" : @"Dude, they didn't share an update with you yet";
   
   NSString *locationText = [NSString stringWithFormat:@"%@ - %@", message.city, message.timestamp];
   
   self.locationLabel.text = (message.city && message.timestamp) ? locationText : locationErrorText;
   self.statusLabel.text = (message.lastSeen) ? message.lastSeen : lastSeenErrorText;
+  
+  // Refresh the timestamp and message
+  if (message && !updateTimestampTimer) {
+    updateTimestampTimer = [NSTimer scheduledTimerWithTimeInterval:60.0 target:self selector:@selector(updateProfileInterface) userInfo:nil repeats:YES];
+  }
   
   // Map
   BOOL sameCoordinate = (message.location.coordinate.latitude == userLocationAnnotation.coordinate.latitude && message.location.coordinate.longitude == userLocationAnnotation.coordinate.longitude);
@@ -119,6 +133,7 @@
       }
     }
     
+    heightConstant = heightConstraint.constant;
     heightConstraint.constant = (heightConstraint.constant == 0) ? heightConstant : heightConstraint.constant;
     
     // Remove existing pin and just update the necessry info
@@ -142,7 +157,7 @@
     span.longitudeDelta = 0.01;
     region.span = span;
     region.center = message.location.coordinate;
-
+    
     region = [self.statusLocationMapView regionThatFits:region];
     [self.statusLocationMapView setRegion:region animated:YES];
     
@@ -201,16 +216,16 @@
     // Request Button
     [self.requestStatusButton setTitle:[NSString stringWithFormat:@"     Ask what %@ is doing", self.profileUser.fullName] forState:UIControlStateNormal];
     
-  } else {// Current user    
+  } else {// Current user
     // Secondary button - Email
-    [self.secondaryButton setTitle:[DUser currentUser].email forState:UIControlStateNormal];
+    [self.secondaryButton setTitle:self.profileUser.email forState:UIControlStateNormal];
     [self.secondaryButton setImage:nil forState:UIControlStateNormal];
-
+    
     // Profile Image
-    [self.profileImageView sd_setImageWithURL:[NSURL URLWithString:[DUser currentUser].profileImage.url] placeholderImage:[UIImage imageNamed:@"Default Profile Image"]];
+    [self.profileImageView sd_setImageWithURL:[NSURL URLWithString:self.profileUser.profileImage.url] placeholderImage:[UIImage imageNamed:@"Default Profile Image"]];
     
     // Name label
-    [self.nameLabel setText:[DUser currentUser].fullName];
+    [self.nameLabel setText:self.profileUser.fullName];
     
     // Send update text
     self.sendUpdateLabel.text = @"Compose a new Update";
@@ -220,10 +235,15 @@
   self.profileImageView.layer.cornerRadius = self.profileImageView.frame.size.width/2;
   
   // ScrollView contentsize and insets
+  [self updateScrollviewContentSizeAndInsets];
+}
+
+- (void)updateScrollviewContentSizeAndInsets {
+  // Set the content size and insets of the scroll view
   float topInset = (self.toolbar) ? self.toolbar.frame.size.height : self.navigationController.navigationBar.frame.size.height+20;
-  self.scrollView.contentInset = UIEdgeInsetsMake(topInset, 0, self.tabBarController.tabBar.frame.size.height, 0);
+  self.scrollView.contentInset = UIEdgeInsetsMake(topInset, 0, 0, 0);
   
-  float contentSizeHeight = self.composeUpdateButton.frame.origin.x + self.composeUpdateButton.frame.size.height;
+  float contentSizeHeight = self.composeUpdateButton.frame.origin.y + self.composeUpdateButton.frame.size.height - topInset - self.tabBarController.tabBar.frame.size.height;
   if (!self.statusLocationMapView.hidden) contentSizeHeight += heightConstant;
   
   self.scrollView.contentSize = CGSizeMake(self.statusLocationMapView.frame.size.width, contentSizeHeight);
@@ -242,7 +262,7 @@
 - (void)toggleBlock {
   // No multiple presses
   [self.secondaryButton setEnabled:NO];
-
+  
   // Asyncly perform the action (block/unblock)
   NSBlockOperation *toggleBlockOperation = [NSBlockOperation blockOperationWithBlock:^{
     if ([[ContactsManager sharedInstance] currentUserBlockedContact:self.profileUser]) {
@@ -281,7 +301,7 @@
 - (IBAction)toggleFavorite:(id)sender {
   // No multiple presses
   [self.favoriteButton setEnabled:NO];
-
+  
   // Asyncly perform the action (favorite/unfavorite)
   NSBlockOperation *toggleFavoriteOperation = [NSBlockOperation blockOperationWithBlock:^{
     if ([[DUser currentUser].favouriteContactsEmails containsObject:self.profileUser.email.lowercaseString]) {
@@ -303,7 +323,7 @@
       if ([[DUser currentUser].favouriteContactsEmails containsObject:self.profileUser.email.lowercaseString]) {
         [self.favoriteButton setImage:[UIImage imageNamed:@"Favorite Selected"] forState:UIControlStateNormal];
         [self.favoriteButton setTitle:[NSString stringWithFormat:@"     Remove %@ from Favorites", self.profileUser.fullName] forState:UIControlStateNormal];
-      
+        
       } else {
         [self.favoriteButton setImage:[UIImage imageNamed:@"Favorite Deselected"] forState:UIControlStateNormal];
         [self.favoriteButton setTitle:[NSString stringWithFormat:@"     Add %@ to Favorites", self.profileUser.fullName] forState:UIControlStateNormal];
@@ -356,27 +376,27 @@
   // Toggle fullscreen when profile image view clicked (only in non current user)
   if (CGRectEqualToRect(self.profileImageView.frame, fullscreenRect)) {
     [self.profileImageView setContentMode:UIViewContentModeScaleAspectFit];
-
+    
     [UIView animateWithDuration:0.3 animations:^{
       [self.profileImageView setFrame:originalProfileImageViewFrame];
       self.profileImageView.layer.cornerRadius = self.profileImageView.frame.size.width/2;
-    
+      
     } completion:^(BOOL finished) {
       UIScrollView *scrollView = (UIScrollView *)self.profileImageView.superview;
       scrollView.scrollEnabled = YES;
     }];
-
+    
   } else {
     [self.profileImageView setContentMode:UIViewContentModeScaleAspectFit];
-
+    
     originalProfileImageViewFrame = self.profileImageView.frame;
     
     [UIView animateWithDuration:0.3 animations:^{
       [self.profileImageView setFrame:fullscreenRect];
-    
+      
     } completion:^(BOOL finished) {
       self.profileImageView.layer.cornerRadius = 0;
-
+      
       UIScrollView *scrollView = (UIScrollView *)self.profileImageView.superview;
       scrollView.scrollEnabled = NO;
     }];
@@ -392,7 +412,7 @@
   }]];
   
   [incorrectCredentialsAlertController addAction:[UIAlertAction actionWithTitle:@"Ok" style:UIAlertActionStyleCancel handler:nil]];
-
+  
 }
 
 - (IBAction)logout:(id)sender {
@@ -414,13 +434,15 @@
   // Set user image file
   PFFile *selectedImageFile = [PFFile fileWithData:UIImageJPEGRepresentation(thumbnailImage, 1)];
   
+  DUser *currentUser = [DUser currentUser];
+  
   if (selectedImageFile) {
-    [[DUser currentUser] setProfileImage:selectedImageFile];
+    [currentUser setProfileImage:selectedImageFile];
     [self.profileImageView setImage:thumbnailImage];
     
   }
   
-  [[DUser currentUser] saveInBackground];
+  [currentUser saveInBackground];
 }
 
 #pragma mark - Navigation

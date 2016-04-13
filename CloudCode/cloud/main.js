@@ -11,9 +11,9 @@ Parse.Cloud.define("updateLastSeen", function(request, response) {
 			success: function(user) {
 					// Remove the old last seen
 					for (var i = 0; i < user.get("lastSeens").length; i++) {
-						var lastSeen = user.get("lastSeens")[i];// This is a PFFile
+						var lastSeen = user.get("lastSeens")[i];
 
-						if (lastSeen[0] == response.params["senderEmail"]) {
+						if (lastSeen[0] == request.params["senderEmail"]) {
 							user.remove("lastSeens", lastSeen);
 							user.save(null, {
 									success: function() {
@@ -24,7 +24,7 @@ Parse.Cloud.define("updateLastSeen", function(request, response) {
 									}
 							});
 
-							i = lastSeens.length + 1;
+							i = user.get("lastSeens").length + 1;
 						}
 					}
 

@@ -100,8 +100,10 @@
         
       case 2: {
         user.password = self.textField.text;
+        
         [self animateToStepWithInitialScreenshot:[self screenshot] fromRight:YES];
         [self proceedToSocial];
+        
         break;
       }
       
@@ -109,37 +111,35 @@
         loggingIn = YES;
         self.confirmButton.enabled = NO;
         
-        [DUser logOutInBackgroundWithBlock:^(NSError * _Nullable error) {
-          [DUser logInWithUsernameInBackground:user.username password:user.password block:^(PFUser * _Nullable loggedInUser, NSError * _Nullable error) {
-            if (!loggedInUser || error) {
-              UIAlertController *incorrectCredentialsAlertController = [UIAlertController alertControllerWithTitle:@"Dude, who are you!?" message:@"Your credentials don't match anyone we know! Check for typos and try again." preferredStyle:UIAlertControllerStyleAlert];
-              [incorrectCredentialsAlertController addAction:[UIAlertAction actionWithTitle:@"Will do!" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-                
-                // Back 2 steps
-                [self animateToStepWithInitialScreenshot:[self screenshot] fromRight:NO];
-                [self proceedToEmail];
-                
-                self.confirmButton.tag -=3;
-                
-              }]];
+        [DUser logInWithUsernameInBackground:user.username password:user.password block:^(PFUser * _Nullable loggedInUser, NSError * _Nullable error) {
+          if (!loggedInUser || error) {
+            UIAlertController *incorrectCredentialsAlertController = [UIAlertController alertControllerWithTitle:@"Dude, who are you!?" message:@"Your credentials don't match anyone we know! Check for typos and try again." preferredStyle:UIAlertControllerStyleAlert];
+            [incorrectCredentialsAlertController addAction:[UIAlertAction actionWithTitle:@"Will do!" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
               
-              dispatch_async(dispatch_get_main_queue(), ^{
-                [self presentViewController:incorrectCredentialsAlertController animated:YES completion:nil];
-                self.confirmButton.enabled = YES;
-                loggingIn = NO;
-              });
+              // Back 2 steps
+              [self animateToStepWithInitialScreenshot:[self screenshot] fromRight:NO];
+              [self proceedToEmail];
               
-            } else if (loggedInUser.isAuthenticated && loggedInUser.sessionToken) {
-              // Update this installation's user
-              [[PFInstallation currentInstallation] setObject:[DUser currentUser] forKey:@"user"];
-              [[PFInstallation currentInstallation] save];
+              self.confirmButton.tag -=3;
               
-              // Go back to the redirection controller
-              dispatch_async(dispatch_get_main_queue(), ^{
-                [self.presentingViewController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
-              });
-            }
-          }];
+            }]];
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+              [self presentViewController:incorrectCredentialsAlertController animated:YES completion:nil];
+              self.confirmButton.enabled = YES;
+              loggingIn = NO;
+            });
+            
+          } else if (loggedInUser.isAuthenticated && loggedInUser.sessionToken) {
+            // Update this installation's user
+            [[PFInstallation currentInstallation] setObject:[DUser currentUser] forKey:@"user"];
+            [[PFInstallation currentInstallation] save];
+            
+            // Go back to the redirection controller
+            dispatch_async(dispatch_get_main_queue(), ^{
+              [self.presentingViewController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+            });
+          }
         }];
         
         break;
@@ -192,8 +192,12 @@
         [user signUpInBackgroundWithBlock:^(BOOL succeeded, NSError * _Nullable error) {
           if (!succeeded) {
             UIAlertController *incorrectCredentialsAlertController = [UIAlertController alertControllerWithTitle:@"Dude, we couldn't sign you up" message:error.localizedDescription preferredStyle:UIAlertControllerStyleAlert];
-            [incorrectCredentialsAlertController addAction:[UIAlertAction actionWithTitle:@"Will do!" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-              [self dismissViewControllerAnimated:YES completion:nil];// Restart
+            [incorrectCredentialsAlertController addAction:[UIAlertAction actionWithTitle:@"I'll try again :(" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+              // Go back to the beginning
+              [self animateToStepWithInitialScreenshot:[self screenshot] fromRight:NO];
+              [self proceedToName];
+              
+              self.confirmButton.tag -=5;
             }]];
             
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -213,14 +217,15 @@
             dispatch_async(dispatch_get_main_queue(), ^{
               [self presentViewController:confirmEmailAlertController animated:YES completion:nil];
             });
+            
+            [user selectFacebookAccountWithCompletion:nil];
+            [user selectTwitterAccountWithCompletion:nil];
+            
+            // Update this installation's user
+            [[PFInstallation currentInstallation] setObject:[DUser currentUser] forKey:@"user"];
+            [[PFInstallation currentInstallation] save];
           }
           
-          [user selectFacebookAccountWithCompletion:nil];
-          [user selectTwitterAccountWithCompletion:nil];
-          
-          // Update this installation's user
-          [[PFInstallation currentInstallation] setObject:[DUser currentUser] forKey:@"user"];
-          [[PFInstallation currentInstallation] save];
         }];
       }
     }
@@ -658,7 +663,7 @@
   selectedImageFile = [PFFile fileWithData:UIImageJPEGRepresentation(thumbnailImage, 1)];
   
   if (selectedImageFile) {
-    [user setProfileImage:selectedImageFile];
+    user.profileImage = selectedImageFile;
     [self.stepImageView setImage:thumbnailImage];
     
     // Add retake X
@@ -670,7 +675,7 @@
     
     self.stepImageView.layer.cornerRadius = 100;
     self.stepImageView.clipsToBounds = YES;
-  
+    
   } else {
     [self selectPicture];
   }

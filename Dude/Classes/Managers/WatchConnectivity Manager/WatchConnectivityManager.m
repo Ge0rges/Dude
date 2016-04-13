@@ -47,6 +47,7 @@
 
 #pragma mark - WCSessionDelegate
 - (void)session:(WCSession *)session didReceiveMessage:(nonnull NSDictionary<NSString *,id> *)message {
+  // Send a message
   if ([message[WatchRequestTypeKey] isEqualToString:WatchRequestSendMessageValue]) {
     PFQuery *userQuery = [DUser query];
     [userQuery fromLocalDatastore];
@@ -57,6 +58,7 @@
       [[MessagesManager sharedInstance] sendMessage:message[WatchMessagesKey] toContact:(DUser*)objects[0] withCompletion:nil];
     }];
     
+  // Provide messages
   } else if ([message[WatchRequestTypeKey] isEqualToString:WatchRequestMessagesValue]) {
     [[MessagesManager sharedInstance] setLocationForMessageGenerationWithCompletion:^(NSError *error) {
       [session sendMessage:@{WatchMessagesKey: [[MessagesManager sharedInstance] generateMessages:16]} replyHandler:nil errorHandler:nil];
@@ -65,6 +67,7 @@
 }
 
 - (void)session:(WCSession *)session didReceiveMessage:(NSDictionary<NSString *,id> *)message replyHandler:(void (^)(NSDictionary<NSString *,id> * _Nonnull))replyHandler {
+  // Provide Messages
   if ([message[WatchRequestTypeKey] isEqualToString:WatchRequestMessagesValue]) {
     replyHandler(@{@"success": @YES});
     [[MessagesManager sharedInstance] setLocationForMessageGenerationWithCompletion:^(NSError *error) {

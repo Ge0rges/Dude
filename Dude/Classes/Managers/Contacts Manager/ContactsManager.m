@@ -52,7 +52,9 @@
 
 #pragma mark - Blocking
 - (BOOL)currentUserBlockedContact:(DUser*)user {
-  for (NSString *blockedEmail in [DUser currentUser].blockedEmails) {
+  DUser *currentUser = [DUser currentUser];
+
+  for (NSString *blockedEmail in currentUser.blockedEmails) {
     if ([blockedEmail.lowercaseString isEqualToString:user.email.lowercaseString]) return YES;
   }
   
@@ -60,54 +62,63 @@
 }
 
 - (BOOL)contactBlockedCurrentUser:(DUser*)user {
+  DUser *currentUser = [DUser currentUser];
+
   for (NSString *blockedEmail in user.blockedEmails) {
-    if ([blockedEmail.lowercaseString isEqualToString:[DUser currentUser].email.lowercaseString]) return YES;
+    if ([blockedEmail.lowercaseString isEqualToString:currentUser.email.lowercaseString]) return YES;
   }
   
   return NO;
 }
 
 - (void)blockContact:(DUser*)user {
+  DUser *currentUser = [DUser currentUser];
+
   // Verify that this user is not blocked already
-  if ([[DUser currentUser].blockedEmails containsObject:user.email]) return;
+  if ([currentUser.blockedEmails containsObject:user.email]) return;
   
   // Get current users
-  NSMutableSet *savedContacts = [[DUser currentUser].blockedEmails mutableCopy];
+  NSMutableSet *savedContacts = [currentUser.blockedEmails mutableCopy];
   
   // Add username
   [savedContacts addObject:user.email];
   
   // Save the blocked users
-  [[DUser currentUser] setBlockedEmails:savedContacts];
-  [[DUser currentUser] saveEventually];
+  [currentUser setBlockedEmails:savedContacts];
+  [currentUser saveEventually];
 }
 
 - (void)unblockContact:(DUser*)user {
+  DUser *currentUser = [DUser currentUser];
+
   // Verify that this user is blocked
-  if (![[DUser currentUser].blockedEmails containsObject:user.email]) return;
+  if (![currentUser.blockedEmails containsObject:user.email]) return;
   
   // Get current users
-  NSMutableSet *savedContacts = [[DUser currentUser].blockedEmails mutableCopy];
+  NSMutableSet *savedContacts = [currentUser.blockedEmails mutableCopy];
   
   // Remove username
   [savedContacts removeObject:user.email];
   
   // Save the blocked users
-  [[DUser currentUser] setBlockedEmails:savedContacts];
-  [[DUser currentUser] saveEventually];
+  [currentUser setBlockedEmails:savedContacts];
+  [currentUser saveEventually];
 }
 
 #pragma mark - Fetching
 - (NSSet*)getContactsRefreshedNecessary:(BOOL)needsLatestData favourites:(BOOL)favs {
-  if (needsLatestData) [[DUser currentUser] fetch];
+  if (needsLatestData) [[DUser currentUser] fetchIfNeeded];
   
-  NSSet *emails = (favs) ? [DUser currentUser].favouriteContactsEmails : [DUser currentUser].contactsEmails;
+  DUser *currentUser = [DUser currentUser];
+
+  NSSet *emails = (favs) ? currentUser.favouriteContactsEmails : currentUser.contactsEmails;
   if (!emails) return [NSSet new];
   
   // Get the PFUsers
   PFQuery *userQuery = [DUser query];
   
   [userQuery whereKey:@"email" containedIn:[emails allObjects]];
+
   if (!needsLatestData) {
     [userQuery fromLocalDatastore];
   }
@@ -137,14 +148,24 @@
 }
 
 - (DMessage*)latestMessageForContact:(DUser*)user {
-  __block DMessage *message = nil;
-  [[DUser currentUser].lastSeens enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-    if ([obj isKindOfClass:[NSArray class]]) {
+  DUser *currentUser = [DUser currentUser];
+  
+  // Not necessary to update the user more then once every ten second
+  if (-[currentUser.updatedAt timeIntervalSinceNow] > 60.0) {
+    currentUser = [currentUser fetch:nil];
+  }
+
+  
+  __block DMessage *message = nil;// So we can return the message
+  
+  // Cycle through the lastSeens
+  [currentUser.lastSeens enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+    if ([obj isKindOfClass:[NSArray class]]) {// Avoid crashes. A lastSeen is: @[email, NSData<DMessage>]
       NSArray *lastSeenArray = (NSArray *)obj;
       
-      if ([lastSeenArray[0] isEqualToString:user.email]) {
-        stop = (BOOL *)YES;// Wtf apple
-        message = (DMessage*)[NSKeyedUnarchiver unarchiveObjectWithData:lastSeenArray[1]];
+      if ([lastSeenArray[0] isEqualToString:user.email]) {// If the email is equal to the email of the user we're looking for
+        stop = (BOOL *)YES;// Stop the loop - Wtf apple
+        message = (DMessage*)[NSKeyedUnarchiver unarchiveObjectWithData:lastSeenArray[1]];// Unarchive the NSData into DMessage
       }
     }
   }];
@@ -154,40 +175,45 @@
 
 #pragma mark - Adding
 - (void)addContactToContacts:(DUser*)user sendNotification:(BOOL)sendNotification {
-  NSMutableSet *savedContacts = [[DUser currentUser].contactsEmails mutableCopy];
-  if ([user.email.lowercaseString isEqualToString:[DUser currentUser].email.lowercaseString]  || [savedContacts containsObject:user.email.lowercaseString]) return;
+  DUser *currentUser = [DUser currentUser];
+
+  NSMutableSet *savedContacts = [currentUser.contactsEmails mutableCopy];
+  if ([user.email.lowercaseString isEqualToString:currentUser.email.lowercaseString]  || [savedContacts containsObject:user.email.lowercaseString]) return;
   
   if (user) {
     // Save the user to the list of contacts
     [savedContacts addObject:user.email];
     
-    [[DUser currentUser] setContactsEmails:savedContacts];
+    [currentUser setContactsEmails:savedContacts];
     
     // Notify the user that we added him
     if (sendNotification) [self sendAddedNotificationToContact:user];
     
-    [[DUser currentUser] saveEventually];
+    [currentUser saveEventually];
   }
 }
 
 - (void)addContactToFavourites:(DUser*)user {
   if (!user) return;
+  
+  DUser *currentUser = [DUser currentUser];
 
-  NSMutableSet *savedContacts = [[DUser currentUser].favouriteContactsEmails mutableCopy];
-  if ([user.email.lowercaseString isEqualToString:[DUser currentUser].email.lowercaseString]  || [savedContacts containsObject:user.email.lowercaseString]) return;
+  NSMutableSet *savedContacts = [currentUser.favouriteContactsEmails mutableCopy];
+  if ([user.email.lowercaseString isEqualToString:currentUser.email.lowercaseString]  || [savedContacts containsObject:user.email.lowercaseString]) return;
   
   // Save the user to the list of contacts
   [savedContacts addObject:user.email.lowercaseString];
   
-  [[DUser currentUser] setFavouriteContactsEmails:savedContacts];
+  [currentUser setFavouriteContactsEmails:savedContacts];
   
-  [[DUser currentUser] saveEventually];
+  [currentUser saveEventually];
   
   [self getContactsRefreshedNecessary:YES favourites:YES];
 }
 
 - (void)addDeviceContactsAndSendNotification:(BOOL)sendNotification {
-  
+  DUser *currentUser = [DUser currentUser];
+
   Reachability *reachability = [Reachability reachabilityForInternetConnection];
   if ([reachability currentReachabilityStatus] != ReachableViaWiFi) return;
   
@@ -200,25 +226,26 @@
     
     for (CNLabeledValue *emailLabeledValue in contact.emailAddresses) {
       NSString *email = emailLabeledValue.value;
-      if (![email.lowercaseString isEqualToString:[DUser currentUser].email.lowercaseString]) {
+      if (![email.lowercaseString isEqualToString:currentUser.email.lowercaseString]) {
         [contactEmails addObject:email];
       }
     }
     
     PFQuery *userQuery = [DUser query];
     [userQuery whereKey:@"email" containedIn:[contactEmails allObjects]];
-    
+    [userQuery whereKey:@"email" notContainedIn:[currentUser.contactsEmails allObjects]];
+
     [userQuery findObjectsInBackgroundWithBlock:^(NSArray * _Nullable objects, NSError * _Nullable error) {
-      NSMutableSet *currentUserContacts = [[DUser currentUser].contactsEmails mutableCopy];
+      NSMutableSet *currentUserContacts = [currentUser.contactsEmails mutableCopy];
       
       for (DUser *user in objects) {
         [currentUserContacts addObject:user.email];
       }
       
       if (objects.count > 0) {
-        [[DUser currentUser] setContactsEmails:currentUserContacts];
+        [currentUser setContactsEmails:currentUserContacts];
         
-        [[DUser currentUser] saveInBackgroundWithBlock:^(BOOL success, NSError *error) {
+        [currentUser saveInBackgroundWithBlock:^(BOOL success, NSError *error) {
           AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
           UIViewController *viewController = appDelegate.visibleViewController;
           
@@ -239,13 +266,15 @@
 
 #pragma mark - Removing
 - (NSSet*)removeContact:(NSString*)email reloadContacts:(BOOL)reload {
+  DUser *currentUser = [DUser currentUser];
+
   // Remove the username from the list
-  NSMutableSet *savedContacts = [[DUser currentUser].contactsEmails mutableCopy];
+  NSMutableSet *savedContacts = [currentUser.contactsEmails mutableCopy];
   
   [savedContacts removeObject:email.lowercaseString];
   
-  [[DUser currentUser] setContactsEmails:savedContacts];
-  [[DUser currentUser] saveEventually];
+  [currentUser setContactsEmails:savedContacts];
+  [currentUser saveEventually];
   
   // Reload contacts if necessary
   return (reload) ? [self getContactsRefreshedNecessary:YES favourites:NO] : nil;
@@ -253,14 +282,16 @@
 
 - (void)removeContactFromFavourites:(DUser*)user {
   if (!user) return;
-    
+  
+  DUser *currentUser = [DUser currentUser];
+
   // Remove the username from the list
-  NSMutableSet *savedContacts = [[DUser currentUser].favouriteContactsEmails mutableCopy];
+  NSMutableSet *savedContacts = [currentUser.favouriteContactsEmails mutableCopy];
   [savedContacts removeObject:user.email];
   
-  [[DUser currentUser] setFavouriteContactsEmails:savedContacts];
+  [currentUser setFavouriteContactsEmails:savedContacts];
   
-  [[DUser currentUser] saveEventually];
+  [currentUser saveEventually];
   
   [self getContactsRefreshedNecessary:YES favourites:YES];
 }
@@ -268,11 +299,13 @@
 #pragma mark Added Notification
 - (void)sendAddedNotificationToContact:(DUser*)user {
   if (!user) return;
-    
+  
+  DUser *currentUser = [DUser currentUser];
+
   // Make sure we are allowed send the notification
-  BOOL isBlocked = [user.blockedEmails containsObject:[DUser currentUser].email];
-  BOOL didBlocked = [[DUser currentUser].blockedEmails containsObject:user.email];
-  BOOL isAddedByUser = [user.contactsEmails containsObject:[DUser currentUser].email.lowercaseString];
+  BOOL isBlocked = [user.blockedEmails containsObject:currentUser.email];
+  BOOL didBlocked = [currentUser.blockedEmails containsObject:user.email];
+  BOOL isAddedByUser = [user.contactsEmails containsObject:currentUser.email.lowercaseString];
   
   if (isAddedByUser || isBlocked || didBlocked) return;
   
@@ -281,12 +314,14 @@
   [pushQuery whereKey:@"user" equalTo:user];
   
   // Send the notification.
-  [PFPush sendPushMessageToQueryInBackground:pushQuery withMessage:[NSString stringWithFormat:@"Duderino, %@ just added you. Why not add them back?", [DUser currentUser].username]];
+  [PFPush sendPushMessageToQueryInBackground:pushQuery withMessage:[NSString stringWithFormat:@"Duderino, %@ just added you. Why not add them back?", currentUser.username]];
 }
 
 #pragma mark - Requesting Status Notification
 - (BOOL)requestStatusForContact:(DUser*)user inBackground:(BOOL)background {
-  NSString *key = [NSString stringWithFormat:@"lastStatusRequest%@", [DUser currentUser].email];
+  DUser *currentUser = [DUser currentUser];
+
+  NSString *key = [NSString stringWithFormat:@"lastStatusRequest%@", currentUser.email];
   
   NSDate *lastRequestDate = [[NSUserDefaults standardUserDefaults] objectForKey:key];
   
@@ -296,8 +331,8 @@
   [[NSUserDefaults standardUserDefaults] setObject:[NSDate date] forKey:key];
   
   // Make sure we are allowed request the status
-  BOOL isBlocked = [user.blockedEmails containsObject:[DUser currentUser].email];
-  BOOL didBlocked = [[DUser currentUser].blockedEmails containsObject:user.email];
+  BOOL isBlocked = [user.blockedEmails containsObject:currentUser.email];
+  BOOL didBlocked = [currentUser.blockedEmails containsObject:user.email];
   
   if (isBlocked || didBlocked) return NO;
   
@@ -307,11 +342,11 @@
   
   // Send the notification.  
   if (background) {
-    [PFPush sendPushMessageToQueryInBackground:pushQuery withMessage:[NSString stringWithFormat:@"Duderino, %@ would like to know what you're up to.", [DUser currentUser].username]];
+    [PFPush sendPushMessageToQueryInBackground:pushQuery withMessage:[NSString stringWithFormat:@"Duderino, %@ would like to know what you're up to.", currentUser.username]];
     return YES;
 
   } else {
-    return [PFPush sendPushMessageToQuery:pushQuery withMessage:[NSString stringWithFormat:@"Duderino, %@ would like to know what you're up to.", [DUser currentUser].username] error:nil];
+    return [PFPush sendPushMessageToQuery:pushQuery withMessage:[NSString stringWithFormat:@"Duderino, %@ would like to know what you're up to.", currentUser.username] error:nil];
   }
 }
 

@@ -295,11 +295,16 @@
 
 #pragma mark - Sending
 - (void)sendMessage:(DMessage* _Nonnull)message toContact:(DUser* _Nonnull)user withCompletion:(_Nullable MessageCompletionBlock)handler {
+  DUser *currentUser = [DUser currentUser];
+
   // Check if we blocked this user or if he blocked us
-  if ([[DUser currentUser].blockedEmails containsObject:user.email] || [user.blockedEmails containsObject:[DUser currentUser].email]) {
+  if ([currentUser.blockedEmails containsObject:user.email] || [user.blockedEmails containsObject:currentUser.email]) {
     handler(NO, [NSError errorWithDomain:@"Blocked" code:500 userInfo:nil]);
   }
-    
+  
+  // Set the messages send Date
+  message.sendDate = [NSDate date];
+  
   // Build the payload
   NSDictionary *payload;
   
@@ -326,8 +331,8 @@
                     @"long": [NSNumber numberWithDouble:message.location.coordinate.longitude],
                     @"lat": [NSNumber numberWithDouble:message.location.coordinate.latitude],
                     
-                    @"username": [DUser currentUser].username,
-                    @"email": [DUser currentUser].email,
+                    @"username": currentUser.username,
+                    @"email": currentUser.email,
                     
                     @"lastSeen": message.lastSeen
                     };
@@ -361,8 +366,8 @@
 
                   @"long": (message.includeLocation) ? [NSNumber numberWithDouble:message.location.coordinate.longitude] : @"",
                   @"lat": (message.includeLocation) ? [NSNumber numberWithDouble:message.location.coordinate.latitude] : @"",
-                  @"email": [DUser currentUser].email,
-                  @"username": [DUser currentUser].username,
+                  @"email": currentUser.email,
+                  @"username": currentUser.username,
                   
                   @"lastSeen": message.lastSeen
                   };
@@ -391,8 +396,8 @@
                     
                     @"url": message.URL.absoluteString,
                     
-                    @"username": [DUser currentUser].username,
-                    @"email": [DUser currentUser].email,
+                    @"username": currentUser.username,
+                    @"email": currentUser.email,
                     
                     @"long": (message.includeLocation) ? [NSNumber numberWithDouble:message.location.coordinate.longitude] : @"",
                     @"lat": (message.includeLocation) ? [NSNumber numberWithDouble:message.location.coordinate.latitude] : @"",
@@ -419,8 +424,8 @@
   NSData *messageData = [NSKeyedArchiver archivedDataWithRootObject:message];
 
   NSDictionary *params = @{@"receiverEmail": user.email,
-                           @"senderEmail": [DUser currentUser].email,
-                           @"data": @[[DUser currentUser].email, messageData]
+                           @"senderEmail": currentUser.email,
+                           @"data": @[currentUser.email, messageData]
                            };
   
   [PFCloud callFunction:@"updateLastSeen" withParameters:params];
@@ -472,6 +477,10 @@
     }
   }
   
+  // Set the messages send Date
+  message.sendDate = [NSDate date];
+
+  // Send
   NSURL *requestURL = [NSURL URLWithString:@"https://api.twitter.com/1.1/statuses/update.json"];
   
   SLRequest *postRequest = [SLRequest requestForServiceType:SLServiceTypeTwitter requestMethod:SLRequestMethodPOST URL:requestURL parameters:messageDict];
@@ -536,6 +545,10 @@
     }
   }
   
+  // Set the messages send Date
+  message.sendDate = [NSDate date];
+  
+  // Send
   NSURL *requestURL = [NSURL URLWithString:@"https://graph.facebook.com/me/feed"];
   
   SLRequest *postRequest = [SLRequest requestForServiceType:SLServiceTypeTwitter requestMethod:SLRequestMethodPOST URL:requestURL parameters:messageDict];

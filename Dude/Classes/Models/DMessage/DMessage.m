@@ -266,20 +266,29 @@ NSString* const IncludeLocationKey = @"includeLocation";
   NSString *timestampString;
   
   if (secondsSinceTimeStamp) {
-    if (secondsSinceTimeStamp <= 120) {
+    if (secondsSinceTimeStamp < 60) {
       timestampString = @"(Now)";
       
-    } else if (secondsSinceTimeStamp > 120 && secondsSinceTimeStamp < 3600) {
+    } else if (secondsSinceTimeStamp >= 60 && secondsSinceTimeStamp < 3600) {
       NSInteger minutes = secondsSinceTimeStamp/60;
       timestampString = [NSString stringWithFormat:@"(%lim ago)", (long)minutes];
       
-    } else if (secondsSinceTimeStamp < 86400) {
+    } else if (secondsSinceTimeStamp >= 3600 && secondsSinceTimeStamp < 86400) {
       NSInteger hours = secondsSinceTimeStamp/3600;
       timestampString = [NSString stringWithFormat:@"(%lih ago)", (long)hours];
       
-    } else {
+    } else if (secondsSinceTimeStamp >= 86400 && secondsSinceTimeStamp < 2592000) {
       NSInteger days = secondsSinceTimeStamp/86400;
       timestampString = [NSString stringWithFormat:@"(%lid ago)", (long)days];
+
+    } else if (secondsSinceTimeStamp >= 2592000 && secondsSinceTimeStamp < 31557600) {
+      NSInteger months = secondsSinceTimeStamp/2592000;
+      timestampString = [NSString stringWithFormat:@"(%li months ago)", (long)months];
+    
+    } else {
+      NSInteger years = secondsSinceTimeStamp/31557600;
+      timestampString = [NSString stringWithFormat:@"(%liy ago)", (long)years];
+
     }
   }
   

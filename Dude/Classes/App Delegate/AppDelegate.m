@@ -144,7 +144,7 @@
       
     } else {
       banner = [[JCNotificationBanner alloc] initWithTitle:title message:notificationMessage tapHandler:^{
-        [[UIApplication sharedApplication] openURL:url];
+#warning open the PVC of the user
       }];
       
     }
@@ -153,11 +153,13 @@
     [[JCNotificationBannerPresenterIOS7Style new] presentNotification:banner finished:nil];
 
     // Move sender to top most in contacts
-    NSMutableArray *contacts = [[DUser currentUser].contactsEmails mutableCopy];
+    DUser *currentUser = [DUser currentUser];
+
+    NSMutableArray *contacts = [currentUser.contactsEmails mutableCopy];
     [contacts removeObject:email];
     [contacts insertObject:email atIndex:0];
     
-    [[DUser currentUser] setContactsEmails:[NSSet setWithArray:contacts]];
+    [currentUser setContactsEmails:[NSSet setWithArray:contacts]];
 
     // Reload users list
     if ([self.visibleViewController isKindOfClass:[UsersTableViewController class]]) {
@@ -181,6 +183,7 @@
       [mapItem openInMapsWithLaunchOptions:nil];
       
     } else {
+#warning open the PVC of the user
       [PFPush handlePush:userInfo];
     }
   }

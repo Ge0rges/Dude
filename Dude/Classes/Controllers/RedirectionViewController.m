@@ -57,9 +57,12 @@
     
   // Redirect the app to the correct View Controller if we have an internet connection in the first place
   if ([self.networkReachability currentReachabilityStatus] != NotReachable) {// Check if we have internet
-    if ([DUser currentUser].isAuthenticated && [DUser currentUser].sessionToken) {
+    
+    DUser *currentUser = [DUser currentUser];
+    
+    if (currentUser.isAuthenticated && currentUser.sessionToken) {
       // Fetch the latest currentUser
-      [[DUser currentUser] fetchInBackgroundWithBlock:nil];
+      [currentUser fetchInBackgroundWithBlock:nil];
       [self performSegueWithIdentifier:@"mainSegue" sender:nil];
       
     } else  {// User isn't authenticated

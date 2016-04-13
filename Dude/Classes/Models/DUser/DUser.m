@@ -36,7 +36,7 @@ NSString* const LastSeensKey = @"lastSeens";
   currentUser.fullName = currentUser[FullNameKey];
   
   currentUser.lastSeens = currentUser[LastSeensKey];
-    
+  
   return currentUser;
 }
 
@@ -68,6 +68,12 @@ NSString* const LastSeensKey = @"lastSeens";
 
 #pragma mark - Support NSSet
 - (void)setObject:(nonnull id)object forKey:(nonnull NSString*)key {
+#warning make lastSeens readonly instead
+  if ([key isEqualToString:@"lastSeens"]) {
+    return;
+  }
+  
+#warning much bad such ignorance of standards
   if ([object isKindOfClass:[NSSet class]]) {
     NSMutableSet *objectSet = [(NSSet*)object mutableCopy];
     
@@ -85,14 +91,6 @@ NSString* const LastSeensKey = @"lastSeens";
 
 - (id)objectForKey:(nonnull NSString*)key {
   id object = [super objectForKey:key];
-  
-  if ([object isKindOfClass:[NSSet class]]) {
-    NSMutableSet *objectSet = [(NSSet*)object mutableCopy];
-    [objectSet removeObject:self.email];
-    
-    return objectSet;
-    
-  }
   
   return object;
 }
