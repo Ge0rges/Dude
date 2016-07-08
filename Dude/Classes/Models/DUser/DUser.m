@@ -8,6 +8,13 @@
 
 #import "DUser.h"
 
+// Encoding keys
+NSString* const ProfileImageKey = @"Picture";
+NSString* const BlockedContactsKey = @"BlockedContacts";
+NSString* const ContactsKey = @"Contacts";
+NSString* const FavouriteContactsKey = @"FavoriteContacts";
+NSString* const LastSeensKey = @"LastSeens";
+
 @interface DUser ()
 
 @property (strong, nonatomic) DUser *currentUser;

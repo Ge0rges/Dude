@@ -8,8 +8,9 @@
 
 #import "DUserWatch.h"
 
-// Constants
-#import "Constants.h"
+// Encoding keys
+NSString* const WProfileImageKey = @"Picture";
+NSString* const FullNameKey = @"fullName";
 
 @implementation DUserWatch
 
@@ -19,7 +20,7 @@
 - (void)encodeWithCoder:(NSCoder *)aCoder {
   [aCoder encodeDataObject:self.recordIDData];
   [aCoder encodeObject:self.fullName forKey:FullNameKey];
-  [aCoder encodeObject:self.profileImage forKey:ProfileImageKey];
+  [aCoder encodeObject:self.profileImage forKey:WProfileImageKey];
 }
 
 - (nullable instancetype)initWithCoder:(NSCoder *)aDecoder {
@@ -27,7 +28,7 @@
   
   self.recordIDData = [aDecoder decodeDataObject];
   self.fullName = [aDecoder decodeObjectForKey:FullNameKey];
-  self.profileImage = [aDecoder decodeObjectForKey:ProfileImageKey];
+  self.profileImage = [aDecoder decodeObjectForKey:WProfileImageKey];
   
   return self;
 }
