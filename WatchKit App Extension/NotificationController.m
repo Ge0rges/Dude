@@ -16,16 +16,6 @@
 
 @implementation NotificationController
 
-- (instancetype)init {
-    self = [super init];
-    if (self){
-        // Initialize variables here.
-        // Configure interface objects here.
-        
-    }
-    return self;
-}
-
 - (void)didReceiveRemoteNotification:(NSDictionary*)remoteNotification withCompletion:(void (^)(WKUserNotificationInterfaceType))completionHandler {
     
     // Set the notification alert

@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder.WatchKit.Storyboard" version="3.0" toolsVersion="9532" systemVersion="15D21" targetRuntime="watchKit" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="AgC-eL-Hgc">
+<document type="com.apple.InterfaceBuilder.WatchKit.Storyboard" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="watchKit" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="AgC-eL-Hgc">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9530"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBWatchKitPlugin" version="9515"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBWatchKitPlugin" version="10032"/>
     </dependencies>
     <scenes>
         <!--Favorites-->
         <scene sceneID="aou-V4-d1y">
             <objects>
-                <controller identifier="ContactsInterface" title="Favorites" backgroundImage="Background Watch" id="AgC-eL-Hgc" customClass="InterfaceController">
+                <controller identifier="ContactsInterface" title="Favorites" id="AgC-eL-Hgc" customClass="InterfaceController">
                     <items>
                         <label width="1" alignment="center" verticalAlignment="center" hidden="YES" textAlignment="center" numberOfLines="0" id="4j8-CH-T6d">
                             <fontDescription key="font" type="system" pointSize="16"/>
@@ -21,7 +21,7 @@
                                             <button alignment="left" verticalAlignment="center" id="GQV-tu-TzD">
                                                 <group key="contentGroup" width="0.5" height="1" alignment="left" layout="vertical" radius="26" id="8gG-v8-sVU">
                                                     <items>
-                                                        <group width="0.80000000000000004" height="1" alignment="center" verticalAlignment="center" backgroundImage="Default Profile Image Watch" radius="26" id="6F5-ja-l7a"/>
+                                                        <group width="0.80000000000000004" height="1" alignment="center" verticalAlignment="center" radius="26" id="6F5-ja-l7a"/>
                                                     </items>
                                                 </group>
                                                 <accessibilityTraits key="accessibilityTraits" button="YES" image="YES"/>
@@ -32,7 +32,7 @@
                                             <button alignment="right" verticalAlignment="center" id="YRk-OA-FBi">
                                                 <group key="contentGroup" width="0.5" height="1" alignment="left" layout="vertical" radius="0.0" id="M3V-zK-dLN">
                                                     <items>
-                                                        <group width="0.80000000000000004" height="1" alignment="center" verticalAlignment="center" backgroundImage="Default Profile Image Watch" radius="26" id="rL3-F3-Bea"/>
+                                                        <group width="0.80000000000000004" height="1" alignment="center" verticalAlignment="center" radius="26" id="rL3-F3-Bea"/>
                                                     </items>
                                                 </group>
                                                 <accessibilityTraits key="accessibilityTraits" button="YES" image="YES"/>
@@ -64,7 +64,7 @@
         <!--Messages-->
         <scene sceneID="oLp-zf-ag5">
             <objects>
-                <controller identifier="MessagesController" title="Messages" backgroundImage="Background Watch" id="quf-hj-OP8" customClass="MessageInterfaceController">
+                <controller identifier="MessagesController" title="Messages" id="quf-hj-OP8" customClass="MessageInterfaceController">
                     <items>
                         <table alignment="center" id="8ZA-Uh-ene">
                             <items>
@@ -95,12 +95,12 @@
                     </connections>
                 </controller>
             </objects>
-            <point key="canvasLocation" x="480" y="669"/>
+            <point key="canvasLocation" x="587" y="669"/>
         </scene>
         <!--Static Interface Scene-->
         <scene sceneID="AEw-b0-oYE">
             <objects>
-                <notificationController backgroundImage="Background Watch" id="YCC-NB-fut" userLabel="Static Interface Scene">
+                <notificationController id="YCC-NB-fut" userLabel="Static Interface Scene">
                     <items>
                         <label width="1" alignment="left" text="Notification" textAlignment="left" numberOfLines="0" id="XkS-y5-khE">
                             <fontDescription key="font" style="UICTFontTextStyleBody"/>
@@ -113,12 +113,12 @@
                     </connections>
                 </notificationController>
             </objects>
-            <point key="canvasLocation" x="235" y="925"/>
+            <point key="canvasLocation" x="235" y="962"/>
         </scene>
         <!--Dynamic Interface-->
         <scene sceneID="KIl-fV-djm">
             <objects>
-                <controller backgroundImage="Background Watch" id="gdX-wl-uQE" userLabel="Dynamic Interface" customClass="NotificationController">
+                <controller id="gdX-wl-uQE" userLabel="Dynamic Interface" customClass="NotificationController">
                     <items>
                         <label width="1" alignment="left" text="Notification" textAlignment="left" numberOfLines="0" id="6ps-O2-LY3">
                             <fontDescription key="font" style="UICTFontTextStyleBody"/>
@@ -131,7 +131,7 @@
                     </connections>
                 </controller>
             </objects>
-            <point key="canvasLocation" x="480" y="925"/>
+            <point key="canvasLocation" x="587" y="962"/>
         </scene>
     </scenes>
 </document>

@@ -10,9 +10,4 @@
 
 @implementation UserTableViewCell
 
-- (void)layoutSubviews {
-  [super layoutSubviews];
-#warning set fixed size and image to 150
-}
-
 @end

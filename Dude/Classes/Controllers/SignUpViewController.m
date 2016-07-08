@@ -13,9 +13,7 @@
 
 // Frameworks
 #import <Accounts/Accounts.h>
-
-// Pods
-#import <Parse/Parse.h>
+#import <CloudKit/CloudKit.h>
 
 // Models
 #import "DUser.h"
@@ -28,16 +26,9 @@
 
 
 @interface SignUpViewController () <UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDelegate> {
+  NSData *profileImageData;
   
-  PFQuery *emailTakenQuery;
-  
-  PFFile *selectedImageFile;
-  
-  DUser *user;
-  
-  UIImageView *retakeImageView;
-  
-  BOOL loggingIn;
+  UIImageView *retakeImageView;  
 }
 
 @property (strong, nonatomic) IBOutlet UILabel *stepLabel;
@@ -61,9 +52,6 @@
   // Update status bar
   [self setNeedsStatusBarAppearanceUpdate];
   
-  // Alloc & Init the temp user
-  user = [DUser object];
-  
   // Start a timer to check if the button should be enabled
   [self.textField addTarget:self action:@selector(checkConfirmButton) forControlEvents:UIControlEventEditingChanged];
 
@@ -81,104 +69,8 @@
 
 #pragma mark - Steps
 - (IBAction)confirmed:(UIButton*)sender {
-  if (self.logIn) {
     switch (self.confirmButton.tag) {
       case 0: {
-        [self proceedToEmail];
-        break;
-      }
-        
-      case 1: {
-        user.email = self.textField.text.lowercaseString;
-        user.username = self.textField.text.lowercaseString;
-        
-        [self animateToStepWithInitialScreenshot:[self screenshot] fromRight:YES];
-        [self proceedToPassword];
-        
-        break;
-      }
-        
-      case 2: {
-        user.password = self.textField.text;
-        
-        [self animateToStepWithInitialScreenshot:[self screenshot] fromRight:YES];
-        [self proceedToSocial];
-        
-        break;
-      }
-      
-      case 3: {
-        loggingIn = YES;
-        self.confirmButton.enabled = NO;
-        
-        [DUser logInWithUsernameInBackground:user.username password:user.password block:^(PFUser * _Nullable loggedInUser, NSError * _Nullable error) {
-          if (!loggedInUser || error) {
-            UIAlertController *incorrectCredentialsAlertController = [UIAlertController alertControllerWithTitle:@"Dude, who are you!?" message:@"Your credentials don't match anyone we know! Check for typos and try again." preferredStyle:UIAlertControllerStyleAlert];
-            [incorrectCredentialsAlertController addAction:[UIAlertAction actionWithTitle:@"Will do!" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-              
-              // Back 2 steps
-              [self animateToStepWithInitialScreenshot:[self screenshot] fromRight:NO];
-              [self proceedToEmail];
-              
-              self.confirmButton.tag -=3;
-              
-            }]];
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-              [self presentViewController:incorrectCredentialsAlertController animated:YES completion:nil];
-              self.confirmButton.enabled = YES;
-              loggingIn = NO;
-            });
-            
-          } else if (loggedInUser.isAuthenticated && loggedInUser.sessionToken) {
-            // Update this installation's user
-            [[PFInstallation currentInstallation] setObject:[DUser currentUser] forKey:@"user"];
-            [[PFInstallation currentInstallation] save];
-            
-            // Go back to the redirection controller
-            dispatch_async(dispatch_get_main_queue(), ^{
-              [self.presentingViewController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
-            });
-          }
-        }];
-        
-        break;
-      }
-    }
-    
-  } else {
-    switch (self.confirmButton.tag) {
-      case 0: {
-        [self proceedToName];
-        break;
-      }
-        
-      case 1: {
-        user.fullName = self.textField.text;
-        
-        [self animateToStepWithInitialScreenshot:[self screenshot] fromRight:YES];
-        [self proceedToEmail];
-        break;
-      }
-        
-      case 2: {        
-        user.email = self.textField.text.lowercaseString;
-        user.username = self.textField.text.lowercaseString;
-        
-        [self animateToStepWithInitialScreenshot:[self screenshot] fromRight:YES];
-        [self proceedToPassword];
-        break;
-      }
-        
-      case 3: {
-        user.password = self.textField.text;
-        
-        [self animateToStepWithInitialScreenshot:[self screenshot] fromRight:YES];
-        [self proceedToPhoto];
-        break;
-      }
-        
-      case 4: {
         // Remove retake X image
         [retakeImageView removeFromSuperview];
         retakeImageView = nil;
@@ -188,118 +80,105 @@
         break;
       }
         
-      case 5: {
-        [user signUpInBackgroundWithBlock:^(BOOL succeeded, NSError * _Nullable error) {
-          if (!succeeded) {
-            UIAlertController *incorrectCredentialsAlertController = [UIAlertController alertControllerWithTitle:@"Dude, we couldn't sign you up" message:error.localizedDescription preferredStyle:UIAlertControllerStyleAlert];
-            [incorrectCredentialsAlertController addAction:[UIAlertAction actionWithTitle:@"I'll try again :(" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-              // Go back to the beginning
-              [self animateToStepWithInitialScreenshot:[self screenshot] fromRight:NO];
-              [self proceedToName];
-              
-              self.confirmButton.tag -=5;
-            }]];
+      case 1: {
+        // Fetch the current User
+        DUser *currentUser = [DUser currentUser];// Cache update
+        if (!currentUser) [DUser currentUser];
+        
+        if (currentUser) {
+          UIAlertController *incorrectCredentialsAlertController = [UIAlertController alertControllerWithTitle:@"Dude, we couldn't sign you up" message:@"" preferredStyle:UIAlertControllerStyleAlert];
+          [incorrectCredentialsAlertController addAction:[UIAlertAction actionWithTitle:@"Cool, open settings" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            // Go back to the beginning
+            [self animateToStepWithInitialScreenshot:[self screenshot] fromRight:NO];
+            [self proceedToPhoto];
             
-            dispatch_async(dispatch_get_main_queue(), ^{
-              [self presentViewController:incorrectCredentialsAlertController animated:YES completion:nil];
-            });
-
-            
-          } else {
-            // Tell the user to confirm his email
-            UIAlertController *confirmEmailAlertController = [UIAlertController alertControllerWithTitle:@"Dude, confirm your email" message:@"We've sent you an email to verify your you. Confirm it to log in." preferredStyle:UIAlertControllerStyleAlert];
-            
-            [confirmEmailAlertController addAction:[UIAlertAction actionWithTitle:@"Will do!" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-              // Go back to the redirection controller
-              [self.presentingViewController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
-            }]];
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-              [self presentViewController:confirmEmailAlertController animated:YES completion:nil];
-            });
-            
-            [user selectFacebookAccountWithCompletion:nil];
-            [user selectTwitterAccountWithCompletion:nil];
-            
-            // Update this installation's user
-            [[PFInstallation currentInstallation] setObject:[DUser currentUser] forKey:@"user"];
-            [[PFInstallation currentInstallation] save];
-          }
+            self.confirmButton.tag -=5;
+          }]];
           
-        }];
+          dispatch_async(dispatch_get_main_queue(), ^{
+            [self presentViewController:incorrectCredentialsAlertController animated:YES completion:nil];
+          });
+          
+          
+        } else {
+          // Go back to the redirection controller
+          [self.presentingViewController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+          
+          [currentUser selectFacebookAccountWithCompletion:nil];
+          [currentUser selectTwitterAccountWithCompletion:nil];
+          
+          // Save the user's profile image
+          CKRecord *profilePictureRecord = [[CKRecord alloc] initWithRecordType:@"ProfilePicture"];
+          profilePictureRecord[@"Picture"] = profileImageData;
+          profilePictureRecord[@"Owner"] = [[CKReference alloc] initWithRecordID:currentUser.recordID action:CKReferenceActionDeleteSelf];
+
+          [[[CKContainer defaultContainer] publicCloudDatabase] saveRecord:profilePictureRecord completionHandler:^(CKRecord * _Nullable record, NSError * _Nullable error) {
+            if (error) {
+              NSLog(@"Well shit. Couldnt upload the profile image.");
+            }
+          }];
+          
+          // Subscribe to last seen creation
+          NSPredicate *predicate = [NSPredicate predicateWithFormat:@"Receiver = %@", currentUser.recordID];
+          CKSubscription *lastSeenSubscription = [[CKSubscription alloc] initWithRecordType:@"LastSeen" predicate:predicate options:CKSubscriptionOptionsFiresOnRecordCreation | CKSubscriptionOptionsFiresOnRecordUpdate];
+          
+          CKNotificationInfo *lastSeenNotificationInfo = [CKNotificationInfo new];
+          lastSeenNotificationInfo.desiredKeys = @[@"Receiver",@"Sender", @"Message"];
+          lastSeenNotificationInfo.alertLocalizationArgs = @[@"NotificationAlert"];
+          lastSeenNotificationInfo.alertBody = @"%@";
+          lastSeenNotificationInfo.shouldBadge = YES;
+          lastSeenNotificationInfo.category = @"REPLY_CATEGORY";
+          
+          [lastSeenSubscription setNotificationInfo:lastSeenNotificationInfo];
+          
+          [[[CKContainer defaultContainer] publicCloudDatabase] saveSubscription:lastSeenSubscription completionHandler:^(CKSubscription *subscription, NSError *error) {
+            if (error) {
+              NSLog(@"Well shit. subscription didnt donkey.");
+            }
+          }];
+          
+          // Subscribe to notification creation
+          CKSubscription *notificationSubscription = [[CKSubscription alloc] initWithRecordType:@"Notification" predicate:predicate options:CKSubscriptionOptionsFiresOnRecordCreation];
+          
+          CKNotificationInfo *notificationInfo = [CKNotificationInfo new];
+          notificationInfo.alertLocalizationArgs = @[@"Message"];
+          notificationInfo.alertBody = @"%@";
+          notificationInfo.shouldBadge = NO;
+          
+          [notificationSubscription setNotificationInfo:notificationInfo];
+          
+          [[[CKContainer defaultContainer] publicCloudDatabase] saveSubscription:notificationSubscription completionHandler:^(CKSubscription *subscription, NSError *error) {
+            if (error) {
+              NSLog(@"Well shit. subscription didnt donkey.");
+            }
+          }];
+          
+#pragma mark DEVELOPER ONLY
+#if 1
+          // Subscribe to notification creation
+          NSPredicate *devPredicate = [NSPredicate predicateWithFormat:@"Developer = %@", @YES];
+          CKSubscription *devNotificationSubscription = [[CKSubscription alloc] initWithRecordType:@"Notification" predicate:devPredicate options:CKSubscriptionOptionsFiresOnRecordCreation];
+          
+          CKNotificationInfo *devNotificationInfo = [CKNotificationInfo new];
+          devNotificationInfo.alertLocalizationArgs = @[@"Message"];
+          devNotificationInfo.alertBody = @"%@ - Remember to delete the record!";
+          devNotificationInfo.shouldBadge = YES;
+          
+          [devNotificationSubscription setNotificationInfo:notificationInfo];
+          
+          [[[CKContainer defaultContainer] publicCloudDatabase] saveSubscription:devNotificationSubscription completionHandler:^(CKSubscription *subscription, NSError *error) {
+            if (error) {
+              NSLog(@"Well shit. subscription didnt donkey.");
+            }
+          }];
+#endif
+
+        }
       }
     }
-  }
-  
+
   // Initial check for next step
   [self checkConfirmButton];
-}
-
-- (void)proceedToName {
-  // Update UI
-  [self.stepImageView setImage:[UIImage imageNamed:@"Name Tag"]];
-  [self.stepLabel setText:@"Your name will be shown to others along with your profile photo"];
-  [self.titleStepLabel setText:@"Your Name"];
-  
-  [self.textField setPlaceholder:@"The Duderino"];
-  [self.textField setText:@""];
-  [self.textField setHidden:NO];
-  [self.textField resignFirstResponder];
-  [self.textField setKeyboardType:UIKeyboardTypeDefault];
-  [self.textField setSecureTextEntry:NO];
-  [self.textField setAutocapitalizationType:UITextAutocapitalizationTypeWords];
-  
-  [self.confirmButton setTitle:@"CONTINUE" forState:UIControlStateNormal];
-  [self.backButton setTitle:@" Back" forState:UIControlStateNormal];
-  
-  self.confirmButton.tag++;
-  
-  if (self.stepImageView.gestureRecognizers.count > 0) {
-    [self.stepImageView removeGestureRecognizer:self.stepImageView.gestureRecognizers[0]];
-  }
-  
-  [self.textField performSelector:@selector(becomeFirstResponder) withObject:nil afterDelay:0.4];//.15 seconds after animation
-  
-  [retakeImageView removeFromSuperview];
-  retakeImageView = nil;
-  
-  self.stepImageView.layer.cornerRadius = 0;
-  self.stepImageView.clipsToBounds = NO;
-}
-
-- (void)proceedToPassword {
-  // Update UI
-  [self.stepImageView setImage:[UIImage imageNamed:@"Password"]];
-  [self.titleStepLabel setText:@"Password"];
-  
-  if (self.logIn) {
-    [self.stepLabel setText:@"Enter your super secret password. (Make sure nobody's looking!)"];
-    [self.textField setPlaceholder:@"Yay! Security!"];
-
-  } else {
-    [self.stepLabel setText:@"Choose a super secret password. (Pssst, don't share it)"];
-    [self.textField setPlaceholder:@"Min. 6 characters, security!"];
-  }
-  
-  [self.textField setText:@""];
-  [self.textField setHidden:NO];
-  [self.textField resignFirstResponder];
-  [self.textField setKeyboardType:UIKeyboardTypeDefault];
-  [self.textField setSecureTextEntry:YES];
-  [self.textField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
-
-  [self.confirmButton setTitle:@"CONTINUE" forState:UIControlStateNormal];
-  [self.backButton setTitle:@" Email" forState:UIControlStateNormal];
-  
-  self.confirmButton.tag++;
-  
-  [self.textField performSelector:@selector(becomeFirstResponder) withObject:nil afterDelay:0.4];//.15 seconds after animation
-  
-  [retakeImageView removeFromSuperview];
-  retakeImageView = nil;
-  
-  self.stepImageView.layer.cornerRadius = 0;
-  self.stepImageView.clipsToBounds = NO;
 }
 
 - (void)proceedToSocial {
@@ -318,43 +197,6 @@
   [self.stepImageView removeGestureRecognizer:self.stepImageView.gestureRecognizers[0]];
   
   [self.textField resignFirstResponder];
-  
-  [retakeImageView removeFromSuperview];
-  retakeImageView = nil;
-  
-  self.stepImageView.layer.cornerRadius = 0;
-  self.stepImageView.clipsToBounds = NO;
-}
-
-- (void)proceedToEmail {
-  // Update UI
-  [self.stepImageView setImage:[UIImage imageNamed:@"Mail"]];
-  [self.titleStepLabel setText:@"Email Address"];
-  
-  if (self.logIn) {
-    [self.stepLabel setText:@"Enter the email you used to sign up."];
-    [self.textField setPlaceholder:@"thedude@is.awesome"];
-    
-  } else {
-    [self.stepLabel setText:@"Your email is private! We'll only contact you about your account."];
-    [self.textField setPlaceholder:@"thedude@is.awesome"];
-  }
-  
-  [self.textField setText:@""];
-  [self.textField setHidden:NO];
-  [self.textField resignFirstResponder];
-  [self.textField setKeyboardType:UIKeyboardTypeEmailAddress];
-  [self.textField setSecureTextEntry:NO];
-  [self.textField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
-
-  [self.confirmButton setTitle:@"CONTINUE" forState:UIControlStateNormal];
-  [self.backButton setTitle:@" Name" forState:UIControlStateNormal];
-  
-  self.confirmButton.tag++;
-  
-  [self.stepImageView removeGestureRecognizer:self.stepImageView.gestureRecognizers[0]];
-  
-  [self.textField performSelector:@selector(becomeFirstResponder) withObject:nil afterDelay:0.4];//.15 seconds after animation
   
   [retakeImageView removeFromSuperview];
   retakeImageView = nil;
@@ -390,7 +232,7 @@
   self.stepImageView.layer.cornerRadius = 0;
   self.stepImageView.clipsToBounds = NO;
   
-  selectedImageFile = nil;
+  profileImageData = nil;
 }
 
 #pragma mark - Animation
@@ -500,64 +342,18 @@
 - (void)checkConfirmButton {
   switch (self.confirmButton.tag) {
     case 1: {
-      self.confirmButton.enabled = (self.logIn) ? [self isValidEmailWithAlert:NO] : (self.textField.text.length > 0);
+      self.confirmButton.enabled = (profileImageData) ? YES : NO;
+      
       break;
     }
       
     case 2: {
-      if (self.logIn) {
-        self.confirmButton.enabled = (self.textField.text.length > 5);
-      
-      } else {
-        NSBlockOperation *validateEmailOperation = [NSBlockOperation blockOperationWithBlock:^{
-          BOOL isValid = [self isValidEmailWithAlert:NO];
-          dispatch_async(dispatch_get_main_queue(), ^{
-            self.confirmButton.enabled = isValid;
-          });
-        }];
-        
-        validateEmailOperation.qualityOfService = NSOperationQualityOfServiceUserInteractive;
-        validateEmailOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
-        
-        validateEmailOperation.completionBlock = ^{
-          dispatch_async(dispatch_get_main_queue(), ^{
-            self.confirmButton.backgroundColor = (self.confirmButton.enabled) ? self.confirmButton.tintColor : [UIColor lightGrayColor];
-          });
-        };
-        
-        [[[NSThread alloc] initWithTarget:validateEmailOperation selector:@selector(start) object:nil] start];
-        
-      }
-      
-      break;
-    }
-      
-    case 3: {
-      self.confirmButton.enabled = (self.logIn) ? !loggingIn : (self.textField.text.length > 5);
-      break;
-    }
-      
-    case 4: {
-      self.confirmButton.enabled = (selectedImageFile) ? YES : NO;
-      
-      break;
-    }
-      
-    case 5: {
       self.confirmButton.enabled = YES;
       break;
     }
   }
   
-  if (!self.logIn && self.confirmButton.tag == 2) {// Check if we are on the email step for sign up
-    // If so disable the button. real results are being generated asyncly and will be set later
-    self.confirmButton.enabled = NO;
-    self.confirmButton.backgroundColor = [UIColor lightGrayColor];
-  
-  } else {
-    // Otherwise usual color setting according to enabled state.
-    self.confirmButton.backgroundColor = (self.confirmButton.enabled) ? self.confirmButton.tintColor : [UIColor lightGrayColor];
-  }
+  self.confirmButton.backgroundColor = (self.confirmButton.enabled) ? self.confirmButton.tintColor : [UIColor lightGrayColor];
 }
 
 - (IBAction)back {
@@ -571,45 +367,7 @@
       
     case 2: {
       [self animateToStepWithInitialScreenshot:[self screenshot] fromRight:NO];
-      if (self.logIn) {
-        [self proceedToEmail];
-     
-      } else {
-        [self proceedToName];
-      }
-      
-      break;
-    }
-      
-    case 3: {
-      [self animateToStepWithInitialScreenshot:[self screenshot] fromRight:NO];
-      if (self.logIn) {
-        [self proceedToPassword];
-        
-      } else {
-        [self proceedToEmail];
-      }
-      
-      break;
-    }
-      
-    case 4: {
-      [self animateToStepWithInitialScreenshot:[self screenshot] fromRight:NO];
-      [self proceedToPassword];
-      
-      break;
-    }
-      
-    case 5: {
-      [self animateToStepWithInitialScreenshot:[self screenshot] fromRight:NO];
-      [self proceedToPhoto];
-      
-      break;
-    }
-      
-    case 6: {
-      [self animateToStepWithInitialScreenshot:[self screenshot] fromRight:NO];
-      [self proceedToSocial];
+        [self proceedToPhoto];
       
       break;
     }
@@ -660,10 +418,9 @@
   UIImage *thumbnailImage = [selectedImage imageByScalingAndCroppingForSize:CGSizeMake(200, 200)];
   
   // Set user image file
-  selectedImageFile = [PFFile fileWithData:UIImageJPEGRepresentation(thumbnailImage, 1)];
+  profileImageData = UIImageJPEGRepresentation(thumbnailImage, 1);
   
-  if (selectedImageFile) {
-    user.profileImage = selectedImageFile;
+  if (profileImageData) {
     [self.stepImageView setImage:thumbnailImage];
     
     // Add retake X
@@ -682,54 +439,6 @@
   
   // For the image
   [self checkConfirmButton];
-}
-
-#pragma mark - UITextField
-
-- (BOOL)isValidEmailWithAlert:(BOOL)showAlert {
-  BOOL validEmail = [self validateEmailWithRFC:self.textField.text];
-  
-  BOOL taken = NO;
-  
-  if (validEmail && !self.logIn) {// We rent in log in so check the taken status of the email
-    [emailTakenQuery cancel];
-    emailTakenQuery = nil;
-    
-    emailTakenQuery = [DUser query];
-    [emailTakenQuery whereKey:@"email" equalTo:self.textField.text.lowercaseString];
-    
-    taken = ([emailTakenQuery countObjects] > 0 );
-  }
-  
-  if ((!validEmail || taken) && showAlert) {
-    NSString *title = (taken) ? @"Email Taken" : @"Email Invalid";
-    NSString *message = (taken) ? @"This email is already associated with an account." : @"This email appears to be invalid, please check for typos.";
-    
-    UIAlertController *ac = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
-    [ac addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleCancel handler:nil]];
-    
-    [self presentViewController:ac animated:YES completion:nil];
-    
-    return NO;
-  }
-  
-  return (validEmail && !taken);
-}
-
-// Complete RFC 2822 verification
-- (BOOL)validateEmailWithRFC:(NSString*)candidate {
-  NSString *emailRegex =
-  @"(?:[a-z0-9!#$%\\&'*+/=?\\^_`{|}~-]+(?:\\.[a-z0-9!#$%\\&'*+/=?\\^_`{|}"
-  @"~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\"
-  @"x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-"
-  @"z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5"
-  @"]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-"
-  @"9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21"
-  @"-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])";
-  
-  NSPredicate *emailTest = [NSPredicate predicateWithFormat:@"SELF MATCHES[c] %@", emailRegex];
-  
-  return [emailTest evaluateWithObject:candidate];
 }
 
 #pragma mark - Status Bar

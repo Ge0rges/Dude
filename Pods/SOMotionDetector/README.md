@@ -1,7 +1,7 @@
 SOMotionDetector
 ================
 
-Simple library to detect motion for iOS by <b> arturdev </b>.
+Simple library to detect motion for iOS by <b> <a href="https://github.com/arturdev">arturdev</a> </b>.
 
 Based on location updates and acceleration.
 
@@ -14,6 +14,7 @@ Compatible with <b>iOS 7</b>
 
 <img src="https://raw.github.com/SocialObjects-Software/SOMotionDetector/master/MotionDetection/screenshot.PNG" width=320>
 
+This demo project also demonstrates how to use this library to relaunch the app from killed state.
 
 USAGE
 =====
@@ -21,41 +22,38 @@ Copy <b>SOMotionDetector</b> folder to your project.
 
 Link <b>CoreMotion.framework</b>, <b>CoreLocation.framework</b>.
 
-Import <b>"SOMotionDetector.h"</b> file and implement <br><SOMotionDetectorDelegate></b> protocol.
+Import <b>"SOMotionDetector.h"</b> file and set SOMotionDetector's callbacks
 
 ```ObjC
 #import "SOMotionDetector.h
-@interface ViewController ()<SOMotionDetectorDelegate>
 
-@end
-```
+//...
 
-Set SOMotionDetector's delegate to self
-```ObjC
-[SOMotionDetector sharedInstance].delegate = self;
-```
-
-Implement delegate methods 
-```ObjC
-- (void)motionDetector:(SOMotionDetector *)motionDetector motionTypeChanged:(SOMotionType)motionType
-{
-
-}
-
-- (void)motionDetector:(SOMotionDetector *)motionDetector locationChanged:(CLLocation *)location
-{
-
-}
-
-- (void)motionDetector:(SOMotionDetector *)motionDetector accelerationChanged:(CMAcceleration)acceleration
-{
+[SOMotionDetector sharedInstance].motionTypeChangedBlock = ^(SOMotionType motionType) {
+    //...
+};
     
-}
+[SOMotionDetector sharedInstance].locationChangedBlock = ^(CLLocation *location) {
+    //...
+};
+
+[SOMotionDetector sharedInstance].accelerationChangedBlock = ^(CMAcceleration acceleration) {
+    //...    
+};
+```
+
+###NOTE!
+To Support iOS > 8.0 you must add in your info.plist file one of the following keys: <br>
+`NSLocationAlwaysUsageDescription`<br> `NSLocationWhenInUseUsageDescription`
+
+To enable background location updates in iOS > 9.0 you must set `allowsBackgroundLocationUpdates` to `YES` <br>
+```ObjC
+    [SOLocationManager sharedInstance].allowsBackgroundLocationUpdates = YES;
 ```
 
 You are done! 
 
-Now to start detection motion just call
+Now to start motion detection just call
 ```ObjC 
 [[SOMotionDetector sharedInstance] startDetection];
 ```
@@ -65,6 +63,12 @@ To stop detection call
 [[SOMotionDetector sharedInstance] stopDetection];
 ```  
 
+To start step counter call
+```ObjC
+    [[SOStepDetector sharedInstance] startDetectionWithUpdateBlock:^(NSError *error) {
+        //...
+    }];
+```
 ###Detecting motion types
 ```ObjC
 typedef enum
@@ -116,7 +120,7 @@ CUSTOMIZATION
 #### Podfile
 
 ```ruby
-pod "SOMotionDetector", "~> 1.0.0"
+pod "SOMotionDetector"
 ```
 
 <h2>LICENSE</h2>

@@ -19,7 +19,7 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>2.0.4</string>
+	<string>2.0.5</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>LSApplicationCategoryType</key>
@@ -32,6 +32,12 @@
 	<string>Your location is used to create smart messages (Dudes) that you can send to your firends attached with your location too.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Your location is used to create smart messages (Dudes) that you can send to your firends attached with your location too.</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>location</string>
+		<string>remote-notification</string>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>Launch Screen</string>
 	<key>UIMainStoryboardFile</key>

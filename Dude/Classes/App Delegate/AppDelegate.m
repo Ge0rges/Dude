@@ -11,6 +11,7 @@
 // Controllers
 #import "UsersTableViewController.h"
 #import "MessagesTableViewController.h"
+#import "ProfileViewController.h"
 
 // Managers
 #import "MessagesManager.h"
@@ -23,6 +24,7 @@
 
 // Models
 #import "DUser.h"
+#import "DMessage.h"
 
 // Frameworks
 #import <Accounts/Accounts.h>
@@ -36,17 +38,6 @@
 
 - (BOOL)application:(UIApplication*)application didFinishLaunchingWithOptions:(NSDictionary*)launchOptions {
   // Override point for customization after application launch.
-  
-  // Parse setup
-  [Parse enableLocalDatastore];// For offline data
-  
-  // Register our subclass
-  [DUser registerSubclass];
-
-  [Parse setApplicationId:@"Lwdk0Qnb9755omfrz9Jt1462lzCyzBSTU4lSs37S" clientKey:@"bqhjVGFBHTtfjyoRG8WlYBrjqkulOjcilhtQursd"];
-  [PFAnalytics trackAppOpenedWithLaunchOptions:launchOptions];
-  
-  [PFUser enableRevocableSessionInBackground];
   
   // Register for Push Notifications
   UIUserNotificationType userNotificationTypes = (UIUserNotificationTypeAlert | UIUserNotificationTypeBadge | UIUserNotificationTypeSound);
@@ -72,9 +63,6 @@
     [self application:application didReceiveRemoteNotification:(NSDictionary*)notification];
   }
   
-  // Start a WCSession to receive messages
-  [[WatchConnectivityManager sharedManager] activateSession];
-  
   return YES;
 }
 
@@ -94,9 +82,6 @@
 
 - (void)applicationDidBecomeActive:(UIApplication*)application {
   // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
-  
-  // Start a WCSession to receive messages
-  [[WatchConnectivityManager sharedManager] activateSession];
 }
 
 - (void)applicationWillTerminate:(UIApplication*)application {
@@ -104,107 +89,205 @@
 }
 
 - (void)application:(UIApplication*)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData*)deviceToken {
-  // Store the deviceToken in the current installation and save it to Parse.
-  PFInstallation *currentInstallation = [PFInstallation currentInstallation];
-  [currentInstallation setDeviceTokenFromData:deviceToken];
-  currentInstallation.channels = @[@"global"];
+}
+
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
+  [self application:application didReceiveRemoteNotification:userInfo];
   
-  [currentInstallation saveInBackground];
+  completionHandler(UIBackgroundFetchResultNoData);
 }
 
 - (void)application:(UIApplication*)application didReceiveRemoteNotification:(NSDictionary*)userInfo {
-  // Get the push data
-  NSString *title = userInfo[@"aps"][@"alert"][@"title"];
-  NSString *notificationMessage = userInfo[@"aps"][@"alert"][@"body"];
-  NSString *username = userInfo[@"username"];
-  NSString *email = userInfo[@"email"];
+  DUser *currentUser = [DUser currentUser];
+  CKNotification *notification = [CKNotification notificationFromRemoteNotificationDictionary:userInfo];
   
-  url = [NSURL URLWithString:userInfo[@"url"]];
+  if (notification.isPruned) {
+    NSLog(@"Notification is pruned use CKFetchNotificationChangesOperation");
+  }
   
-  double latitude = [userInfo[@"lat"] doubleValue];
-  double longitude = [userInfo[@"long"] doubleValue];
+  CKQueryNotification *queryNotification = [CKQueryNotification notificationFromRemoteNotificationDictionary:userInfo];
   
-  // Handle notification
-  if (application) {// While in app
-    JCNotificationBanner *banner;
-    if (url) {
-      banner = [[JCNotificationBanner alloc] initWithTitle:title message:notificationMessage tapHandler:^{
+  DMessage *message = [NSKeyedUnarchiver unarchiveObjectWithData:queryNotification.recordFields[@"Message"]];
+  
+  if (message) {
+    // Update the lastSeen cache
+    CKReference *senderReference = queryNotification.recordFields[@"Sender"];
+    NSString *lastSeenRecordIDCacheKey = [NSString stringWithFormat:@"lastSeenRecordID%@%@", senderReference.recordID, [DUser currentUser].recordID];
+
+    NSString *messageCacheKey = [NSString stringWithFormat:@"lastSeen%@%@", senderReference.recordID, [DUser currentUser].recordID];
+
+    [[NSUserDefaults standardUserDefaults] setObject:message forKey:messageCacheKey];
+    [[NSUserDefaults standardUserDefaults] setObject:queryNotification.recordID forKey:lastSeenRecordIDCacheKey];
+    
+    // Update the current user's lastSeen
+    NSMutableArray *lastSeens = [NSMutableArray arrayWithArray:[DUser currentUser].lastSeens];
+    
+    // Only have the record once
+    if (![lastSeens containsObject:queryNotification.recordID]) {
+      [lastSeens addObject:queryNotification.recordID];
+    }
+    
+    currentUser.lastSeens = lastSeens;
+    
+    [currentUser saveWithCompletion:nil];
+
+    // Get the push data
+    url = [NSURL URLWithString:userInfo[@"url"]];
+    
+    double latitude = [userInfo[@"lat"] doubleValue];
+    double longitude = [userInfo[@"long"] doubleValue];
+    
+    // Handle notification
+    if (application && ![message.senderRecordID isEqual:currentUser.recordID]) {// While in app
+      JCNotificationBanner *banner;
+      if (url) {
+        banner = [[JCNotificationBanner alloc] initWithTitle:message.notificationTitle message:message.notificationMessage tapHandler:^{
+          [[UIApplication sharedApplication] openURL:url];
+        }];
+        
+        
+      } else if (latitude && longitude) {
+        MKPlacemark *placemark = [[MKPlacemark alloc] initWithCoordinate:CLLocationCoordinate2DMake(latitude, longitude) addressDictionary:nil];
+        mapItem = [[MKMapItem alloc] initWithPlacemark:placemark];
+        mapItem.name = [NSString stringWithFormat:@"%@'s Location", message.senderFullName];
+        
+        banner = [[JCNotificationBanner alloc] initWithTitle:message.notificationTitle message:message.notificationMessage tapHandler:^{
+          [mapItem openInMapsWithLaunchOptions:nil];
+        }];
+        
+      } else {
+        banner = [[JCNotificationBanner alloc] initWithTitle:message.notificationTitle message:message.notificationMessage tapHandler:^{
+          // Open PVC of the user
+          DUser *user = [[DUser alloc] init];
+          user.recordID = [[CKRecordID alloc] initWithRecordName:message.senderRecordID[@"recordName"] zoneID:message.senderRecordID[@"zoneID"]];
+          
+          user = [user fetchFromCache];
+          
+          if (!user) {
+            [user fetchWithSuccessBlock:^(DUser * _Nullable fetchedUser) {
+              dispatch_async(dispatch_get_main_queue(), ^{
+                ProfileViewController *pvc = [[UIStoryboard storyboardWithName:@"Main" bundle:[NSBundle mainBundle]] instantiateViewControllerWithIdentifier:@"ProfileViewControllerOther"];
+                pvc.profileUser = fetchedUser;
+                
+                [self.visibleViewController presentViewController:pvc animated:YES completion:nil];
+                
+              });
+              
+            } failureBlock:nil];
+            
+          } else {
+            ProfileViewController *pvc = [[UIStoryboard storyboardWithName:@"Main" bundle:[NSBundle mainBundle]] instantiateViewControllerWithIdentifier:@"ProfileViewControllerOther"];
+            pvc.profileUser = user;
+            
+            [self.visibleViewController presentViewController:pvc animated:YES completion:nil];
+          }
+        }];
+      }
+      
+      // Present the notification
+      [[JCNotificationBannerPresenterIOS7Style new] presentNotification:banner finished:nil];
+      
+      // Reload users list
+      if ([self.visibleViewController isKindOfClass:[UsersTableViewController class]]) {
+        UsersTableViewController *visibleUsersTableVC = (UsersTableViewController*)self.visibleViewController;
+        [visibleUsersTableVC performSelectorInBackground:@selector(reloadData:) withObject:nil];
+        
+      } else if ([self.visibleViewController.presentingViewController isKindOfClass:[UsersTableViewController class]]) {
+        UsersTableViewController *visibleUsersTableVC = (UsersTableViewController*)self.visibleViewController.presentingViewController;
+        [visibleUsersTableVC performSelectorInBackground:@selector(reloadData:) withObject:nil];
+      }
+      
+    } else {// Regular notification
+      if (url) {
         [[UIApplication sharedApplication] openURL:url];
-      }];
-      
-      
-    } else if (latitude && longitude) {
-      MKPlacemark *placemark = [[MKPlacemark alloc] initWithCoordinate:CLLocationCoordinate2DMake(latitude, longitude) addressDictionary:nil];
-      mapItem = [[MKMapItem alloc] initWithPlacemark:placemark];
-      mapItem.name = [NSString stringWithFormat:@"%@'s Location", username];
-      
-      banner = [[JCNotificationBanner alloc] initWithTitle:title message:notificationMessage tapHandler:^{
+
+      } else if (latitude && longitude) {
+        MKPlacemark *placemark = [[MKPlacemark alloc] initWithCoordinate:CLLocationCoordinate2DMake(latitude, longitude) addressDictionary:nil];
+        mapItem = [[MKMapItem alloc] initWithPlacemark:placemark];
+        mapItem.name = [NSString stringWithFormat:@"%@'s Location", message.senderFullName];
+        
         [mapItem openInMapsWithLaunchOptions:nil];
-      }];
-      
-    } else {
-      banner = [[JCNotificationBanner alloc] initWithTitle:title message:notificationMessage tapHandler:^{
-#warning open the PVC of the user
-      }];
-      
+        
+      } else {
+        // Open PVC of the user
+        DUser *user = [[DUser alloc] init];
+        user.recordID = [[CKRecordID alloc] initWithRecordName:message.senderRecordID[@"recordName"] zoneID:message.senderRecordID[@"zoneID"]];
+        
+        user = [user fetchFromCache];
+        
+        if (!user) {
+          [user fetchWithSuccessBlock:^(DUser * _Nullable fetchedUser) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+              ProfileViewController *pvc = [[UIStoryboard storyboardWithName:@"Main" bundle:[NSBundle mainBundle]] instantiateViewControllerWithIdentifier:@"ProfileViewControllerOther"];
+              pvc.profileUser = fetchedUser;
+              
+              [self.visibleViewController presentViewController:pvc animated:YES completion:nil];
+              
+            });
+            
+          } failureBlock:nil];
+          
+        } else {
+          ProfileViewController *pvc = [[UIStoryboard storyboardWithName:@"Main" bundle:[NSBundle mainBundle]] instantiateViewControllerWithIdentifier:@"ProfileViewControllerOther"];
+          pvc.profileUser = user;
+          
+          [self.visibleViewController presentViewController:pvc animated:YES completion:nil];
+        }
+        
+      }
     }
     
-    // Present the notification
+  } else if (application && notification) {
+    JCNotificationBanner *banner = [[JCNotificationBanner alloc] initWithTitle:@"Dude" message:queryNotification.alertBody tapHandler:nil];
     [[JCNotificationBannerPresenterIOS7Style new] presentNotification:banner finished:nil];
-
-    // Move sender to top most in contacts
-    DUser *currentUser = [DUser currentUser];
-
-    NSMutableArray *contacts = [currentUser.contactsEmails mutableCopy];
-    [contacts removeObject:email];
-    [contacts insertObject:email atIndex:0];
     
-    [currentUser setContactsEmails:[NSSet setWithArray:contacts]];
-
-    // Reload users list
-    if ([self.visibleViewController isKindOfClass:[UsersTableViewController class]]) {
-      UsersTableViewController *visibleUsersTableVC = (UsersTableViewController*)self.visibleViewController;
-      [visibleUsersTableVC performSelectorInBackground:@selector(reloadData:) withObject:nil];
-      
-    } else if ([self.visibleViewController.presentingViewController isKindOfClass:[UsersTableViewController class]]) {
-      UsersTableViewController *visibleUsersTableVC = (UsersTableViewController*)self.visibleViewController.presentingViewController;
-      [visibleUsersTableVC performSelectorInBackground:@selector(reloadData:) withObject:nil];
-    }
-    
-  } else {// Regular notification
-    if (url) {
-      [[UIApplication sharedApplication] openURL:url];
-      
-    } else if (latitude && longitude) {
-      MKPlacemark *placemark = [[MKPlacemark alloc] initWithCoordinate:CLLocationCoordinate2DMake(latitude, longitude) addressDictionary:nil];
-      mapItem = [[MKMapItem alloc] initWithPlacemark:placemark];
-      mapItem.name = [NSString stringWithFormat:@"%@'s Location", username];
-      
-      [mapItem openInMapsWithLaunchOptions:nil];
-      
-    } else {
-#warning open the PVC of the user
-      [PFPush handlePush:userInfo];
-    }
+    [[[CKContainer defaultContainer] publicCloudDatabase] deleteRecordWithID:queryNotification.recordID completionHandler:^(CKRecordID * _Nullable recordID, NSError * _Nullable error) {
+      if (error) {
+        NSLog(@"Couldn't delete notification record");
+      }
+    }];
   }
 }
 
 - (void)application:(UIApplication*)application handleActionWithIdentifier:(NSString*)identifier forRemoteNotification:(NSDictionary*)userInfo completionHandler:(void (^)())completionHandler {
-  NSString *senderEmail = userInfo[@"email"];
+  CKNotification *notification = [CKNotification notificationFromRemoteNotificationDictionary:userInfo];
   
-  PFQuery *senderQuery = [DUser query];
-  [senderQuery whereKey:@"email" equalTo:senderEmail];
+  if (notification.isPruned) {
+    NSLog(@"Notification is pruned use CKFetchNotificationChangesOperation");
+  }
   
-  [senderQuery fromLocalDatastore];
+  CKQueryNotification *querynotification = [CKQueryNotification notificationFromRemoteNotificationDictionary:userInfo];
   
-  DUser *sender = (DUser*)[senderQuery getFirstObject];
+  DMessage *message = [NSKeyedUnarchiver unarchiveObjectWithData:querynotification.recordFields[@"Message"]];
   
-  MessagesTableViewController *messagesTableVC = [self.window.rootViewController.storyboard instantiateViewControllerWithIdentifier:@"MessagesTable"];
-  messagesTableVC.selectedUsers = @[sender];
-  
-  [self.window.rootViewController.navigationController presentViewController:messagesTableVC animated:YES completion:nil];
-  
-  completionHandler();
+  if (message) {
+    DUser *user = [[DUser alloc] init];
+    user.recordID = [[CKRecordID alloc] initWithRecordName:message.senderRecordID[@"recordName"] zoneID:message.senderRecordID[@"zoneID"]];
+    
+    user = [user fetchFromCache];
+    
+    if (!user) {
+      [user fetchWithSuccessBlock:^(DUser * _Nullable fetchedUser) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+          MessagesTableViewController *messagesTableVC = [self.window.rootViewController.storyboard instantiateViewControllerWithIdentifier:@"MessagesTable"];
+          messagesTableVC.selectedUsers = @[fetchedUser];
+          
+          [self.window.rootViewController.navigationController presentViewController:messagesTableVC animated:YES completion:nil];
+          
+          completionHandler();
+          
+        });
+        
+      } failureBlock:nil];
+      
+      MessagesTableViewController *messagesTableVC = [self.window.rootViewController.storyboard instantiateViewControllerWithIdentifier:@"MessagesTable"];
+      messagesTableVC.selectedUsers = @[user];
+      
+      [self.window.rootViewController.navigationController presentViewController:messagesTableVC animated:YES completion:nil];
+      
+      completionHandler();
+    }
+  }
 }
 
 @end

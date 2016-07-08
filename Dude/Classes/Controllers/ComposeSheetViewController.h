@@ -16,5 +16,6 @@
 
 @property (strong, nonatomic) DMessage * _Nonnull selectedMessage;
 @property (strong, nonatomic) NSSet * _Nonnull selectedUsers;
+@property (nonatomic) BOOL shareOnDudeDefault;
 
 @end

@@ -47,7 +47,7 @@
   appDelegate.visibleViewController = self;
   
   // Generate Messages
-  [self performSelectorInBackground:@selector(reloadData) withObject:nil];
+  [self performSelectorInBackground:@selector(reloadData:) withObject:nil];
   
   // Begin refreshing
   [self.tableView setContentOffset:CGPointMake(0, -self.refreshControl.frame.size.height)];
@@ -60,7 +60,9 @@
 }
 
 #pragma mark - Table view data source
-- (IBAction)reloadData {
+- (IBAction)reloadData:(id)sender {
+  if ([sender isKindOfClass:[NSTimer class]]) sender = nil;
+  
   __weak MessagesManager *messagesManager = [MessagesManager sharedInstance];
 
   if (self.messages.count == 0) {
@@ -71,7 +73,7 @@
         
         [self.tableView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];
       }
-    }];
+    } latest:(sender) ? YES : NO];
   }
   
   [messagesManager setLocationForMessageGenerationWithCompletion:^(NSError *error) {
@@ -85,7 +87,7 @@
       });
       
     } else if (error.code == 500 && [error.domain isEqualToString:@"LocationAuthorization"]) {
-      [self reloadData];
+      [self reloadData:sender];
       
     } else {
       [DUser showSocialServicesAlert];
@@ -93,7 +95,7 @@
         [self.refreshControl endRefreshing];
       });
     }
-  }];
+  } latest:(sender) ? YES : NO];
 }
 
 - (NSString*)tableView:(UITableView*)tableView titleForHeaderInSection:(NSInteger)section {
@@ -217,6 +219,7 @@
     ComposeSheetViewController *composeSheetViewController = (ComposeSheetViewController*)[segue destinationViewController];
     composeSheetViewController.selectedMessage = message;
     composeSheetViewController.selectedUsers = [NSSet setWithArray:self.selectedUsers];
+    composeSheetViewController.shareOnDudeDefault = self.shareOnDudeDefault;
   }
 }
 

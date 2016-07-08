@@ -54,8 +54,8 @@
 - (BOOL)currentUserBlockedContact:(DUser*)user {
   DUser *currentUser = [DUser currentUser];
 
-  for (NSString *blockedEmail in currentUser.blockedEmails) {
-    if ([blockedEmail.lowercaseString isEqualToString:user.email.lowercaseString]) return YES;
+  for (CKRecordID *blockedRecordID in currentUser.blockedContacts) {
+    if ([blockedRecordID isEqual:user.recordID]) return YES;
   }
   
   return NO;
@@ -64,8 +64,8 @@
 - (BOOL)contactBlockedCurrentUser:(DUser*)user {
   DUser *currentUser = [DUser currentUser];
 
-  for (NSString *blockedEmail in user.blockedEmails) {
-    if ([blockedEmail.lowercaseString isEqualToString:currentUser.email.lowercaseString]) return YES;
+  for (CKRecordID *blockedRecordID in user.blockedContacts) {
+    if ([blockedRecordID isEqual:currentUser.recordID]) return YES;
   }
   
   return NO;
@@ -75,97 +75,145 @@
   DUser *currentUser = [DUser currentUser];
 
   // Verify that this user is not blocked already
-  if ([currentUser.blockedEmails containsObject:user.email]) return;
+  if ([currentUser.blockedContacts containsObject:user.recordID]) return;
   
   // Get current users
-  NSMutableSet *savedContacts = [currentUser.blockedEmails mutableCopy];
+  NSMutableSet *savedContacts = [currentUser.blockedContacts mutableCopy];
   
   // Add username
-  [savedContacts addObject:user.email];
+  [savedContacts addObject:user.recordID];
   
   // Save the blocked users
-  [currentUser setBlockedEmails:savedContacts];
-  [currentUser saveEventually];
+  [currentUser setBlockedContacts:savedContacts];
+  [currentUser saveWithCompletion:nil];
 }
 
 - (void)unblockContact:(DUser*)user {
   DUser *currentUser = [DUser currentUser];
 
   // Verify that this user is blocked
-  if (![currentUser.blockedEmails containsObject:user.email]) return;
+  if (![currentUser.blockedContacts containsObject:user.recordID]) return;
   
-  // Get current users
-  NSMutableSet *savedContacts = [currentUser.blockedEmails mutableCopy];
+  // Get current users  s
+  NSMutableSet *savedContacts = [currentUser.blockedContacts mutableCopy];
   
   // Remove username
-  [savedContacts removeObject:user.email];
+  [savedContacts removeObject:user.recordID];
   
   // Save the blocked users
-  [currentUser setBlockedEmails:savedContacts];
-  [currentUser saveEventually];
+  [currentUser setBlockedContacts:savedContacts];
+  [currentUser saveWithCompletion:nil];
 }
 
 #pragma mark - Fetching
-- (NSSet*)getContactsRefreshedNecessary:(BOOL)needsLatestData favourites:(BOOL)favs {
-  if (needsLatestData) [[DUser currentUser] fetchIfNeeded];
+- (void)fetchContactsFromCache:(BOOL)fromCache favorites:(BOOL)favorites successBlock:(void(^_Nullable)(NSArray <CKRecord *> * _Nullable fetchedUsers))successBlock failureBlock:(void(^_Nullable)(NSError * _Nullable error))failureBlock {
+  DUser *currentUser = [DUser currentUser];
   
+  if (fromCache) {
+    NSArray *users = [[self contactsFromCacheFavorites:favorites] allObjects];
+    
+    if (users.count > 0) {
+      successBlock(users);
+    
+    } else {
+      failureBlock([NSError errorWithDomain:@"Empty Cache" code:1 userInfo:nil]);
+    }
+    
+  } else {
+    CKQuery *query = [[CKQuery alloc] initWithRecordType:@"Users" predicate:[NSPredicate predicateWithFormat:@"creatorUserRecordID = %@" argumentArray:[currentUser.contacts allObjects]]];
+    [[[CKContainer defaultContainer] publicCloudDatabase] performQuery:query inZoneWithID:nil completionHandler:^(NSArray *results, NSError *error) {
+      dispatch_async(dispatch_get_main_queue(), ^{
+        if (error) {
+          failureBlock(error);
+          
+        } else if ([results count] > 0) {
+          successBlock(results);
+        }
+      });
+      
+      if ([results count] > 0) {
+        NSMutableSet *watchUsers = [NSMutableSet new];
+        NSMutableArray *filteredResults = (favorites) ? [NSMutableArray new] : [results copy];
+        
+        for (CKRecord *userRecord in results) {
+          
+          // Update the cache
+          [[NSUserDefaults standardUserDefaults] setObject:userRecord forKey:[NSString stringWithFormat:@"%@", userRecord.recordID]];
+          [[NSUserDefaults standardUserDefaults] synchronize];
+          
+          // Check if favorite
+          if ([currentUser.favouriteContacts containsObject:userRecord.recordID]) {
+            if (favorites) {// If we should be filtering for favorites
+              [filteredResults addObject:userRecord];
+            }
+            
+            // Add to watch users
+            if ([WatchConnectivityManager sharedManager]) {
+              DUser *user = [DUser userWithRecord:userRecord];
+              
+              DUserWatch *watchUser = [DUserWatch new];
+              watchUser.profileImage = [UIImage  imageWithData:user.profileImage];
+              watchUser.fullName = [NSString stringWithFormat:@"%@ %@", user.firstName, user.lastName];
+              watchUser.recordIDData = [NSKeyedArchiver archivedDataWithRootObject:user.recordID];
+              
+              [watchUsers addObject:watchUser];
+            }
+          }
+        }
+        
+        if (filteredResults.count > 0) {
+          successBlock(filteredResults);
+          
+          [[WatchConnectivityManager sharedManager] activateSession];
+          
+          NSError *error;
+          [[WatchConnectivityManager sharedManager].session updateApplicationContext:@{WatchContactsKey: [watchUsers allObjects]} error:&error];
+          
+        } else {
+          failureBlock([NSError errorWithDomain:@"No Contacts found after filtering" code:1 userInfo:nil]);
+        }
+        
+        if (error) {
+          NSLog(@"Application context failed with error: %@", error);
+        }
+      }
+    }];
+  }
+}
+
+- (NSSet <CKRecord *> * _Nullable)contactsFromCacheFavorites:(BOOL)favorites {
   DUser *currentUser = [DUser currentUser];
 
-  NSSet *emails = (favs) ? currentUser.favouriteContactsEmails : currentUser.contactsEmails;
-  if (!emails) return [NSSet new];
+  NSMutableArray *users = [NSMutableArray new];
+  for (CKRecordID *userID in (favorites) ? currentUser.favouriteContacts : currentUser.contacts) {
+    // Get the user from the cache the cache
+    [users addObject:[[NSUserDefaults standardUserDefaults] objectForKey:[NSString stringWithFormat:@"%@", userID]]];
+  }
   
-  // Get the PFUsers
-  PFQuery *userQuery = [DUser query];
-  
-  [userQuery whereKey:@"email" containedIn:[emails allObjects]];
+  return [NSSet setWithArray:users];
 
-  if (!needsLatestData) {
-    [userQuery fromLocalDatastore];
-  }
-  
-  NSSet *users = [NSSet setWithArray:[userQuery findObjects]];
-  
-  if (needsLatestData) {
-    [DUser pinAllInBackground:[users allObjects]];
-  }
-  
-  if (needsLatestData && favs && [WatchConnectivityManager sharedManager]) {
-    NSMutableSet *watchUsers = [NSMutableSet new];
-    
-    for (DUser *user in users) {
-      [watchUsers addObject:[NSKeyedArchiver archivedDataWithRootObject:[user watchUser]]];
-    }
-    
-    NSError *error;
-    [[WatchConnectivityManager sharedManager].session updateApplicationContext:@{WatchContactsKey: [watchUsers allObjects]} error:&error];
-    
-    if (error) {
-      NSLog(@"Application context failed with error: %@", error);
-    }
-  }
-
-  return (users) ?: [NSSet new];
 }
 
 - (DMessage*)latestMessageForContact:(DUser*)user {
   DUser *currentUser = [DUser currentUser];
-  
-  // Not necessary to update the user more then once every ten second
-  if (-[currentUser.updatedAt timeIntervalSinceNow] > 60.0) {
-    currentUser = [currentUser fetch:nil];
-  }
 
-  
-  __block DMessage *message = nil;// So we can return the message
+  __block DMessage *message = [[NSUserDefaults standardUserDefaults] objectForKey:[NSString stringWithFormat:@"lastSeen%@%@", currentUser.recordID, user.recordID]];
+  if (message) {
+    return message;
+  }
   
   // Cycle through the lastSeens
   [currentUser.lastSeens enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-    if ([obj isKindOfClass:[NSArray class]]) {// Avoid crashes. A lastSeen is: @[email, NSData<DMessage>]
-      NSArray *lastSeenArray = (NSArray *)obj;
+    if ([obj isKindOfClass:[CKReference class]]) {// Avoid crashes. A lastSeen is: @[email, NSData<DMessage>]
+      CKReference *reference = (CKReference*)obj;
       
-      if ([lastSeenArray[0] isEqualToString:user.email]) {// If the email is equal to the email of the user we're looking for
+      if ([reference.recordID.recordName isEqualToString:[NSString stringWithFormat:@"%@%@", currentUser.recordID, user.recordID]]) {// If the reference's record ID is equal to a prebuilt ID format
         stop = (BOOL *)YES;// Stop the loop - Wtf apple
-        message = (DMessage*)[NSKeyedUnarchiver unarchiveObjectWithData:lastSeenArray[1]];// Unarchive the NSData into DMessage
+        
+        [[[CKContainer defaultContainer] publicCloudDatabase] fetchRecordWithID:reference.recordID completionHandler:^(CKRecord * _Nullable record, NSError * _Nullable error) {
+          message = (DMessage*)[NSKeyedUnarchiver unarchiveObjectWithData:record[@"Message"]];// Unarchive the NSData into DMessage
+          [[NSUserDefaults standardUserDefaults] setObject:message forKey:[NSString stringWithFormat:@"lastSeen%@%@", currentUser.recordID, user.recordID]];
+        }];
       }
     }
   }];
@@ -177,19 +225,19 @@
 - (void)addContactToContacts:(DUser*)user sendNotification:(BOOL)sendNotification {
   DUser *currentUser = [DUser currentUser];
 
-  NSMutableSet *savedContacts = [currentUser.contactsEmails mutableCopy];
-  if ([user.email.lowercaseString isEqualToString:currentUser.email.lowercaseString]  || [savedContacts containsObject:user.email.lowercaseString]) return;
+  NSMutableSet *savedContacts = [currentUser.contacts mutableCopy];
+  if ([user.recordID isEqual:currentUser.recordID]  || [savedContacts containsObject:user.recordID]) return;
   
   if (user) {
     // Save the user to the list of contacts
-    [savedContacts addObject:user.email];
+    [savedContacts addObject:user.recordID];
     
-    [currentUser setContactsEmails:savedContacts];
+    currentUser.contacts = savedContacts;
     
     // Notify the user that we added him
     if (sendNotification) [self sendAddedNotificationToContact:user];
     
-    [currentUser saveEventually];
+    [currentUser saveWithCompletion:nil];
   }
 }
 
@@ -198,86 +246,67 @@
   
   DUser *currentUser = [DUser currentUser];
 
-  NSMutableSet *savedContacts = [currentUser.favouriteContactsEmails mutableCopy];
-  if ([user.email.lowercaseString isEqualToString:currentUser.email.lowercaseString]  || [savedContacts containsObject:user.email.lowercaseString]) return;
+  NSMutableSet *savedContacts = [currentUser.favouriteContacts mutableCopy];
+  if ([user.recordID isEqual:currentUser.recordID]  || [savedContacts containsObject:user.recordID]) return;
   
   // Save the user to the list of contacts
-  [savedContacts addObject:user.email.lowercaseString];
+  [savedContacts addObject:user.recordID];
   
-  [currentUser setFavouriteContactsEmails:savedContacts];
+  currentUser.favouriteContacts = savedContacts;
   
-  [currentUser saveEventually];
-  
-  [self getContactsRefreshedNecessary:YES favourites:YES];
+  [currentUser saveWithCompletion:^(CKRecord * _Nullable record, NSError * _Nullable error) {
+    [self fetchContactsFromCache:NO favorites:YES successBlock:nil failureBlock:nil];
+  }];
 }
 
 - (void)addDeviceContactsAndSendNotification:(BOOL)sendNotification {
-  DUser *currentUser = [DUser currentUser];
-
   Reachability *reachability = [Reachability reachabilityForInternetConnection];
   if ([reachability currentReachabilityStatus] != ReachableViaWiFi) return;
-  
-  CNContactStore *contactStore = [CNContactStore new];
-  
-  [contactStore requestAccessForEntityType:CNEntityTypeContacts completionHandler:^(BOOL granted, NSError * _Nullable error){}];
-
-  [contactStore enumerateContactsWithFetchRequest:[[CNContactFetchRequest alloc] initWithKeysToFetch:@[CNContactEmailAddressesKey]] error:nil usingBlock:^(CNContact * _Nonnull contact, BOOL * _Nonnull stop) {
-    NSMutableSet *contactEmails = [NSMutableSet new];
     
-    for (CNLabeledValue *emailLabeledValue in contact.emailAddresses) {
-      NSString *email = emailLabeledValue.value;
-      if (![email.lowercaseString isEqualToString:currentUser.email.lowercaseString]) {
-        [contactEmails addObject:email];
-      }
-    }
+  [[CKContainer defaultContainer] discoverAllContactUserInfosWithCompletionHandler:^(NSArray<CKDiscoveredUserInfo *> * _Nullable userInfos, NSError * _Nullable error) {
+    DUser *currentUser = [DUser currentUser];
+    NSMutableSet *currentUserContacts = [currentUser.contacts mutableCopy];
     
-    PFQuery *userQuery = [DUser query];
-    [userQuery whereKey:@"email" containedIn:[contactEmails allObjects]];
-    [userQuery whereKey:@"email" notContainedIn:[currentUser.contactsEmails allObjects]];
-
-    [userQuery findObjectsInBackgroundWithBlock:^(NSArray * _Nullable objects, NSError * _Nullable error) {
-      NSMutableSet *currentUserContacts = [currentUser.contactsEmails mutableCopy];
-      
-      for (DUser *user in objects) {
-        [currentUserContacts addObject:user.email];
-      }
-      
-      if (objects.count > 0) {
-        [currentUser setContactsEmails:currentUserContacts];
+    if (userInfos.count > 0) {
+      for (CKDiscoveredUserInfo *userInfo in userInfos) {
+        [currentUserContacts addObject:userInfo.userRecordID];
         
-        [currentUser saveInBackgroundWithBlock:^(BOOL success, NSError *error) {
-          AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
-          UIViewController *viewController = appDelegate.visibleViewController;
+        [[[CKContainer defaultContainer] publicCloudDatabase] fetchRecordWithID:userInfo.userRecordID completionHandler:^(CKRecord * _Nullable record, NSError * _Nullable error) {
+          [self sendAddedNotificationToContact:[DUser userWithRecord:record]];
           
-          if ([viewController isKindOfClass:[UsersTableViewController class]] && success) {
-            UsersTableViewController *userTableVC = (UsersTableViewController*)viewController;
-            [userTableVC reloadData:nil];
-          }
-          
-          for (DUser *user in objects) {
-            [self sendAddedNotificationToContact:user];
-          }
         }];
       }
       
-    }];
+      [currentUser setContacts:currentUserContacts];
+      [currentUser saveWithCompletion:^(CKRecord * _Nullable record, NSError * _Nullable error) {
+        AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
+        UIViewController *viewController = appDelegate.visibleViewController;
+        
+        if ([viewController isKindOfClass:[UsersTableViewController class]] && !error) {
+          UsersTableViewController *userTableVC = (UsersTableViewController*)viewController;
+          [userTableVC reloadData:nil];
+        }
+      }];
+    }
   }];
 }
 
 #pragma mark - Removing
-- (NSSet*)removeContact:(NSString*)email reloadContacts:(BOOL)reload {
+- (void)removeContact:(NSString*)email reloadContacts:(BOOL)reload {
   DUser *currentUser = [DUser currentUser];
 
   // Remove the username from the list
-  NSMutableSet *savedContacts = [currentUser.contactsEmails mutableCopy];
+  NSMutableSet *savedContacts = [currentUser.contacts mutableCopy];
   
   [savedContacts removeObject:email.lowercaseString];
   
-  [currentUser setContactsEmails:savedContacts];
-  [currentUser saveEventually];
-  
-  // Reload contacts if necessary
-  return (reload) ? [self getContactsRefreshedNecessary:YES favourites:NO] : nil;
+  currentUser.contacts = savedContacts;
+  [currentUser saveWithCompletion:^(CKRecord * _Nullable record, NSError * _Nullable error) {
+    // Reload contacts if necessary
+    if (reload) {
+      [self fetchContactsFromCache:NO favorites:NO successBlock:nil failureBlock:nil];
+    }
+  }];
 }
 
 - (void)removeContactFromFavourites:(DUser*)user {
@@ -286,14 +315,14 @@
   DUser *currentUser = [DUser currentUser];
 
   // Remove the username from the list
-  NSMutableSet *savedContacts = [currentUser.favouriteContactsEmails mutableCopy];
-  [savedContacts removeObject:user.email];
+  NSMutableSet *savedContacts = [currentUser.favouriteContacts mutableCopy];
+  [savedContacts removeObject:user.recordID];
   
-  [currentUser setFavouriteContactsEmails:savedContacts];
+  currentUser.favouriteContacts = savedContacts;
   
-  [currentUser saveEventually];
-  
-  [self getContactsRefreshedNecessary:YES favourites:YES];
+  [currentUser saveWithCompletion:^(CKRecord * _Nullable record, NSError * _Nullable error) {
+    [self fetchContactsFromCache:NO favorites:YES successBlock:nil failureBlock:nil];
+  }];
 }
 
 #pragma mark Added Notification
@@ -303,51 +332,60 @@
   DUser *currentUser = [DUser currentUser];
 
   // Make sure we are allowed send the notification
-  BOOL isBlocked = [user.blockedEmails containsObject:currentUser.email];
-  BOOL didBlocked = [currentUser.blockedEmails containsObject:user.email];
-  BOOL isAddedByUser = [user.contactsEmails containsObject:currentUser.email.lowercaseString];
+  BOOL isBlocked = [user.blockedContacts containsObject:currentUser.recordID];
+  BOOL didBlocked = [currentUser.blockedContacts containsObject:user.recordID];
+  BOOL isAddedByUser = [user.contacts containsObject:currentUser.recordID];
   
   if (isAddedByUser || isBlocked || didBlocked) return;
-  
-  // Build the actual push notification target query
-  PFQuery *pushQuery = [PFInstallation query];
-  [pushQuery whereKey:@"user" equalTo:user];
-  
+
+#warning make sure the records get deleted eventually
+  // Build the notification record
+  CKRecord *notificationRecord = [[CKRecord alloc] initWithRecordType:@"Notification"];
+  notificationRecord[@"Message"] = [NSString stringWithFormat:@"Duderino, %@ just added you. Why not add them back?", currentUser.firstName];
+  notificationRecord[@"Receiver"] = [NSString stringWithFormat:@"%@", user.recordID];
+  notificationRecord[@"Developer"] = @NO;
+
   // Send the notification.
-  [PFPush sendPushMessageToQueryInBackground:pushQuery withMessage:[NSString stringWithFormat:@"Duderino, %@ just added you. Why not add them back?", currentUser.username]];
+  [[[CKContainer defaultContainer] publicCloudDatabase] saveRecord:notificationRecord completionHandler:^(CKRecord * _Nullable record, NSError * _Nullable error) {
+    if (error) {
+      NSLog(@"Error sending added notification");
+    }
+  }];
 }
 
 #pragma mark - Requesting Status Notification
-- (BOOL)requestStatusForContact:(DUser*)user inBackground:(BOOL)background {
+- (BOOL)requestStatusForContact:(DUser*)user {
   DUser *currentUser = [DUser currentUser];
 
-  NSString *key = [NSString stringWithFormat:@"lastStatusRequest%@", currentUser.email];
+  NSString *key = [NSString stringWithFormat:@"lastStatusRequest%@", user.recordID];
   
   NSDate *lastRequestDate = [[NSUserDefaults standardUserDefaults] objectForKey:key];
   
-  if (!user.email || (-[lastRequestDate timeIntervalSinceNow] <= 600 && lastRequestDate)) return NO;
+  if (!user.recordID || (-[lastRequestDate timeIntervalSinceNow] <= 600 && lastRequestDate)) return NO;
   
   // Set time for status request
   [[NSUserDefaults standardUserDefaults] setObject:[NSDate date] forKey:key];
   
   // Make sure we are allowed request the status
-  BOOL isBlocked = [user.blockedEmails containsObject:currentUser.email];
-  BOOL didBlocked = [currentUser.blockedEmails containsObject:user.email];
+  BOOL isBlocked = [user.blockedContacts containsObject:currentUser.recordID];
+  BOOL didBlocked = [currentUser.blockedContacts containsObject:user.recordID];
   
   if (isBlocked || didBlocked) return NO;
   
-  // Build the actual push notification target query
-  PFQuery *pushQuery = [PFInstallation query];
-  [pushQuery whereKey:@"user" equalTo:user];
-  
-  // Send the notification.  
-  if (background) {
-    [PFPush sendPushMessageToQueryInBackground:pushQuery withMessage:[NSString stringWithFormat:@"Duderino, %@ would like to know what you're up to.", currentUser.username]];
-    return YES;
+  // Build the notification record
+  CKRecord *notificationRecord = [[CKRecord alloc] initWithRecordType:@"Notification"];
+  notificationRecord[@"Message"] = [NSString stringWithFormat:@"Duderino, %@ would like to know what you're up to.", currentUser.firstName];
+  notificationRecord[@"Receiver"] = [NSString stringWithFormat:@"%@", user.recordID];
+  notificationRecord[@"Developer"] = @NO;
 
-  } else {
-    return [PFPush sendPushMessageToQuery:pushQuery withMessage:[NSString stringWithFormat:@"Duderino, %@ would like to know what you're up to.", currentUser.username] error:nil];
-  }
+  // Send the notification.
+  [[[CKContainer defaultContainer] publicCloudDatabase] saveRecord:notificationRecord completionHandler:^(CKRecord * _Nullable record, NSError * _Nullable error) {
+    if (error) {
+      NSLog(@"Error sending added notification");
+    }
+  }];
+  
+  return YES;
 }
 
 @end

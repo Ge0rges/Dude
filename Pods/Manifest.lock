@@ -1,24 +1,18 @@
 PODS:
-  - Bolts/Tasks (1.6.0)
   - JCNotificationBannerPresenter (1.1.2)
-  - Parse (1.12.0):
-    - Bolts/Tasks (~> 1.5)
-  - SDWebImage (3.7.5):
-    - SDWebImage/Core (= 3.7.5)
-  - SDWebImage/Core (3.7.5)
-  - SOMotionDetector (1.0.1)
+  - SDWebImage (3.8.1):
+    - SDWebImage/Core (= 3.8.1)
+  - SDWebImage/Core (3.8.1)
+  - SOMotionDetector (1.0.2)
 
 DEPENDENCIES:
   - JCNotificationBannerPresenter
-  - Parse
   - SDWebImage
   - SOMotionDetector
 
 SPEC CHECKSUMS:
-  Bolts: f52a250053bb517ca874523c3913776359ab3def
   JCNotificationBannerPresenter: f40150961943048ed3b1d2628d29dbf66a959e21
-  Parse: de2c52a9a1421b91ae7594ab8ce191afd184f19b
-  SDWebImage: 69c6303e3348fba97e03f65d65d4fbc26740f461
-  SOMotionDetector: 9e7975e25ccdaa3f108db510153f92ef433767da
+  SDWebImage: 35f9627a3e44b4f292a8a8ce6a531fa488239b91
+  SOMotionDetector: 50131192a9b9ea76747d0230a7b6f82e5124d8d4
 
 COCOAPODS: 0.39.0

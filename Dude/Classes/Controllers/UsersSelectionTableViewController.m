@@ -39,7 +39,7 @@
   self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(done)];
 
   // Get contacts, sort, filter and save them
-  NSArray *contacts = [[[ContactsManager sharedInstance] getContactsRefreshedNecessary:NO favourites:NO] allObjects];
+  NSArray *contacts = [[[ContactsManager sharedInstance] contactsFromCacheFavorites:NO] allObjects];
   selectedContacts = [NSMutableArray arrayWithArray:[self.composeSheetViewController.selectedUsers allObjects]];
   
   NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"fullName" ascending:YES selector:@selector(caseInsensitiveCompare:)];
@@ -48,7 +48,7 @@
   splittedContacts = [NSMutableDictionary new];
   indexTitles = [NSMutableSet new];
   for (DUser *user in contacts) {
-    NSString *firstLetter = [user.fullName substringToIndex:1];
+    NSString *firstLetter = [user.firstName substringToIndex:1];
     
     if ([indexTitles containsObject:firstLetter]) {
       NSMutableArray *existingArray = [NSMutableArray arrayWithArray:(NSArray*)(splittedContacts[firstLetter])];
@@ -57,7 +57,7 @@
       [splittedContacts setObject:(NSArray*)existingArray forKey:firstLetter];
     
     } else {
-      [indexTitles addObject:[user.fullName substringToIndex:1]];
+      [indexTitles addObject:[user.firstName substringToIndex:1]];
       
       NSMutableArray *existingArray = [NSMutableArray arrayWithArray:(NSArray*)(splittedContacts[firstLetter])];
       [existingArray addObject:user];
@@ -69,7 +69,6 @@
   // TableView UI
   self.tableView.sectionIndexBackgroundColor = [UIColor clearColor];
   self.tableView.sectionIndexTrackingBackgroundColor = [UIColor whiteColor];
-
 }
 
 - (void)didReceiveMemoryWarning {
@@ -104,12 +103,9 @@
   
   // Configure the cell
   DUser *user = ((NSArray*)splittedContacts[(NSString*)[indexTitles allObjects][indexPath.section]])[indexPath.row];
-  cell.textLabel.text = user.fullName;
+  cell.textLabel.text = [NSString stringWithFormat:@"%@ %@", user.firstName, user.lastName];
   
-  [cell.imageView sd_setImageWithURL:[NSURL URLWithString:user.profileImage.url] placeholderImage:[UIImage imageNamed:@"Default Profile Image"] completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
-    [cell.imageView setImage:[image resizedImage:CGSizeMake(50, 50) interpolationQuality:kCGInterpolationHigh]];
-    [cell layoutSubviews];
-  }];
+  [cell.imageView setImage:[UIImage imageWithData:user.profileImage]];
   
   // Add checkmarck if user is already selected
   cell.accessoryType = ([selectedContacts containsObject:user]) ? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;

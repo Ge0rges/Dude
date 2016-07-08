@@ -8,97 +8,189 @@
 
 #import "DUser.h"
 
-// Pods
-#import <Parse/PFObject+Subclass.h>
+@interface DUser ()
 
-extern NSString* const ProfileImageKey; // Defined in DUserWatch which is imported
-extern NSString* const FullNameKey; // Defined in DUserWatch which is imported
-NSString* const BlockedEmailsKey = @"blockedEmails";
-NSString* const ContactsEmailsKey = @"contactsEmails";
-NSString* const FavouriteContactsKey = @"favouriteContactsEmails";
-NSString* const LastSeensKey = @"lastSeens";
+@property (strong, nonatomic) DUser *currentUser;
+
+@property (strong, nonatomic) NSString * _Nullable firstName;
+@property (strong, nonatomic) NSString * _Nullable lastName;
+
+@end
 
 @implementation DUser
 
-@dynamic profileImage, lastSeens, blockedEmails,  contactsEmails, favouriteContactsEmails, fullName;
+@dynamic firstName, lastName;
+@synthesize lastSeens, profileImage, blockedContacts, contacts, favouriteContacts;
 
 #pragma mark - Initializations
-
-+ (instancetype)currentUser {
-  DUser *currentUser = (DUser*)[super currentUser];
++ (instancetype _Nullable)userWithRecord:(CKRecord*)record {
+  DUser *user = [DUser new];
   
-  currentUser.profileImage = (PFFile*)currentUser[ProfileImageKey];
+  // Get the profile image
+  CKReference *profileImageReference = record[ProfileImageKey];
   
-  currentUser.blockedEmails = [NSSet setWithArray:currentUser[BlockedEmailsKey]];
-  currentUser.contactsEmails = [NSSet setWithArray:currentUser[ContactsEmailsKey]];
-  currentUser.favouriteContactsEmails = [NSSet setWithArray:currentUser[FavouriteContactsKey]];
-  
-  currentUser.fullName = currentUser[FullNameKey];
-  
-  currentUser.lastSeens = currentUser[LastSeensKey];
-  
-  return currentUser;
-}
-
-+ (instancetype)object {
-  DUser *user = (DUser*)[super object];
-  
-  user.profileImage = (PFFile*)user[ProfileImageKey];
+  CKFetchRecordsOperation *profileImageFetchOperation = [[CKFetchRecordsOperation alloc] initWithRecordIDs:@[profileImageReference.recordID]];
+  profileImageFetchOperation.fetchRecordsCompletionBlock = ^(NSDictionary <CKRecordID * , CKRecord *> * __nullable recordsByRecordID, NSError * __nullable operationError) {
+    if (operationError) {
+      NSLog(@"error fetching profile image of user");
     
-  user.blockedEmails = [NSSet setWithArray:user[BlockedEmailsKey]];
-  user.contactsEmails = [NSSet setWithArray:user[ContactsEmailsKey]];
-  user.favouriteContactsEmails = [NSSet setWithArray:user[FavouriteContactsKey]];
+    } else if (recordsByRecordID) {
+      for (CKRecord *record in [recordsByRecordID allKeys]) {
+        user.profileImage = record[ProfileImageKey];
+      }
+    }
+  };
   
-  user.fullName = user[FullNameKey];
+  [[[CKContainer defaultContainer] publicCloudDatabase] addOperation:profileImageFetchOperation];
   
-  user.lastSeens = user[LastSeensKey];
+  user.recordID = record.recordID;
+  user.userRecord = record;
+  user.blockedContacts = record[BlockedContactsKey];
+  user.favouriteContacts = record[FavouriteContactsKey];
+  user.contacts = record[ContactsKey];
   
+  for (CKReference *lastSeenReference in (NSArray *)record[LastSeensKey]) {
+    CKFetchRecordsOperation *lastSeenFetchOperation = [[CKFetchRecordsOperation alloc] initWithRecordIDs:@[lastSeenReference.recordID]];
+    lastSeenFetchOperation.fetchRecordsCompletionBlock = ^(NSDictionary <CKRecordID * , CKRecord *> * __nullable recordsByRecordID, NSError * __nullable operationError) {
+      if (operationError) {
+        NSLog(@"error fetching a lastSeen of the user");
+        
+      } else if (recordsByRecordID) {
+        for (CKRecord *record in [recordsByRecordID allKeys]) {
+          NSMutableArray *lastSeens = [NSMutableArray arrayWithArray:user.lastSeens];
+          [lastSeens addObject:record];
+          
+          user.lastSeens = lastSeens;
+        }
+      }
+    };
+    
+    [[[CKContainer defaultContainer] publicCloudDatabase] addOperation:lastSeenFetchOperation];
+  }
+  
+  user.lastSeens = record[LastSeensKey];
+  
+  [user fetchName];
+
   return user;
 }
 
-#pragma mark - WatchOS
-- (DUserWatch* _Nonnull)watchUser {
-  DUserWatch *watchUser = [DUserWatch new];
-  watchUser.profileImage = [UIImage imageWithData:[self.profileImage getData]];
-  watchUser.fullName = [self.fullName copy];
-  watchUser.email = [self.email copy];
++ (instancetype _Nullable)currentUser {
+  // perform cache checks, update them if necessarya nd return nil.
+  CKRecordID *currentUserRecordID = [[NSUserDefaults standardUserDefaults] objectForKey:@"currentUserRecordID"];
+  CKRecord *currentUserRecord = [[NSUserDefaults standardUserDefaults] objectForKey:[NSString stringWithFormat:@"%@", currentUserRecordID]];
   
-  return watchUser;
-}
+  if (!currentUserRecordID) {
+    // Update the cache
+    [[CKContainer defaultContainer] fetchUserRecordIDWithCompletionHandler:^(CKRecordID * _Nullable recordID, NSError * _Nullable error) {
+      [[NSUserDefaults standardUserDefaults] setObject:recordID forKey:@"currentUserRecordID"];
+      [[NSUserDefaults standardUserDefaults] synchronize];
 
-#pragma mark - Support NSSet
-- (void)setObject:(nonnull id)object forKey:(nonnull NSString*)key {
-#warning make lastSeens readonly instead
-  if ([key isEqualToString:@"lastSeens"]) {
-    return;
+      DUser *user = [[DUser alloc] init];
+      
+      user.recordID = recordID;
+      
+      [user fetchWithSuccessBlock:^(DUser * _Nullable currentUser) {
+        [[NSUserDefaults standardUserDefaults] setObject:currentUser forKey:[NSString stringWithFormat:@"%@", user.recordID]];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+
+      } failureBlock:nil];
+      
+    }];
+    
+    return nil;
+    
+  } else if (!currentUserRecord) {
+    // Update the cache
+    DUser *user = [[DUser alloc] init];
+    
+    user.recordID = currentUserRecordID;
+    
+    [user fetchWithSuccessBlock:^(DUser * _Nullable currentUser) {
+      [[NSUserDefaults standardUserDefaults] setObject:currentUser forKey:[NSString stringWithFormat:@"%@", currentUser.recordID]];
+      [[NSUserDefaults standardUserDefaults] synchronize];
+
+    } failureBlock:nil];
+    
+    return user;
   }
   
-#warning much bad such ignorance of standards
-  if ([object isKindOfClass:[NSSet class]]) {
-    NSMutableSet *objectSet = [(NSSet*)object mutableCopy];
-    
-    // Make sure we don't have our own email in any of the contact arrays
-    if (self.email) {// Check that email isn't nil, it will cause a crash otherwise
-      [objectSet removeObject:self.email];
+  return [DUser userWithRecord:currentUserRecord];
+}
+
+
+#pragma mark - Fetching
+- (void)fetchWithSuccessBlock:(void(^_Nullable)(DUser * _Nullable fetchedUser))successBlock failureBlock:(void(^_Nullable)(NSError * _Nullable error))failureBlock {
+  [[[CKContainer defaultContainer] publicCloudDatabase] fetchRecordWithID:self.recordID completionHandler:^(CKRecord * _Nullable record, NSError * _Nullable error) {
+
+    if (error) {
+      dispatch_async(dispatch_get_main_queue(), ^{
+        failureBlock(error);
+      });
+      
+    } else if (record) {
+      // Update the cache
+      [[NSUserDefaults standardUserDefaults] setObject:record forKey:[NSString stringWithFormat:@"%@", self.recordID]];
+      [[NSUserDefaults standardUserDefaults] synchronize];
+
+      dispatch_async(dispatch_get_main_queue(), ^{
+        successBlock([DUser userWithRecord:record]);
+      });
     }
-    
-    [super setObject:[objectSet allObjects] forKey:key];
-  
-  } else {
-    [super setObject:object forKey:key];
-  }
+  }];
 }
 
-- (id)objectForKey:(nonnull NSString*)key {
-  id object = [super objectForKey:key];
+- (instancetype _Nullable)fetchFromCache {
+  if (!self.recordID) {
+    return nil;
+  }
   
-  return object;
+  return [[NSUserDefaults standardUserDefaults] objectForKey:[NSString stringWithFormat:@"%@", self.recordID]];
+}
+
+- (void)fetchName {
+  [[CKContainer defaultContainer] discoverUserInfoWithUserRecordID:self.recordID completionHandler:^(CKDiscoveredUserInfo * _Nullable userInfo, NSError * _Nullable error) {
+    self.firstName = userInfo.displayContact.givenName;
+    self.lastName = userInfo.displayContact.familyName;
+  }];
+}
+
+#pragma mark - Saving
+- (void)saveWithCompletion:(void(^_Nullable)(CKRecord * _Nullable record, NSError * _Nullable error))completionBlock {
+  [[[CKContainer defaultContainer] privateCloudDatabase] saveRecord:self.userRecord completionHandler:completionBlock];
+}
+
+#pragma mark - Setters and Getters
+
+- (void)setLastSeens:(NSArray *)lastSeensLcl {
+  self.userRecord[LastSeensKey] = lastSeensLcl;
+  self.lastSeens = lastSeensLcl;
+}
+
+- (void)setProfileImage:(NSData *)profileImageLcl {
+  self.userRecord[ProfileImageKey] = profileImageLcl;
+  self.profileImage = profileImageLcl;
+}
+
+- (void)setBlockedContacts:(NSSet *)blockedContactsLcl {
+  self.userRecord[BlockedContactsKey] = [blockedContactsLcl allObjects];
+  self.blockedContacts = blockedContactsLcl;
+}
+
+- (void)setContacts:(NSSet *)contactsLcl {
+  self.userRecord[ContactsKey] = [contactsLcl allObjects];
+  self.contacts = contactsLcl;
+}
+
+- (void)setFavouriteContacts:(NSSet *)favouriteContactsLcl {
+  self.userRecord[FavouriteContactsKey] = [favouriteContactsLcl allObjects];
+  self.favouriteContacts = favouriteContactsLcl;
 }
 
 #pragma mark - Logout
 + (void)logOut {
   // Create the userunique keys
-  NSString *contactsKey = [NSString stringWithFormat:@"contact%@", [DUser currentUser].username];
+  NSString *contactsKey = [NSString stringWithFormat:@"contact%@", [DUser currentUser].recordID];
   
   // Clear the saved contacts for this username
   [[NSUserDefaults standardUserDefaults] setObject:nil forKey:contactsKey];
@@ -110,18 +202,14 @@ NSString* const LastSeensKey = @"lastSeens";
   [[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"facebookAccountID"];
   [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"askFacebook"];
   
+  [[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"currentUserRecordID"];
+  
   // Sync NSUserDefaults
   [[NSUserDefaults standardUserDefaults] synchronize];
-  
-  // Disassociate this user from this device
-  [[PFInstallation currentInstallation] setObject:@"" forKey:@"user"];
-  [[PFInstallation currentInstallation] save];
-  
-  [super logOut];
 }
 
 #pragma mark - Twitter & Facebook
-- (NSString*)twitterUsername {
+- (NSString* _Nonnull)CurrentUserTwitterUsername {
   // If twitter return user account
   ACAccountStore *accountStore = [ACAccountStore new];
   ACAccount *account = [accountStore accountWithIdentifier:[[NSUserDefaults standardUserDefaults] stringForKey:@"twitterAccountID"]];
@@ -129,7 +217,7 @@ NSString* const LastSeensKey = @"lastSeens";
   return (account) ? [NSString stringWithFormat:@"@%@", account.username] : @"No Account Selected";
 }
 
-- (NSString*)facebookUsername {
+- (NSString* _Nonnull)CurrentUserFacebookUsername {
   // If twitter return user account
   ACAccountStore *accountStore = [ACAccountStore new];
   ACAccount *account = [accountStore accountWithIdentifier:[[NSUserDefaults standardUserDefaults] stringForKey:@"facebookAccountID"]];
@@ -222,7 +310,7 @@ NSString* const LastSeensKey = @"lastSeens";
   }
 }
 
-- (void)showSelectionAlertControllerWithAccount:(NSArray*)accounts andCompletionHandler:(AccountCompletionBlock)completion forTwitter:(BOOL)twitter {
+- (void)showSelectionAlertControllerWithAccount:(NSArray* _Nonnull)accounts andCompletionHandler:(AccountCompletionBlock)completion forTwitter:(BOOL)twitter {
   dispatch_async(dispatch_get_main_queue(), ^{
     NSString *title = (twitter) ? @"Which Twitter account would you like to use?" : @"Which Facebook account would you like to use?" ;
     

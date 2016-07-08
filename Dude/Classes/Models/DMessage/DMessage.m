@@ -8,9 +8,6 @@
 
 #import "DMessage.h"
 
-// Pods
-#import <Parse/Parse.h>
-
 // Models
 #import "DUser.h"
 
@@ -28,6 +25,8 @@ NSString* const TypeKey = @"type";
 NSString* const SendDateKey = @"sendDate";
 NSString* const TimestampKey = @"timestamp";
 NSString* const IncludeLocationKey = @"includeLocation";
+NSString* const SenderRecordIDKey = @"senderRecordID";
+NSString* const SenderFullNameKey = @"senderFullName";
 
 @interface DMessage ()
 
@@ -49,11 +48,14 @@ NSString* const IncludeLocationKey = @"includeLocation";
 @property (strong, nonatomic) NSString *timestamp; // The timestamp to show for this message
 @property (nonatomic) DMessageType type;// What kind of message is this
 
+@property (strong, nonatomic) NSDictionary *senderRecordID;
+@property (strong, nonatomic) NSString *senderFullName;
+
 @end
 
 @implementation DMessage
 
-@synthesize message, notificationMessage, lastSeen, URL, location, city, category, type, notificationTitle, venueName, imageURL, sendDate, timestamp;
+@synthesize message, notificationMessage, lastSeen, URL, location, city, category, type, notificationTitle, venueName, imageURL, sendDate, timestamp, senderFullName, senderRecordID;
 
 #pragma mark - Initilizations
 - (instancetype)initWithCategory:(NSString*)messageCategory location:(CLLocation*)messageLocation venueName:(NSString*)messageVenueName  venueCity:(NSString*)messageLocationCity imageURL:(NSString*)imageURLString {
@@ -64,6 +66,8 @@ NSString* const IncludeLocationKey = @"includeLocation";
     self.city = [messageLocationCity copy];
     self.type = DMessageTypeMessage;
     self.imageURL = [NSURL URLWithString:imageURLString];
+    self.senderRecordID = @{@"recordName": [DUser currentUser].recordID.recordName, @"zoneID": [DUser currentUser].recordID.zoneID};
+    self.senderFullName = [NSString stringWithFormat:@"%@ %@", [DUser currentUser].firstName, [DUser currentUser].lastName];
     
     if (!self.location || !self.venueName || !self.city) {
       return nil;
@@ -71,16 +75,19 @@ NSString* const IncludeLocationKey = @"includeLocation";
     
     if (![self actionSentences][self.category]) { // Check that the category is valid othwise notifies dev
       NSBlockOperation *notifyDevOperation = [NSBlockOperation blockOperationWithBlock:^{
-        // Notify Devs
-        PFQuery *innerQuery = [DUser query];
-        [innerQuery whereKey:@"email" equalTo:@"ge0rges@ge0rges.com"];
-        
-        // Build the query for this user's installation
-        PFQuery *pushQuery = [PFInstallation query];
-        [pushQuery whereKey:@"user" matchesQuery:innerQuery];
+        // Notify Devs || Build the notification record
+        CKRecord *notificationRecord = [[CKRecord alloc] initWithRecordType:@"Notification"];
+        notificationRecord[@"Message"] = [NSString stringWithFormat:@"Dude, unsupported category: [%@]", self.category];
+        notificationRecord[@"Receiver"] = @"";
+        notificationRecord[@"Developer"] = @YES;
         
         // Send the notification.
-        [PFPush sendPushMessageToQueryInBackground:pushQuery withMessage:[NSString stringWithFormat:@"Dude, unsupported category: [%@]", self.category]];
+        [[[CKContainer defaultContainer] publicCloudDatabase] saveRecord:notificationRecord completionHandler:^(CKRecord * _Nullable record, NSError * _Nullable error) {
+          if (error) {
+            NSLog(@"Error sending added notification");
+          }
+        }];
+        
       }];
       
       notifyDevOperation.queuePriority = NSOperationQueuePriorityVeryLow;
@@ -104,6 +111,8 @@ NSString* const IncludeLocationKey = @"includeLocation";
     self.city = [messageLocationCity copy];
     self.type = DMessageTypeLocation;
     self.imageURL = [NSURL URLWithString:@"http://Badge_Location.com"];
+    self.senderRecordID = @{@"recordName": [DUser currentUser].recordID.recordName, @"zoneID": [DUser currentUser].recordID.zoneID};
+    self.senderFullName = [NSString stringWithFormat:@"%@ %@", [DUser currentUser].firstName, [DUser currentUser].lastName];
 
     if (!self.location || !self.city) return nil;
   }
@@ -117,7 +126,9 @@ NSString* const IncludeLocationKey = @"includeLocation";
     self.city = [messageLocationCity copy];
     self.type = DMessageTypeURL;
     self.imageURL = [NSURL URLWithString:@"http://Badge_Link.com"];
-    
+    self.senderRecordID = @{@"recordName": [DUser currentUser].recordID.recordName, @"zoneID": [DUser currentUser].recordID.zoneID};
+    self.senderFullName = [NSString stringWithFormat:@"%@ %@", [DUser currentUser].firstName, [DUser currentUser].lastName];
+
     if (!self.URL || !self.location) return nil;
   }
   
@@ -141,6 +152,8 @@ NSString* const IncludeLocationKey = @"includeLocation";
     self.sendDate = [aDecoder decodeObjectForKey:SendDateKey];
     self.timestamp = [aDecoder decodeObjectForKey:TimestampKey];
     self.includeLocation = [aDecoder decodeBoolForKey:IncludeLocationKey];
+    self.senderFullName = [aDecoder decodeObjectForKey:SenderFullNameKey];
+    self.senderRecordID = [aDecoder decodeObjectForKey:SenderRecordIDKey];
   }
   
   return self;
@@ -161,6 +174,8 @@ NSString* const IncludeLocationKey = @"includeLocation";
   [aCoder encodeObject:self.sendDate forKey:SendDateKey];
   [aCoder encodeObject:self.timestamp forKey:TimestampKey];
   [aCoder encodeBool:self.includeLocation forKey:IncludeLocationKey];
+  [aCoder encodeObject:self.senderRecordID forKey:SenderRecordIDKey];
+  [aCoder encodeObject:self.senderFullName forKey:SenderFullNameKey];
 }
 
 #pragma mark - Message Parsing
@@ -203,20 +218,20 @@ NSString* const IncludeLocationKey = @"includeLocation";
 
 - (NSString*)notificationMessage {
   // All We have to do here is add the current user's name
-  return [NSString stringWithFormat:@"%@: %@", [DUser currentUser].username, self.message];
+  return [NSString stringWithFormat:@"%@: %@", [DUser currentUser].firstName, self.message];
 }
 
 - (NSString*)notificationTitle {
-  NSString *username = [DUser currentUser].username;
+  NSString *username = [DUser currentUser].firstName;
   
   switch (self.type) {
     case DMessageTypeURL: {
-      return [NSString stringWithFormat:@"%@ - Link", username];
+      return [NSString stringWithFormat:@"%@ Shared a Link", username];
       break;
     }
     
     case DMessageTypeMessage: {
-      return [NSString stringWithFormat:@"%@ - Message", username];
+      return [NSString stringWithFormat:@"%@ Shared an Update", username];
       break;
     }
     
@@ -288,7 +303,6 @@ NSString* const IncludeLocationKey = @"includeLocation";
     } else {
       NSInteger years = secondsSinceTimeStamp/31557600;
       timestampString = [NSString stringWithFormat:@"(%liy ago)", (long)years];
-
     }
   }
   
@@ -703,11 +717,11 @@ NSString* const IncludeLocationKey = @"includeLocation";
            @"Lake":	@"Dude, I'm at name.",
            @"Lighthouse":	@"Dude, I'm signaling boats at name.",
            @"Mountain":	@"Dude, I'm at name.",
-           @"National Park":	@"Dude, I'm breathing fresh air at name.",
+           @"National Park":	@"Dude, I'm exploring nature at name.",
            @"Nature Preserve":	@"Dude, I'm enjoying nature at name.",
-           @"Other Great Outdoors":	@"Dude, I'm breathing fresh air at name.",
+           @"Other Great Outdoors":	@"Dude, I'm exploring the great outdoors at name.",
            @"Palace":	@"Dude, I'm at name.",
-           @"Park":	@"Dude, I'm breathing fresh air in a city at name.",
+           @"Park":	@"Dude, I'm enjoying the park at name.",
            @"Pedestrian Plaza":	@"Dude, I'm walking around at name.",
            @"Playground":	@"Dude, I'm having fun at name.",
            @"Plaza":	@"Dude, I'm at name.",

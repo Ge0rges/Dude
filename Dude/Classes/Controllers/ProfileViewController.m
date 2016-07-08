@@ -79,12 +79,13 @@
   [super viewWillAppear:animated];
   
   if ([self.profileUser isEqual:[DUser currentUser]]) {
-    [self.profileUser fetchInBackgroundWithBlock:^(PFObject * _Nullable object, NSError * _Nullable error) {
-      self.profileUser = (DUser*)object;
+    [self.profileUser fetchWithSuccessBlock:^(DUser * _Nullable fetchedUser) {
+      self.profileUser = fetchedUser;
       
       // Update UI
       [self updateProfileInterface];
-    }];
+
+    } failureBlock:nil];
   }
 }
 
@@ -105,8 +106,8 @@
   DMessage *message = [[ContactsManager sharedInstance] latestMessageForContact:self.profileUser];
 
   // Status Update
-  NSString *locationErrorText = ([self.profileUser isEqual:[DUser currentUser]]) ? @"Dude, you haven't shared a location yet" : @"Dude, they didn't share a location with you yet";
-  NSString *lastSeenErrorText = ([self.profileUser isEqual:[DUser currentUser]]) ? @"Dude, you haven't shared an update yet" : @"Dude, they didn't share an update with you yet";
+  NSString *locationErrorText = ([self.profileUser isEqual:[DUser currentUser]]) ? @"Dude, share a public location" : @"Dude, no known location";
+  NSString *lastSeenErrorText = ([self.profileUser isEqual:[DUser currentUser]]) ? @"Dude, share a public status" : @"Dude, no status available";
   
   NSString *locationText = [NSString stringWithFormat:@"%@ - %@", message.city, message.timestamp];
   
@@ -121,7 +122,7 @@
   // Map
   BOOL sameCoordinate = (message.location.coordinate.latitude == userLocationAnnotation.coordinate.latitude && message.location.coordinate.longitude == userLocationAnnotation.coordinate.longitude);
   
-  if (message.location && message && !sameCoordinate) {
+  if (message.location && message && (!sameCoordinate && !self.statusLocationMapView.hidden)) {
     self.statusLocationMapView.hidden = NO;
     
     // Modify height constraint
@@ -143,7 +144,7 @@
     } else {
       // Create new Pin
       userLocationAnnotation = [MKPointAnnotation new];
-      userLocationAnnotation.title = ([self.profileUser isEqual:[DUser currentUser]]) ? @"Your Public Location" : [NSString stringWithFormat:@"%@'s Location", [self.profileUser.fullName stringBetweenString:@"" andString:@" "]];
+      userLocationAnnotation.title = ([self.profileUser isEqual:[DUser currentUser]]) ? @"Your Public Location" : [NSString stringWithFormat:@"%@'s Location", self.profileUser.firstName];
     }
     
     userLocationAnnotation.coordinate = message.location.coordinate;
@@ -193,43 +194,52 @@
     }
     
     // Favorite
-    if ([[DUser currentUser].favouriteContactsEmails containsObject:self.profileUser.email.lowercaseString]) {
+    if ([[DUser currentUser].favouriteContacts containsObject:self.profileUser.recordID]) {
       // Already favorited
       [self.favoriteButton setImage:[UIImage imageNamed:@"Favorite Selected"] forState:UIControlStateNormal];
-      [self.favoriteButton setTitle:[NSString stringWithFormat:@"     Remove %@ from Favorites", self.profileUser.fullName] forState:UIControlStateNormal];
+      [self.favoriteButton setTitle:[NSString stringWithFormat:@"     Remove %@ from Favorites", self.profileUser.firstName] forState:UIControlStateNormal];
       
     } else {
       // Not Already favorited
       [self.favoriteButton setImage:[UIImage imageNamed:@"Favorite Deselected"] forState:UIControlStateNormal];
-      [self.favoriteButton setTitle:[NSString stringWithFormat:@"     Add %@ to Favorites", self.profileUser.fullName] forState:UIControlStateNormal];
+      [self.favoriteButton setTitle:[NSString stringWithFormat:@"     Add %@ to Favorites", self.profileUser.firstName] forState:UIControlStateNormal];
     }
     
-    // Profile Image
-    [self.profileImageView sd_setImageWithURL:[NSURL URLWithString:self.profileUser.profileImage.url] placeholderImage:[UIImage imageNamed:@"Default Profile Image"]];
-    
-    // Name label
-    [self.nameLabel setText:self.profileUser.fullName];
-    
     // Send update text
-    self.sendUpdateLabel.text = [NSString stringWithFormat:@"Send %@ an Update", self.profileUser.fullName];
+    self.sendUpdateLabel.text = [NSString stringWithFormat:@"Send %@ an Update", self.profileUser.firstName];
     
     // Request Button
-    [self.requestStatusButton setTitle:[NSString stringWithFormat:@"     Ask what %@ is doing", self.profileUser.fullName] forState:UIControlStateNormal];
+    NSString *key = [NSString stringWithFormat:@"lastStatusRequest%@", self.profileUser.recordID];
+    NSDate *lastRequestDate = [[NSUserDefaults standardUserDefaults] objectForKey:key];
+    
+    if (-[lastRequestDate timeIntervalSinceNow] <= 600 && lastRequestDate) {
+      // Disable the button, change the text and reenable it in 10 mins.
+      self.requestStatusButton.enabled = NO;
+      [self.requestStatusButton setTitle:@"Wait a bit before asking again" forState:UIControlStateNormal];
+      
+      dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(-[lastRequestDate timeIntervalSinceNow] * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        self.requestStatusButton.enabled = YES;
+        [self.requestStatusButton setTitle:[NSString stringWithFormat:@"     What's up %@?", self.profileUser.firstName] forState:UIControlStateNormal];
+      });
+      
+    } else {
+      [self.requestStatusButton setTitle:[NSString stringWithFormat:@"     What's up %@?", self.profileUser.firstName] forState:UIControlStateNormal];
+    }
     
   } else {// Current user
     // Secondary button - Email
-    [self.secondaryButton setTitle:self.profileUser.email forState:UIControlStateNormal];
+    [self.secondaryButton setTitle:@"" forState:UIControlStateNormal];
     [self.secondaryButton setImage:nil forState:UIControlStateNormal];
-    
-    // Profile Image
-    [self.profileImageView sd_setImageWithURL:[NSURL URLWithString:self.profileUser.profileImage.url] placeholderImage:[UIImage imageNamed:@"Default Profile Image"]];
-    
-    // Name label
-    [self.nameLabel setText:self.profileUser.fullName];
     
     // Send update text
     self.sendUpdateLabel.text = @"Compose a new Update";
   }
+  
+  // Profile Image
+  [self.profileImageView setImage:[UIImage imageWithData:self.profileUser.profileImage]];
+  
+  // Name label
+  [self.nameLabel setText:[NSString stringWithFormat:@"%@ %@", self.profileUser.firstName, self.profileUser.lastName]];
   
   // Round Profile Image
   self.profileImageView.layer.cornerRadius = self.profileImageView.frame.size.width/2;
@@ -251,10 +261,24 @@
 
 #pragma mark - Actions
 - (IBAction)requestStatus:(id)sender {
-  BOOL requested = [[ContactsManager sharedInstance] requestStatusForContact:self.profileUser inBackground:NO];
+  BOOL requested = [[ContactsManager sharedInstance] requestStatusForContact:self.profileUser];
   
-  UIAlertController *ac = [UIAlertController alertControllerWithTitle:(requested) ? @"Status Requested" : @"Status not Requested" message:(requested) ? @"Dude, we informed them you'd like to know what they're doing." : @"Sorry Dude, but you can't request statuses more then once in under 10 minutes." preferredStyle:UIAlertControllerStyleAlert];
-  [ac addAction:[UIAlertAction actionWithTitle:(requested) ? @"Great!" : @"Okay, I'll ask again later" style:UIAlertActionStyleDefault handler:nil]];
+  if (requested) {
+    NSString *key = [NSString stringWithFormat:@"lastStatusRequest%@", self.profileUser.recordID];
+    NSDate *lastRequestDate = [[NSUserDefaults standardUserDefaults] objectForKey:key];
+
+    // Disable the button, change the text and reenable it in 10 mins.
+    self.requestStatusButton.enabled = NO;
+    [self.requestStatusButton setTitle:@"Wait a bit before asking again" forState:UIControlStateNormal];
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(-[lastRequestDate timeIntervalSinceNow] * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+      self.requestStatusButton.enabled = YES;
+      [self.requestStatusButton setTitle:[NSString stringWithFormat:@"     What's up %@?", self.profileUser.firstName] forState:UIControlStateNormal];
+    });
+  }
+  
+  UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"Asked" message:@"Dude, we told them you'd like to find out about what they're doing." preferredStyle:UIAlertControllerStyleAlert];
+  [ac addAction:[UIAlertAction actionWithTitle:@"Sweet!" style:UIAlertActionStyleDefault handler:nil]];
   
   [self presentViewController:ac animated:YES completion:nil];
 }
@@ -304,7 +328,7 @@
   
   // Asyncly perform the action (favorite/unfavorite)
   NSBlockOperation *toggleFavoriteOperation = [NSBlockOperation blockOperationWithBlock:^{
-    if ([[DUser currentUser].favouriteContactsEmails containsObject:self.profileUser.email.lowercaseString]) {
+    if ([[DUser currentUser].favouriteContacts containsObject:self.profileUser.recordID]) {
       // Already favorited
       [[ContactsManager sharedInstance] removeContactFromFavourites:self.profileUser];
       
@@ -320,13 +344,13 @@
   toggleFavoriteOperation.completionBlock = ^{
     dispatch_async(dispatch_get_main_queue(), ^{
       // Update the image
-      if ([[DUser currentUser].favouriteContactsEmails containsObject:self.profileUser.email.lowercaseString]) {
+      if ([[DUser currentUser].favouriteContacts containsObject:self.profileUser.recordID]) {
         [self.favoriteButton setImage:[UIImage imageNamed:@"Favorite Selected"] forState:UIControlStateNormal];
-        [self.favoriteButton setTitle:[NSString stringWithFormat:@"     Remove %@ from Favorites", self.profileUser.fullName] forState:UIControlStateNormal];
+        [self.favoriteButton setTitle:[NSString stringWithFormat:@"     Remove %@ from Favorites", self.profileUser.firstName] forState:UIControlStateNormal];
         
       } else {
         [self.favoriteButton setImage:[UIImage imageNamed:@"Favorite Deselected"] forState:UIControlStateNormal];
-        [self.favoriteButton setTitle:[NSString stringWithFormat:@"     Add %@ to Favorites", self.profileUser.fullName] forState:UIControlStateNormal];
+        [self.favoriteButton setTitle:[NSString stringWithFormat:@"     Add %@ to Favorites", self.profileUser.firstName] forState:UIControlStateNormal];
       }
       
       [self.favoriteButton setEnabled:YES];
@@ -416,7 +440,7 @@
 }
 
 - (IBAction)logout:(id)sender {
-  [DUser logOutInBackground];
+  [DUser logOut];
   [self dismissViewControllerAnimated:YES completion:nil];
 }
 
@@ -432,17 +456,16 @@
   UIImage *thumbnailImage = [selectedImage imageByScalingAndCroppingForSize:CGSizeMake(200, 200)];
   
   // Set user image file
-  PFFile *selectedImageFile = [PFFile fileWithData:UIImageJPEGRepresentation(thumbnailImage, 1)];
+  NSData *selectedImageData = UIImageJPEGRepresentation(thumbnailImage, 1);
   
   DUser *currentUser = [DUser currentUser];
   
-  if (selectedImageFile) {
-    [currentUser setProfileImage:selectedImageFile];
+  if (selectedImageData) {
+    currentUser.profileImage = selectedImageData;
     [self.profileImageView setImage:thumbnailImage];
-    
   }
   
-  [currentUser saveInBackground];
+  [currentUser saveWithCompletion:nil];
 }
 
 #pragma mark - Navigation
@@ -451,6 +474,7 @@
     UINavigationController *navigationVC = [segue destinationViewController];
     MessagesTableViewController *messagesTableViewController  = (MessagesTableViewController*)navigationVC.visibleViewController;
     messagesTableViewController.selectedUsers = (sender) ? @[sender] : @[];
+    messagesTableViewController.shareOnDudeDefault = (!sender);
   }
 }
 

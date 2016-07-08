@@ -25,16 +25,14 @@
 
 @implementation WatchConnectivityManager
 
-@dynamic session;
-
 + (instancetype _Nullable)sharedManager {
   static WatchConnectivityManager *sharedWatchConnectivityManager = nil;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    sharedWatchConnectivityManager = [self new];
+    sharedWatchConnectivityManager = [self new];    
   });
   
-  return ([WCSession isSupported] && [WCSession defaultSession].isWatchAppInstalled && [WCSession defaultSession].isPaired) ? sharedWatchConnectivityManager: nil;
+  return sharedWatchConnectivityManager;
 }
 
 - (BOOL)activateSession {
@@ -45,24 +43,22 @@
   return self.session.isReachable;
 }
 
+#pragma mark - Setter
+
 #pragma mark - WCSessionDelegate
 - (void)session:(WCSession *)session didReceiveMessage:(nonnull NSDictionary<NSString *,id> *)message {
   // Send a message
   if ([message[WatchRequestTypeKey] isEqualToString:WatchRequestSendMessageValue]) {
-    PFQuery *userQuery = [DUser query];
-    [userQuery fromLocalDatastore];
-    
-    [userQuery whereKey:@"email" equalTo:((DUserWatch*)message[WatchContactsKey]).email];
-    
-    [userQuery findObjectsInBackgroundWithBlock:^(NSArray * _Nullable objects, NSError * _Nullable error) {
-      [[MessagesManager sharedInstance] sendMessage:message[WatchMessagesKey] toContact:(DUser*)objects[0] withCompletion:nil];
+    CKRecordID *userRecordID = [NSKeyedUnarchiver unarchiveObjectWithData:message[WatchContactsKey]];
+    [[[CKContainer defaultContainer] publicCloudDatabase] fetchRecordWithID:userRecordID completionHandler:^(CKRecord * _Nullable record, NSError * _Nullable error) {
+      [[MessagesManager sharedInstance] sendMessage:message[WatchMessagesKey] toContact:[DUser userWithRecord:record] withCompletion:nil];
     }];
     
   // Provide messages
   } else if ([message[WatchRequestTypeKey] isEqualToString:WatchRequestMessagesValue]) {
     [[MessagesManager sharedInstance] setLocationForMessageGenerationWithCompletion:^(NSError *error) {
       [session sendMessage:@{WatchMessagesKey: [[MessagesManager sharedInstance] generateMessages:16]} replyHandler:nil errorHandler:nil];
-    }];
+    } latest:YES];
   }
 }
 
@@ -72,7 +68,7 @@
     replyHandler(@{@"success": @YES});
     [[MessagesManager sharedInstance] setLocationForMessageGenerationWithCompletion:^(NSError *error) {
       [session sendMessage:@{WatchMessagesKey: [[MessagesManager sharedInstance] generateMessages:16]} replyHandler:nil errorHandler:nil];
-    }];
+    } latest:YES];
   }
 }
 

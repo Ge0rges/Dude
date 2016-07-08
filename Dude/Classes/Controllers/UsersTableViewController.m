@@ -11,10 +11,6 @@
 // Classes
 #import "AppDelegate.h"
 
-// Pods
-#import <SDWebImage/UIImageView+WebCache.h>
-#import <SDWebImage/SDWebImageDownloader.h>
-
 // Managers
 #import "ContactsManager.h"
 #import "MessagesManager.h"
@@ -34,7 +30,7 @@ typedef void(^completion)(BOOL validEmail);
 @interface UsersTableViewController () <UITableViewDataSource, UITableViewDelegate> {
   NSSet *allContacts;
   NSSet *favoriteContacts;
-
+  
   UIImageView *leftBarButtonitemImageView;
   
   DUser *friendSearchedUser;
@@ -107,7 +103,7 @@ typedef void(^completion)(BOOL validEmail);
   [super viewDidAppear:animated];
   
   DUser *currentUser = [DUser currentUser];
-
+  
   // Tell the delegate we are the visible view
   AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
   appDelegate.visibleViewController = self;
@@ -131,28 +127,28 @@ typedef void(^completion)(BOOL validEmail);
   [self.refreshControl addTarget:self action:@selector(reloadData:) forControlEvents:UIControlEventValueChanged];
   self.refreshControl.attributedTitle = [[NSAttributedString alloc] initWithString:@"Contacting other dudes..."];
   self.refreshControl.tintColor = self.view.tintColor;
-
+  
   tableViewController.refreshControl = self.refreshControl;
   
   // Renew accounts
   ACAccountStore *accountStore = [ACAccountStore new];
   ACAccount *twitterAccount = [accountStore accountWithIdentifier:[[NSUserDefaults standardUserDefaults] stringForKey:@"twiterAccountID"]];
   ACAccount *facebookAccount = [accountStore accountWithIdentifier:[[NSUserDefaults standardUserDefaults] stringForKey:@"facebookAccountID"]];
-
-  if (twitterAccount) {
-  [accountStore renewCredentialsForAccount:twitterAccount completion:^(ACAccountCredentialRenewResult renewResult, NSError *error) {
-    
-    if (renewResult == ACAccountCredentialRenewResultRejected) {
-      [[NSUserDefaults standardUserDefaults] setObject:@"" forKey:@"twiterAccountID"];
-    }
-    
-    [accountStore renewCredentialsForAccount:facebookAccount completion:^(ACAccountCredentialRenewResult renewResult, NSError *error) {
-      if (renewResult == ACAccountCredentialRenewResultRejected) {
-        [[NSUserDefaults standardUserDefaults] setObject:@"" forKey:@"facebookAccountID"];
-      }
-    }];
-  }];
   
+  if (twitterAccount) {
+    [accountStore renewCredentialsForAccount:twitterAccount completion:^(ACAccountCredentialRenewResult renewResult, NSError *error) {
+      
+      if (renewResult == ACAccountCredentialRenewResultRejected) {
+        [[NSUserDefaults standardUserDefaults] setObject:@"" forKey:@"twiterAccountID"];
+      }
+      
+      [accountStore renewCredentialsForAccount:facebookAccount completion:^(ACAccountCredentialRenewResult renewResult, NSError *error) {
+        if (renewResult == ACAccountCredentialRenewResultRejected) {
+          [[NSUserDefaults standardUserDefaults] setObject:@"" forKey:@"facebookAccountID"];
+        }
+      }];
+    }];
+    
   } else if (facebookAccount) {
     [accountStore renewCredentialsForAccount:facebookAccount completion:^(ACAccountCredentialRenewResult renewResult, NSError *error) {
       if (renewResult == ACAccountCredentialRenewResultRejected) {
@@ -160,6 +156,11 @@ typedef void(^completion)(BOOL validEmail);
       }
     }];
   }
+  
+  // CloudKit discoverability
+  [[CKContainer defaultContainer] requestApplicationPermission:CKApplicationPermissionUserDiscoverability completionHandler:^(CKApplicationPermissionStatus applicationPermissionStatus, NSError * _Nullable error) {
+#warning do something
+  }];
 }
 
 #pragma mark - Public Methods
@@ -171,57 +172,24 @@ typedef void(^completion)(BOOL validEmail);
     }
     
     // Update Table with new data in the background
-    [fetchUsersOperation cancel];// No double fetching
+    if ([fetchUsersOperation isExecuting]) return;// No double fetching
     
     fetchUsersOperation = [NSBlockOperation blockOperationWithBlock:^{
       if (!fetchUsersOperation.isCancelled) {
-        if (self.favoritesOnly) {
-          
-          // If this is a user performed refresh or a system fetch
-          if (![sender isEqual:self.segmentedControl] || !sender || [sender isKindOfClass:[NSTimer class]]) {
-            // Get the latest favorites
-            favoriteContacts = [[ContactsManager sharedInstance] getContactsRefreshedNecessary:YES favourites:self.favoritesOnly];
-          
-            // Update the UI
-            [self performSelectorOnMainThread:@selector(updateInterface) withObject:nil waitUntilDone:NO];
-          
-          } else {
-            // Get cached favs
-            favoriteContacts = [[ContactsManager sharedInstance] getContactsRefreshedNecessary:NO favourites:self.favoritesOnly];
-            
-            // If there are no cached favs or this is a user performed refresh get the latest favs
-            if (favoriteContacts.count == 0) {
-              favoriteContacts = [[ContactsManager sharedInstance] getContactsRefreshedNecessary:YES favourites:self.favoritesOnly];
-            }
-            
-            // Update the UI
-            [self performSelectorOnMainThread:@selector(updateInterface) withObject:nil waitUntilDone:NO];
-
-          }
+        BOOL fromCache = (![sender isEqual:self.segmentedControl] || ![sender isKindOfClass:[NSTimer class]]);
         
-        } else {
-          // If this is a user performed refresh
-          if (![sender isEqual:self.segmentedControl] || !sender || [sender isKindOfClass:[NSTimer class]]) {
-            // Get the latest favorites
-            allContacts = [[ContactsManager sharedInstance] getContactsRefreshedNecessary:YES favourites:self.favoritesOnly];
-            
-            // Update the UI
-            [self performSelectorOnMainThread:@selector(updateInterface) withObject:nil waitUntilDone:NO];
-            
+        [[ContactsManager sharedInstance] fetchContactsFromCache:fromCache favorites:self.favoritesOnly successBlock:^(NSArray<CKRecord *> * _Nullable fetchedUsers) {
+          if (self.favoritesOnly) {
+            favoriteContacts = [NSSet setWithArray:fetchedUsers];
           } else {
-            // Get cached contacts
-            allContacts = [[ContactsManager sharedInstance] getContactsRefreshedNecessary:NO favourites:self.favoritesOnly];
-            
-            // If there are no cached favs or this is a user performed refresh get the latest contacts
-            if (allContacts.count == 0) {
-              allContacts = [[ContactsManager sharedInstance] getContactsRefreshedNecessary:YES favourites:self.favoritesOnly];
-            }
-            
-            // Update the UI
-            [self performSelectorOnMainThread:@selector(updateInterface) withObject:nil waitUntilDone:NO];
-            
+            allContacts = [NSSet setWithArray:fetchedUsers];
           }
-        }
+          
+          [self performSelectorOnMainThread:@selector(updateInterface) withObject:nil waitUntilDone:YES];
+          
+        } failureBlock:^(NSError * _Nullable error) {
+#warning do something
+        }];
       }
       
       [self.refreshControl performSelectorOnMainThread:@selector(endRefreshing) withObject:nil waitUntilDone:NO];
@@ -325,22 +293,19 @@ typedef void(^completion)(BOOL validEmail);
   DUser *user = (self.favoritesOnly) ? [favoriteContacts allObjects][indexPath.row] : [allContacts allObjects][indexPath.row];
   
   // Populate the cell
-  cell.textLabel.text = user.fullName;
+  cell.textLabel.text = [NSString stringWithFormat:@"%@ %@", user.firstName, user.lastName];
   cell.detailTextLabel.text = @"Asking what's up...";
-
+  
   // This can take time do it on another thread
   dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
     DMessage *message = [[ContactsManager sharedInstance] latestMessageForContact:user];
     
     dispatch_async(dispatch_get_main_queue(), ^{
-      cell.detailTextLabel.text = (message) ? [NSString stringWithFormat:@"%@ - %@", message.lastSeen, message.timestamp] : @"Dude didn't share an update yet";
+      cell.detailTextLabel.text = (message) ? [NSString stringWithFormat:@"%@ - %@", message.lastSeen, message.timestamp] : @"Dude, no status available";
     });
   });
   
-  [cell.imageView sd_setImageWithURL:[NSURL URLWithString:user.profileImage.url] placeholderImage:[UIImage imageNamed:@"Default Profile Image"] completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
-    [cell.imageView setImage:[image resizedImage:CGSizeMake(50, 50) interpolationQuality:kCGInterpolationHigh]];
-    [cell layoutSubviews];
-  }];
+  [cell.imageView setImage:[[UIImage imageWithData:user.profileImage] resizedImage:CGSizeMake(60, 60) interpolationQuality:kCGInterpolationHigh]];
   
   return cell;
 }
@@ -429,11 +394,11 @@ typedef void(^completion)(BOOL validEmail);
   // We do this know to be able to use .hidden as checks
   self.searchFriendsView.alpha = 0.0;
   self.searchFriendsView.hidden = NO;
-
+  
   // Disable Segmented Control
   self.segmentedControl.enabled = NO;
   self.segmentedControl.userInteractionEnabled = NO;
-
+  
   // Clear the UI
   if (!self.nofavoritesView.hidden) {
     [UIView animateWithDuration:0.3 animations:^{
@@ -487,77 +452,77 @@ typedef void(^completion)(BOOL validEmail);
 
 - (IBAction)textfieldValueChanged:(UITextField*)textfield {
   DUser *currentUser = [DUser currentUser];
-
+  
   [self.searchResultButton removeTarget:self action:@selector(addFriend) forControlEvents:UIControlEventTouchUpInside];
-
-  if ([textfield.text isEqualToString:currentUser.email]) {
+  
+  if ([textfield.text isEqual:currentUser.recordID]) {
     [self.searchResultButton setImage:nil forState:UIControlStateNormal];
     [self.searchResultButton setTitle:@"You" forState:UIControlStateNormal];
     [self.searchResultLabel setText:@"Dude you can't add yourself :p"];
-    [self.searchResultImageView sd_setImageWithURL:[NSURL URLWithString:currentUser.profileImage.url] placeholderImage:[UIImage imageNamed:@"Default Profile Image"]];
+    [self.searchResultImageView setImage:[UIImage imageWithData:currentUser.profileImage]];
     
     [self.searchResultButton sizeToFit];
-
+    
     return;
   }
   
   [self validateEmail:textfield.text withAlert:NO completion:^(BOOL validEmail) {
-      dispatch_async(dispatch_get_main_queue(), ^{
-        if (!validEmail) {
-          // Reset the UI
-          [self.searchResultButton setImage:nil forState:UIControlStateNormal];
-          [self.searchResultButton setTitle:@"" forState:UIControlStateNormal];
-          [self.searchResultLabel setText:@"Dude enter your friend's email"];
-          [self.searchResultImageView setImage:[UIImage imageNamed:@"Default Profile Image"]];
+    dispatch_async(dispatch_get_main_queue(), ^{
+      if (!validEmail) {
+        // Reset the UI
+        [self.searchResultButton setImage:nil forState:UIControlStateNormal];
+        [self.searchResultButton setTitle:@"" forState:UIControlStateNormal];
+        [self.searchResultLabel setText:@"Dude enter your friend's email"];
+        [self.searchResultImageView setImage:[UIImage imageNamed:@"Default Profile Image"]];
+        
+      } else {
+        [self.searchResultLabel setText:@"Searching..."];
+        [self.searchResultButton setTitle:@"" forState:UIControlStateNormal];
+        
+        // Get the user with that email to make sure its valid
+        CKQuery *userQuery = [[CKQuery alloc] initWithRecordType:@"Users" predicate:[NSPredicate predicateWithFormat:[NSString stringWithFormat:@"creatorRecordId = %@", textfield.text]]];
+        
+        [[[CKContainer defaultContainer] publicCloudDatabase] performQuery:userQuery inZoneWithID:nil completionHandler:^(NSArray<CKRecord *> * _Nullable results, NSError * _Nullable error) {
           
-        } else {
-          [self.searchResultLabel setText:@"Searching..."];
-          [self.searchResultButton setTitle:@"" forState:UIControlStateNormal];
+          friendSearchedUser = (DUser*)[results firstObject];
           
-          // Get the user with that email to make sure its valid
-          PFQuery *userQuery = [DUser query];
-          [userQuery whereKey:@"email" equalTo:textfield.text.lowercaseString];
-          
-          [userQuery getFirstObjectInBackgroundWithBlock:^(PFObject * _Nullable object, NSError * _Nullable error) {
-            friendSearchedUser = (DUser*)object;
-            
-            // If valid update results UI
-            if (friendSearchedUser && !error) {
-              NSString *imageName;
-              if ([[ContactsManager sharedInstance] contactBlockedCurrentUser:friendSearchedUser]) {
-                imageName = @"Blocked Friend Search";
-                
-              } else if ([currentUser.contactsEmails containsObject:friendSearchedUser.email.lowercaseString]) {
-                imageName = @"Friends Friend Search";
-                
-              } else {
-                imageName = @"Add Friend Search";
-                [self.searchResultButton addTarget:self action:@selector(addFriend) forControlEvents:UIControlEventTouchUpInside];
-              }
+          // If valid update results UI
+          if (friendSearchedUser && !error) {
+            NSString *imageName;
+            if ([[ContactsManager sharedInstance] contactBlockedCurrentUser:friendSearchedUser]) {
+              imageName = @"Blocked Friend Search";
               
-              [UIView animateWithDuration:0.3 animations:^{
-                [self.searchResultImageView sd_setImageWithURL:[NSURL URLWithString:friendSearchedUser.profileImage.url] placeholderImage:[UIImage imageNamed:@"Default Profile Image"] options:SDWebImageHighPriority];
-                self.searchResultLabel.text = friendSearchedUser.fullName;
-                [self.searchResultButton setTitle:nil forState:UIControlStateNormal];
-                [self.searchResultButton setImage:[UIImage imageNamed:imageName] forState:UIControlStateNormal];
-
-              }];
+            } else if ([currentUser.contacts containsObject:friendSearchedUser.recordID]) {
+              imageName = @"Friends Friend Search";
               
-            }  else {
-              friendSearchedUser = nil;
-              
-              [self.searchResultLabel setText:@"Not Found."];
-              [self.searchResultButton setImage:nil forState:UIControlStateNormal];
-              [self.searchResultButton setTitle:@"Double check the email you entered." forState:UIControlStateNormal];
-              [self.searchResultImageView setImage:[UIImage imageNamed:@"Default Profile Image"]];
-
+            } else {
+              imageName = @"Add Friend Search";
+              [self.searchResultButton addTarget:self action:@selector(addFriend) forControlEvents:UIControlEventTouchUpInside];
             }
             
-            [self.searchResultButton sizeToFit];
-          }];
-        }
-      });
-    }];
+            [UIView animateWithDuration:0.3 animations:^{
+              [self.searchResultImageView setImage:[UIImage imageWithData:friendSearchedUser.profileImage]];
+              self.searchResultLabel.text = [NSString stringWithFormat:@"%@ %@", friendSearchedUser.firstName, friendSearchedUser.lastName];
+              [self.searchResultButton setTitle:nil forState:UIControlStateNormal];
+              [self.searchResultButton setImage:[UIImage imageNamed:imageName] forState:UIControlStateNormal];
+              
+            }];
+            
+          }  else {
+            friendSearchedUser = nil;
+            
+            [self.searchResultLabel setText:@"Not Found."];
+            [self.searchResultButton setImage:nil forState:UIControlStateNormal];
+            [self.searchResultButton setTitle:@"Double check the email you entered." forState:UIControlStateNormal];
+            [self.searchResultImageView setImage:[UIImage imageNamed:@"Default Profile Image"]];
+            
+          }
+          
+          [self.searchResultButton sizeToFit];
+        }];
+      }
+    });
+  }];
 }
 
 

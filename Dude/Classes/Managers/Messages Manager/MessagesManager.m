@@ -48,8 +48,7 @@
 }
 
 #pragma mark - Location Handling
-- (void)setLocationForMessageGenerationWithCompletion:(_Nonnull LocationCompletionBlock)handler {
-  self.locationManager = [CLLocationManager new];
+- (void)setLocationForMessageGenerationWithCompletion:(_Nonnull LocationCompletionBlock)handler latest:(BOOL)latest {
   
   // Set the block for later use and modify to set searchedLocation
   __weak typeof(self) weakSelf = self;
@@ -62,7 +61,6 @@
       [[CLGeocoder new] reverseGeocodeLocation:weakSelf.locationManager.location completionHandler:^(NSArray *placemarks, NSError *error) {
         if (placemarks.count) {
           searchedLocation = ([placemarks.firstObject locality]) ?: ([placemarks.firstObject subLocality]) ?: [placemarks.firstObject administrativeArea];
-          
           weakSearchedLocation = searchedLocation;
         }
         
@@ -72,41 +70,45 @@
         
         handler(error);
       }];
+      
     } else {
       handler(error);
     }
   };
   
-  if (fabs([self.locationManager.location.timestamp timeIntervalSinceNow]) < 120 && self.locationManager.location) {// Check if we have a cached location within 2min
+  if (fabs([self.locationManager.location.timestamp timeIntervalSinceNow]) <= 60 && self.locationManager.location && !latest) {// Check if we have a cached location within 1 min
     locationCompletionBlock(nil);
     return;
   }
   
   // Set the location manager
   dispatch_async(dispatch_get_main_queue(), ^{
-    // User motion type
-    [[SOMotionDetector sharedInstance] setUseM7IfAvailable:YES];
-    [[SOMotionDetector sharedInstance] startDetection];
+    // Set up the location manager
+    self.locationManager = [CLLocationManager new];
     
-    // Location
     self.locationManager.delegate = self;
     self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
     self.locationManager.activityType = CLActivityTypeFitness;
     self.locationManager.distanceFilter = 10;
+    
+    // User motion type
+    [[SOMotionDetector sharedInstance] startDetection];
+    [[SOMotionDetector sharedInstance] setUseM7IfAvailable:YES];
     
     // If the location permission is underterminded ask for it
     CLAuthorizationStatus status = [CLLocationManager authorizationStatus];
     
     if (status == kCLAuthorizationStatusNotDetermined) {
       [self.locationManager requestAlwaysAuthorization];
-    
+      
     } else if (status == kCLAuthorizationStatusDenied) {
       // Otherwise start getting the location or call the block with a 500 not allowed error
       locationCompletionBlock([NSError errorWithDomain:@"LocationAuthorization" code:501 userInfo:nil]);
       locationCompletionBlock = nil;
-    
+      return;
+      
     } else if (status == kCLAuthorizationStatusAuthorizedAlways || status == kCLAuthorizationStatusAuthorizedWhenInUse) {
-      [self.locationManager startUpdatingLocation];
+      [self.locationManager requestLocation];
     }
   });
 }
@@ -116,32 +118,28 @@
   // If the location permission is underterminded ask for it
   if (status == kCLAuthorizationStatusNotDetermined) {
     [self.locationManager requestAlwaysAuthorization];
-
+    
   } else if (status == kCLAuthorizationStatusDenied) {
     // Otherwise start getting the location or call the block with a 500 not allowed error
     locationCompletionBlock([NSError errorWithDomain:@"LocationAuthorization" code:501 userInfo:nil]);
     locationCompletionBlock = nil;
+    return;
     
   } else if (status == kCLAuthorizationStatusAuthorizedAlways || status == kCLAuthorizationStatusAuthorizedWhenInUse) {
-    [self.locationManager startUpdatingLocation];
+    [self.locationManager requestLocation];
   }
 }
 
-- (void)locationManager:(CLLocationManager*)manager didUpdateLocations:(NSArray*)locations {
-  // Get most recent location
-  CLLocation *location = [locations lastObject];
-  
-  // If it's a relatively recent event, turn off updates to save power.
-  NSDate *eventDate = location.timestamp;
-  NSTimeInterval howRecent = [eventDate timeIntervalSinceNow];
-  if (fabs(howRecent) < 15.0) {
-    // Stop updating
-    [manager stopUpdatingLocation];
-    
-    // Call the block
-    locationCompletionBlock(nil);
-    locationCompletionBlock = nil;
-  }
+- (void)locationManager:(CLLocationManager*)manager didUpdateLocations:(NSArray*)locations {  
+  // Call the block
+  locationCompletionBlock(nil);
+  locationCompletionBlock = nil;
+}
+
+- (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
+  // Call the block
+  locationCompletionBlock(error);
+  locationCompletionBlock = nil;
 }
 
 #pragma mark SOMotionDetector
@@ -298,137 +296,27 @@
   DUser *currentUser = [DUser currentUser];
 
   // Check if we blocked this user or if he blocked us
-  if ([currentUser.blockedEmails containsObject:user.email] || [user.blockedEmails containsObject:currentUser.email]) {
+  if ([currentUser.blockedContacts containsObject:user.recordID] || [user.blockedContacts containsObject:currentUser.recordID]) {
     handler(NO, [NSError errorWithDomain:@"Blocked" code:500 userInfo:nil]);
   }
   
   // Set the messages send Date
   message.sendDate = [NSDate date];
   
-  // Build the payload
-  NSDictionary *payload;
+  // Create a new LastSeen object
+  CKRecord *lastSeen = [[CKRecord alloc] initWithRecordType:@"LastSeen" recordID:[[CKRecordID alloc] initWithRecordName:[NSString stringWithFormat:@"%@%@", currentUser.recordID, user.recordID]]];
   
-  switch (message.type) {
-    case DMessageTypeLocation: {
-      if ([CLLocationManager authorizationStatus] != kCLAuthorizationStatusDenied && message.includeLocation) {// If we have permission
-        payload = @{
-                    @"aps": @{
-                        @"alert": @{
-                            @"title": message.notificationTitle,
-                            @"body": message.notificationMessage,
-                            @"actions" : @[
-                                @{
-                                  @"id" : @"REPLY_ACTION",
-                                  @"title" : @"Reply"
-                                  },
-                                ]
-                            },
-                        
-                        @"sound": @"default",
-                        @"category": @"REPLY_CATEGORY"
-                        },
-                    
-                    @"long": [NSNumber numberWithDouble:message.location.coordinate.longitude],
-                    @"lat": [NSNumber numberWithDouble:message.location.coordinate.latitude],
-                    
-                    @"username": currentUser.username,
-                    @"email": currentUser.email,
-                    
-                    @"lastSeen": message.lastSeen
-                    };
-        
-      } else if (message.includeLocation) {
-        [self showLocationServicesAlert];
-        
-        handler(NO, [NSError errorWithDomain:@"Location" code:500 userInfo:nil]);
-      }
-      
-      break;
+  lastSeen[@"Message"] = [NSKeyedArchiver archivedDataWithRootObject:message];
+  lastSeen[@"NotificationAlert"] = message.notificationMessage;
+  lastSeen[@"Receiver"] = [[CKReference alloc] initWithRecordID:user.recordID action:CKReferenceActionDeleteSelf];
+  lastSeen[@"Sender"] = [[CKReference alloc] initWithRecordID:currentUser.recordID action:CKReferenceActionNone];
+  
+  [[[CKContainer defaultContainer] publicCloudDatabase] saveRecord:lastSeen completionHandler:^(CKRecord * _Nullable record, NSError * _Nullable error) {
+    if (error) {
+      NSLog(@"Error sending message");
+#warning give feedback
     }
-    
-    case DMessageTypeMessage: {
-      payload = @{
-                  @"aps": @{
-                      @"alert": @{
-                          @"title": message.notificationTitle,
-                          @"body": message.notificationMessage,
-                          @"actions" : @[
-                              @{
-                                @"id" : @"REPLY_ACTION",
-                                @"title" : @"Reply"
-                                },
-                              ]
-                          },
-                      
-                      @"sound": @"default",
-                      @"category": @"REPLY_CATEGORY"
-                      },
-
-                  @"long": (message.includeLocation) ? [NSNumber numberWithDouble:message.location.coordinate.longitude] : @"",
-                  @"lat": (message.includeLocation) ? [NSNumber numberWithDouble:message.location.coordinate.latitude] : @"",
-                  @"email": currentUser.email,
-                  @"username": currentUser.username,
-                  
-                  @"lastSeen": message.lastSeen
-                  };
-      
-      break;
-    }
-    
-    case DMessageTypeURL: {
-      if (message.URL) {
-        payload = @{
-                    @"aps": @{
-                        @"alert": @{
-                            @"title": message.notificationTitle,
-                            @"body": message.notificationMessage,
-                            @"actions" : @[
-                                @{
-                                  @"id" : @"REPLY_ACTION",
-                                  @"title" : @"Reply"
-                                  },
-                                ]
-                            },
-                        
-                        @"sound": @"default",
-                        @"category": @"REPLY_CATEGORY"
-                        },
-                    
-                    @"url": message.URL.absoluteString,
-                    
-                    @"username": currentUser.username,
-                    @"email": currentUser.email,
-                    
-                    @"long": (message.includeLocation) ? [NSNumber numberWithDouble:message.location.coordinate.longitude] : @"",
-                    @"lat": (message.includeLocation) ? [NSNumber numberWithDouble:message.location.coordinate.latitude] : @"",
-                    
-                    @"lastSeen": message.lastSeen
-                    };
-        
-      } else {
-        handler(NO, [NSError errorWithDomain:@"URL" code:404 userInfo:nil]);
-      }
-
-      break;
-    }
-  }
-  
-  // Build the query for this user's installation
-  PFQuery *pushQuery = [PFInstallation query];
-  [pushQuery whereKey:@"user" equalTo:user];
-  
-  // Send the notification.
-  [PFPush sendPushDataToQueryInBackground:pushQuery withData:payload];
-  
-  // Update the the current user's lastSeen on the sender user
-  NSData *messageData = [NSKeyedArchiver archivedDataWithRootObject:message];
-
-  NSDictionary *params = @{@"receiverEmail": user.email,
-                           @"senderEmail": currentUser.email,
-                           @"data": @[currentUser.email, messageData]
-                           };
-  
-  [PFCloud callFunction:@"updateLastSeen" withParameters:params];
+  }];
 }
 
 - (void)tweetMessage:(DMessage* _Nonnull)message withCompletion:(_Nullable MessageCompletionBlock)handler {

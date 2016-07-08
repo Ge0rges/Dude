@@ -9,32 +9,7 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>Pods-Dude-Bolts.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
-		<key>Pods-Dude-Parse.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
 		<key>Pods-Dude.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
-		<key>Pods-Watch Extension-Bolts.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
-		<key>Pods-Watch Extension-Parse.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
-		<key>Pods-Watch Extension.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
@@ -52,17 +27,7 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>0D29EB2EE1D3FC1DF0681DEC54D16ED5</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>17310B6D1F477C6236CF57A712E92059</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>3C96F3CB4F01920556B65E64A9526048</key>
+		<key>255928677ADF34945BAF86E8AF2CE134</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -72,27 +37,12 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>8CF3F4808D7134592E943E394F303360</key>
+		<key>D21EC7AEB2D2F7C877AD62092C22462A</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>8DF227F81D0903E1E1C37BEEB3317FC7</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>A1042EDDDF18E66CA7DC4A6EFBDE1730</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>C0537291D567CA222A6C061601E6570C</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>F4071B8F9AB8B0D6233F77812D090893</key>
+		<key>D6766C5CF0501D4C6F37E0FA4E5C53DF</key>
 		<dict>
 			<key>primary</key>
 			<true/>

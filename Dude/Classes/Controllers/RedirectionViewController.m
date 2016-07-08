@@ -60,9 +60,9 @@
     
     DUser *currentUser = [DUser currentUser];
     
-    if (currentUser.isAuthenticated && currentUser.sessionToken) {
+    if (currentUser) {
       // Fetch the latest currentUser
-      [currentUser fetchInBackgroundWithBlock:nil];
+      [currentUser fetchWithSuccessBlock:nil failureBlock:nil];
       [self performSegueWithIdentifier:@"mainSegue" sender:nil];
       
     } else  {// User isn't authenticated

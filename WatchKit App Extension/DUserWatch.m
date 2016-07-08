@@ -8,20 +8,16 @@
 
 #import "DUserWatch.h"
 
-// Pods
-#import <Parse/PFObject+Subclass.h>
-
-NSString* const ProfileImageKey = @"profileImage";
-NSString* const FullNameKey = @"fullName";
-NSString* const EmailKey = @"email";
+// Constants
+#import "Constants.h"
 
 @implementation DUserWatch
 
-@synthesize profileImage, fullName, email;
+@synthesize profileImage, fullName, recordIDData;
 
 #pragma mark - NSCoding
 - (void)encodeWithCoder:(NSCoder *)aCoder {
-  [aCoder encodeObject:self.email forKey:EmailKey];
+  [aCoder encodeDataObject:self.recordIDData];
   [aCoder encodeObject:self.fullName forKey:FullNameKey];
   [aCoder encodeObject:self.profileImage forKey:ProfileImageKey];
 }
@@ -29,7 +25,7 @@ NSString* const EmailKey = @"email";
 - (nullable instancetype)initWithCoder:(NSCoder *)aDecoder {
   self = [super init];
   
-  self.email = [aDecoder decodeObjectForKey:EmailKey];
+  self.recordIDData = [aDecoder decodeDataObject];
   self.fullName = [aDecoder decodeObjectForKey:FullNameKey];
   self.profileImage = [aDecoder decodeObjectForKey:ProfileImageKey];
   

@@ -10,6 +10,4 @@
 
 @interface SignUpViewController : UIViewController
 
-@property (nonatomic) BOOL logIn;
-
 @end

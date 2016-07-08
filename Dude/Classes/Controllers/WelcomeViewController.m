@@ -47,9 +47,30 @@
 #pragma mark - Navigation
 - (IBAction)unwindToWelcomeViewController:(UIStoryboardSegue*)segue {}
 
-- (void)prepareForSegue:(UIStoryboardSegue*)segue sender:(id)sender {
-  SignUpViewController *signUpViewController = (SignUpViewController*)[segue destinationViewController];
-  signUpViewController.logIn = ([segue.identifier isEqualToString:@"logInSegue"]) ? YES : NO;
+- (void)performSegueWithIdentifier:(NSString *)identifier sender:(id)sender {
+  [[CKContainer defaultContainer] accountStatusWithCompletionHandler:^(CKAccountStatus accountStatus, NSError *error) {
+    if (accountStatus == CKAccountStatusNoAccount) {
+      UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Sign in to iCloud"
+                                                                     message:@"Sign in to your iCloud account to write records. On the Home screen, launch Settings, tap iCloud, and enter your Apple ID. Turn iCloud Drive on. If you don't have an iCloud account, tap Create a new Apple ID."
+                                                              preferredStyle:UIAlertControllerStyleAlert];
+      [alert addAction:[UIAlertAction actionWithTitle:@"Okay"
+                                                style:UIAlertActionStyleCancel
+                                              handler:nil]];
+      [self presentViewController:alert animated:YES completion:nil];
+   
+    } else if (accountStatus == CKAccountStatusRestricted) {
+      UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Dude ask your parents"
+                                                                     message:@"Hey little Dude, seems like your parents have disabled access to your iCloud account with Parental Controls. Dude relies on iCloud to function, ask your parents to remove the restriction and try again."
+                                                              preferredStyle:UIAlertControllerStyleAlert];
+      [alert addAction:[UIAlertAction actionWithTitle:@"Will do!"
+                                                style:UIAlertActionStyleCancel
+                                              handler:nil]];
+      [self presentViewController:alert animated:YES completion:nil];
+      
+    } else{
+      [super performSegueWithIdentifier:identifier sender:sender];
+    }
+  }];
 }
 
 #pragma mark - Status Bar

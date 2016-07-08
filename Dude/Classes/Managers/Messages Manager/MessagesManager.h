@@ -10,19 +10,15 @@
 #import "DMessage.h"
 #import "DUser.h"
 
-//Pods
-#import <Parse/Parse.h>
-
 typedef void (^LocationCompletionBlock)( NSError * _Nullable error);
 typedef void (^MessageCompletionBlock)(BOOL success, NSError *_Nullable error);
-typedef void (^UserAddedBlock)(PFObject *_Nullable object, NSError * _Nullable error);
 
 @interface MessagesManager : NSObject
 
 + (instancetype _Nullable)sharedInstance;
 
 // Message Generation
-- (void)setLocationForMessageGenerationWithCompletion:(_Nonnull LocationCompletionBlock)handler;
+- (void)setLocationForMessageGenerationWithCompletion:(_Nonnull LocationCompletionBlock)handler latest:(BOOL)latest;
 - (NSArray* _Nonnull)generateMessages:(NSInteger)numberOfMessagesToGenerate;
 
 // Sending messages

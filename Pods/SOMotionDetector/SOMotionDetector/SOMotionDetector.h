@@ -1,5 +1,5 @@
 //
-//  MotionDetecter.h
+//  SOMotionDetecter.h
 //  MotionDetection
 //
 // The MIT License (MIT)
@@ -52,7 +52,11 @@ typedef enum
 + (SOMotionDetector *)sharedInstance;
 
 #pragma mark - Properties
-@property (weak, nonatomic) id<SOMotionDetectorDelegate> delegate;
+@property (weak, nonatomic) id<SOMotionDetectorDelegate> delegate DEPRECATED_MSG_ATTRIBUTE(" Use blocks instead");
+
+@property (copy) void (^motionTypeChangedBlock) (SOMotionType motionType);
+@property (copy) void (^locationChangedBlock) (CLLocation *location);
+@property (copy) void (^accelerationChangedBlock) (CMAcceleration acceleration);
 
 @property (nonatomic, readonly) SOMotionType motionType;
 @property (nonatomic, readonly) double currentSpeed;
@@ -69,7 +73,7 @@ typedef enum
 /**
  * Set this parameter to YES if you want to use M7 chip to detect more exact motion type. By default is No.
  * Set this parameter before calling startDetection method.
- * Available only on devices that have M7 chip. At this time only the iPhone 5S, the iPad Air and iPad mini with retina display have the M7 coprocessor.
+ * Available only on devices that have M7 chip. At this time only the iPhone 5S, iPhone6/6plus, the iPad Air and iPad mini with retina display have the M7 coprocessor.
  */
 @property (nonatomic) BOOL useM7IfAvailable NS_AVAILABLE_IOS(7_0);
 

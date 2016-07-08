@@ -17,9 +17,6 @@
 // Constants
 #import "Constants.h"
 
-// Pods
-#import <Parse/Parse.h>
-
 @interface ExtensionDelegate () <WCSessionDelegate>
 
 @end
@@ -28,13 +25,11 @@
 
 - (void)applicationDidFinishLaunching {
   // Perform any final initialization of your application.
-    
-  // Parse setup
-  [Parse setApplicationId:@"Lwdk0Qnb9755omfrz9Jt1462lzCyzBSTU4lSs37S" clientKey:@"bqhjVGFBHTtfjyoRG8WlYBrjqkulOjcilhtQursd"];
 }
 
 - (void)handleActionWithIdentifier:(NSString*)identifier forRemoteNotification:(NSDictionary*)remoteNotification {
   if ([identifier isEqualToString:@"REPLY_ACTION"]) {// If it's a reply action
+    
     WCSession *session = [WCSession defaultSession];
     session.delegate = self;
     [session activateSession];
@@ -45,8 +40,13 @@
     
     DUserWatch *sendUser;
     
+#warning check if payload has a recordID key that is valid
+    if (!remoteNotification[@"recordID"]) {
+      NSLog(@"%@", remoteNotification);
+    }
+    
     for (DUserWatch *user in contacts) {
-      if ([user.email isEqualToString:remoteNotification[@"email"]]) {
+      if ([user.recordIDData isEqualToData:[NSKeyedArchiver archivedDataWithRootObject:remoteNotification[@"recordID"]]]) {
         sendUser = user;
         
         break;

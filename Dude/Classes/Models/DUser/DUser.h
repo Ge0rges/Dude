@@ -6,46 +6,56 @@
 //  Copyright (c) 2015 Georges Kanaan. All rights reserved.
 //
 
-// Pods
-#import <Parse/Parse.h>
-
 // Classes
 #import "AppDelegate.h"
 
 // Frameworks
 #import <Accounts/Accounts.h>
-
-// Models
-#import "DUserWatch.h"
+#import <CloudKit/CloudKit.h>
 
 typedef void (^AccountCompletionBlock)(BOOL success, ACAccount * _Nullable account, NSError * _Nullable error);
 
-@interface DUser : PFUser <PFSubclassing>
+@interface DUser : NSObject
 
-@property (strong, nonatomic) PFFile * _Nullable profileImage;
+@property (strong, nonatomic) NSData * _Nullable profileImage;
 
-@property (strong, nonatomic) NSString * _Nullable fullName;
+@property (strong, nonatomic, readonly) NSString * _Nullable firstName;
+@property (strong, nonatomic, readonly) NSString * _Nullable lastName;
 
-// Set of user emails
-@property (strong, nonatomic) NSSet * _Nullable blockedEmails;
-@property (strong, nonatomic) NSSet * _Nullable contactsEmails;
-@property (strong, nonatomic) NSSet * _Nullable favouriteContactsEmails;
+@property (strong, nonatomic) CKRecordID * _Nonnull recordID;
 
+@property (strong, nonatomic) CKRecord * _Nonnull userRecord;
+
+// Set of user record IDs
+@property (strong, nonatomic) NSSet * _Nullable blockedContacts;
+@property (strong, nonatomic) NSSet * _Nullable contacts;
+@property (strong, nonatomic) NSSet * _Nullable favouriteContacts;
+
+// List of assets to records
 @property (strong, nonatomic) NSArray * _Nullable lastSeens;
 
-+ (instancetype _Nullable)currentUser;
-+ (instancetype _Nonnull)object;
+@property (strong, nonatomic, readonly) NSString * _Nonnull CurrentUserFacebookUsername;
+@property (strong, nonatomic, readonly) NSString * _Nonnull CurrentUserTwitterUsername;
 
-@property (strong, nonatomic, readonly) NSString * _Nullable facebookUsername;
-@property (strong, nonatomic, readonly) NSString * _Nullable twitterUsername;
+// Init and fetching
++ (instancetype _Nullable)userWithRecord:(CKRecord* _Nonnull)record;
++ (instancetype _Nullable)currentUser;
+
+- (void)fetchWithSuccessBlock:(void(^_Nullable)(DUser * _Nullable fetchedUser))successBlock failureBlock:(void(^_Nullable)(NSError * _Nullable error))failureBlock;
+- (instancetype _Nullable)fetchFromCache;// Record ID must be set
+
+// Social Stuff
++ (void)showSocialServicesAlert;
 
 - (void)selectTwitterAccountWithCompletion:(_Nullable AccountCompletionBlock)completion;
 - (void)selectFacebookAccountWithCompletion:(_Nullable AccountCompletionBlock)completion;
 
 - (void)renewCredentials;
 
-+ (void)showSocialServicesAlert;
+// Saving
+- (void)saveWithCompletion:(void(^_Nullable)(CKRecord * _Nullable record, NSError * _Nullable error))completionBlock;
 
-- (DUserWatch* _Nonnull)watchUser;
+// Log out
++ (void)logOut;
 
 @end

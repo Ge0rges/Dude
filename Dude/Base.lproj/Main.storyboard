@@ -65,6 +65,7 @@
                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Disconnected" translatesAutoresizingMaskIntoConstraints="NO" id="CiD-D5-1Pf">
                                 <rect key="frame" x="194" y="30" width="213" height="213"/>
                                 <constraints>
+                                    <constraint firstAttribute="width" priority="250" constant="213" id="5Gd-RW-l10"/>
                                     <constraint firstAttribute="width" secondItem="CiD-D5-1Pf" secondAttribute="height" multiplier="1:1" id="YmW-0B-Y0N"/>
                                 </constraints>
                             </imageView>
@@ -87,7 +88,7 @@
                         <color key="backgroundColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
                             <constraint firstItem="kJk-18-x53" firstAttribute="top" secondItem="FpS-iD-wYe" secondAttribute="bottom" constant="10" id="6Oq-8w-dLW"/>
-                            <constraint firstAttribute="centerX" secondItem="CiD-D5-1Pf" secondAttribute="centerX" id="Leo-KM-Fpd"/>
+                            <constraint firstAttribute="centerX" secondItem="CiD-D5-1Pf" secondAttribute="centerX" placeholder="YES" id="Leo-KM-Fpd"/>
                             <constraint firstItem="CiD-D5-1Pf" firstAttribute="centerX" secondItem="FpS-iD-wYe" secondAttribute="centerX" id="SE7-hK-VNb"/>
                             <constraint firstItem="FpS-iD-wYe" firstAttribute="top" secondItem="CiD-D5-1Pf" secondAttribute="bottom" constant="80" id="cQs-aD-MMu"/>
                             <constraint firstItem="kJk-18-x53" firstAttribute="centerX" secondItem="FpS-iD-wYe" secondAttribute="centerX" constant="0.5" id="cYO-z5-vhk"/>
@@ -235,7 +236,7 @@
                                 </view>
                                 <blurEffect style="light"/>
                             </visualEffectView>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" directionalLockEnabled="YES" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" style="grouped" separatorStyle="none" rowHeight="64" sectionHeaderHeight="18" sectionFooterHeight="18" translatesAutoresizingMaskIntoConstraints="NO" id="Pyc-bM-7sA">
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" directionalLockEnabled="YES" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" style="grouped" separatorStyle="none" rowHeight="74" sectionHeaderHeight="18" sectionFooterHeight="18" translatesAutoresizingMaskIntoConstraints="NO" id="Pyc-bM-7sA">
                                 <rect key="frame" x="20" y="64" width="560" height="487"/>
                                 <color key="backgroundColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
                                 <prototypes>
@@ -263,7 +264,7 @@
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <userDefinedRuntimeAttributes>
                                                         <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                                            <integer key="value" value="25"/>
+                                                            <integer key="value" value="30"/>
                                                         </userDefinedRuntimeAttribute>
                                                     </userDefinedRuntimeAttributes>
                                                 </imageView>
@@ -814,7 +815,7 @@
         <!--Profile View Controller-->
         <scene sceneID="NSa-ho-dxu">
             <objects>
-                <viewController automaticallyAdjustsScrollViewInsets="NO" id="Np9-dY-O6G" customClass="ProfileViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="ProfileViewControllerOther" automaticallyAdjustsScrollViewInsets="NO" useStoryboardIdentifierAsRestorationIdentifier="YES" id="Np9-dY-O6G" customClass="ProfileViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="uOy-36-ep0"/>
                         <viewControllerLayoutGuide type="bottom" id="VzE-7j-hk5"/>
@@ -965,26 +966,6 @@
                                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                         </state>
                                     </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SUg-WQ-8bb">
-                                        <rect key="frame" x="20" y="514" width="560" height="50"/>
-                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="50" id="jJL-o0-PZ4"/>
-                                        </constraints>
-                                        <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="15"/>
-                                        <inset key="contentEdgeInsets" minX="5" minY="0.0" maxX="0.0" maxY="0.0"/>
-                                        <state key="normal" title="     Ask what Jony is doing" image="Request Status">
-                                            <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                                        </state>
-                                        <userDefinedRuntimeAttributes>
-                                            <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                                <integer key="value" value="7"/>
-                                            </userDefinedRuntimeAttribute>
-                                        </userDefinedRuntimeAttributes>
-                                        <connections>
-                                            <action selector="requestStatus:" destination="Np9-dY-O6G" eventType="touchUpInside" id="4Tz-9b-6G9"/>
-                                        </connections>
-                                    </button>
                                     <imageView clipsSubviews="YES" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="tBx-5b-1C5">
                                         <rect key="frame" x="154" y="16" width="100" height="100"/>
                                         <color key="backgroundColor" red="0.92156862745098034" green="0.92156862745098034" blue="0.94901960784313721" alpha="1" colorSpace="calibratedRGB"/>
@@ -1002,6 +983,26 @@
                                             <outletCollection property="gestureRecognizers" destination="aXX-rG-JpD" appends="YES" id="BgB-R2-jIb"/>
                                         </connections>
                                     </imageView>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SUg-WQ-8bb">
+                                        <rect key="frame" x="20" y="514" width="560" height="50"/>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="50" id="jJL-o0-PZ4"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="15"/>
+                                        <inset key="contentEdgeInsets" minX="5" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                        <state key="normal" title="      What's up Jony Ive?" image="Request Status">
+                                            <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                        </state>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                                <integer key="value" value="7"/>
+                                            </userDefinedRuntimeAttribute>
+                                        </userDefinedRuntimeAttributes>
+                                        <connections>
+                                            <action selector="requestStatus:" destination="Np9-dY-O6G" eventType="touchUpInside" id="4Tz-9b-6G9"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
                                 <constraints>
                                     <constraint firstItem="SUg-WQ-8bb" firstAttribute="top" secondItem="c0p-V6-2bO" secondAttribute="bottom" constant="8" symbolic="YES" id="0bf-ut-S6P"/>
@@ -1026,7 +1027,7 @@
                                     <constraint firstItem="E9u-iY-BsA" firstAttribute="trailing" secondItem="SUg-WQ-8bb" secondAttribute="trailing" id="fXr-Jh-sPp"/>
                                     <constraint firstItem="hj3-vL-wtj" firstAttribute="leading" secondItem="QOe-Va-jph" secondAttribute="leading" id="vBI-hk-bti"/>
                                     <constraint firstItem="hj3-vL-wtj" firstAttribute="leading" secondItem="tBx-5b-1C5" secondAttribute="trailing" constant="30" id="wWz-cD-LnM"/>
-                                    <constraint firstAttribute="bottom" secondItem="c0p-V6-2bO" secondAttribute="bottom" constant="-1" id="xgm-4p-cng"/>
+                                    <constraint firstAttribute="bottom" secondItem="c0p-V6-2bO" secondAttribute="bottom" constant="-1" placeholder="YES" id="xgm-4p-cng"/>
                                 </constraints>
                             </scrollView>
                         </subviews>
@@ -1156,7 +1157,7 @@
                             </fragment>
                         </attributedString>
                         <connections>
-                            <action selector="reloadData" destination="gt7-Nu-7Dd" eventType="valueChanged" id="f41-zR-Vo4"/>
+                            <action selector="reloadData:" destination="gt7-Nu-7Dd" eventType="touchUpInside" id="JyM-vK-gcf"/>
                         </connections>
                     </refreshControl>
                 </tableViewController>
@@ -1194,7 +1195,7 @@
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" image="79AF2F7F-F3D5-4285-8516-2537367F963F" id="WgX-dx-Bjt">
+                                                <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" image="3DCF6532-605F-4CB1-9135-B3F190CE6D5E" id="WgX-dx-Bjt">
                                                     <rect key="frame" x="15" y="13" width="38" height="38"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                 </imageView>
@@ -1387,7 +1388,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="79AF2F7F-F3D5-4285-8516-2537367F963F" width="38" height="38">
+        <image name="3DCF6532-605F-4CB1-9135-B3F190CE6D5E" width="38" height="38">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGPT5YJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK4HCBMU
 GR4fIyQrLjE3OlUkbnVsbNUJCgsMDQ4PEBESVk5TU2l6ZVYkY2xhc3NcTlNJbWFnZUZsYWdzVk5TUmVw
@@ -1546,15 +1547,15 @@ IJ4goCClIK0gsCC1IL0gwCDSINUg2gAAAAAAAAIBAAAAAAAAAEEAAAAAAAAAAAAAAAAAACDcA
         <image name="Name Tag" width="136" height="80"/>
         <image name="Pin" width="16" height="26"/>
         <image name="Pin Faded" width="188" height="255"/>
-        <image name="Request Status" width="210" height="213"/>
+        <image name="Request Status" width="30" height="30"/>
         <image name="Scroll Shade" width="1" height="1"/>
         <image name="Star" width="197" height="188"/>
         <image name="Tab Person" width="33" height="33"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="0hw-y0-bB9"/>
         <segue reference="Nbs-OA-gvm"/>
         <segue reference="Mie-N4-Lj2"/>
+        <segue reference="3Uq-ao-rtd"/>
         <segue reference="vSt-jy-4r4"/>
         <segue reference="C2E-uc-dCP"/>
     </inferredMetricsTieBreakers>

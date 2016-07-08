@@ -6,9 +6,6 @@
 //  Copyright (c) 2015 Georges Kanaan. All rights reserved.
 //
 
-// Pods
-#import <Parse/Parse.h>
-
 // Framework
 #import <WatchKit/WatchKit.h>
 
@@ -18,6 +15,6 @@
 
 @property (strong, nonatomic) NSString * _Nullable fullName;
 
-@property (strong, nonatomic) NSString * _Nullable email;
+@property (strong, nonatomic) NSData * _Nullable recordIDData;
 
 @end

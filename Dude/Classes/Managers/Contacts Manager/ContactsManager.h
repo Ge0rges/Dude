@@ -34,11 +34,12 @@
 - (BOOL)contactBlockedCurrentUser:(DUser* _Nonnull)user;
 
 // Removing
-- (NSSet* _Nonnull)removeContact:(DUser* _Nonnull)user reloadContacts:(BOOL)reload;
+- (void)removeContact:(DUser* _Nonnull)user reloadContacts:(BOOL)reload;
 - (void)removeContactFromFavourites:(DUser* _Nonnull)user;
 
 // Fetching contacts
-- (NSSet* _Nonnull)getContactsRefreshedNecessary:(BOOL)needsLatestData favourites:(BOOL)favs;
+- (void)fetchContactsFromCache:(BOOL)fromCache favorites:(BOOL)favorites successBlock:(void(^_Nullable)(NSArray <CKRecord *> * _Nullable fetchedUsers))successBlock failureBlock:(void(^_Nullable)(NSError * _Nullable error))failureBlock;
+- (NSSet <CKRecord *> * _Nullable)contactsFromCacheFavorites:(BOOL)favorites;
 
 // Last seens
 - (DMessage* _Nullable)latestMessageForContact:(DUser* _Nonnull)user;
@@ -47,6 +48,6 @@
 - (void)sendAddedNotificationToContact:(DUser* _Nonnull)user;
 
 // Requesting status
-- (BOOL)requestStatusForContact:(DUser* _Nonnull)user inBackground:(BOOL)background;
+- (BOOL)requestStatusForContact:(DUser* _Nonnull)user;
 
 @end

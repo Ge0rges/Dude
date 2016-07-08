@@ -14,7 +14,7 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = 'primary'
-               BlueprintIdentifier = 'A69B70FBA6303812E7F42A3B'
+               BlueprintIdentifier = '5EB1ABA0683BE38B799AA7AD'
                BlueprintName = 'JCNotificationBannerPresenter'
                ReferencedContainer = 'container:Pods.xcodeproj'
                BuildableName = 'libJCNotificationBannerPresenter.a'>

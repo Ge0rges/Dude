@@ -24,7 +24,9 @@
 // Constants
 #import "Constants.h"
 
-@interface ComposeSheetViewController () <MFMessageComposeViewControllerDelegate, UITableViewDataSource, UITableViewDelegate>
+@interface ComposeSheetViewController () <MFMessageComposeViewControllerDelegate, UITableViewDataSource, UITableViewDelegate> {
+  BOOL setDefault;
+}
 
 @property (strong, nonatomic) IBOutlet UITableView *tableView;
 
@@ -121,6 +123,10 @@
         cell.imageView.contentMode = UIViewContentModeScaleAspectFit;
 
         self.shareDudeSwitch = [cell viewWithTag:3];
+        
+        if (!setDefault) {
+          self.shareDudeSwitch.on = self.shareOnDudeDefault;
+        }
 
         break;
       
@@ -223,6 +229,18 @@
 
 - (void)tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
+  
+  // Disable/Enable the friend selection
+  UITableViewCell *selectFriendsCell = [tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:1 inSection:1]];
+  
+  if (self.shareDudeSwitch.on) {
+    selectFriendsCell.userInteractionEnabled = NO;
+    selectFriendsCell.detailTextLabel.text = @"All Friends";
+  
+  } else {
+    selectFriendsCell.userInteractionEnabled = YES;
+    selectFriendsCell.detailTextLabel.text = [NSString stringWithFormat:@"%i %@", (int)self.selectedUsers.count, (self.selectedUsers.count != 1) ? @"Friends" : @"Friend"];
+  }
 }
 
 #pragma mark - Actions
@@ -238,19 +256,10 @@
     
     // Public sharing
     if (self.shareDudeSwitch.on) {
-      self.selectedUsers = [[ContactsManager sharedInstance] getContactsRefreshedNecessary:NO favourites:NO];
+      self.selectedUsers = [[ContactsManager sharedInstance] contactsFromCacheFavorites:NO];
       
       // Update our lastSeen in our own user.
-      DUser *currentUser = [DUser currentUser];
-
-      NSData *messageData = [NSKeyedArchiver archivedDataWithRootObject:self.selectedMessage];      
-      
-      NSDictionary *params = @{@"receiverEmail": currentUser.email,
-                               @"senderEmail": currentUser.email,
-                               @"data": @[currentUser.email, messageData]
-                               };
-      
-      [PFCloud callFunction:@"updateLastSeen" withParameters:params];
+      [messagesManager sendMessage:self.selectedMessage toContact:[DUser currentUser] withCompletion:nil];
     }
     
     // Send message to selected recipients

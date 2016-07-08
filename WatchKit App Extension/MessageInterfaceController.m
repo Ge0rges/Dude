@@ -18,9 +18,6 @@
 #import "DUserWatch.h"
 #import "DMessage.h"
 
-// Pods
-#import <SDWebImage/SDWebImageDownloader.h>
-
 // Constants
 #import "Constants.h"
 
@@ -102,19 +99,24 @@
 - (void)table:(WKInterfaceTable*)table didSelectRowAtIndex:(NSInteger)rowIndex {
   NSDictionary *payload =  @{WatchRequestTypeKey: WatchRequestSendMessageValue,
                              WatchMessagesKey: messages[rowIndex],
-                             WatchContactsKey: selectedUser.email
+                             WatchContactsKey: selectedUser.recordIDData
                              };
   
   if (session.reachable) {
-    [session sendMessage:payload replyHandler:nil errorHandler:^(NSError * _Nonnull error) {
-      [WKAlertAction actionWithTitle:@"Dude, I couldn't send your message! Try again." style:WKAlertActionStyleDefault handler:^{}];
+    [session sendMessage:payload replyHandler:^(NSDictionary<NSString *,id> * _Nonnull replyMessage) {
+      [self popToRootController];
+    
+    } errorHandler:^(NSError * _Nonnull error) {
+      [WKAlertAction actionWithTitle:@"Dude, I couldn't send your message! Try again." style:WKAlertActionStyleDefault handler:^{
+        [self popToRootController];
+      }];
     }];
   
   } else {
-    [WKAlertAction actionWithTitle:@"Dude, I couldn't send your message! Make sure your connected to your phone." style:WKAlertActionStyleDefault handler:^{}];
+    [WKAlertAction actionWithTitle:@"Dude, I couldn't send your message! Make sure your connected to your phone." style:WKAlertActionStyleDefault handler:^{
+      [self popToRootController];
+    }];
   }
-  
-  [self popToRootController];
 }
 
 @end
