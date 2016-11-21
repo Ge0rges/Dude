@@ -9,217 +9,79 @@
 #import "DUser.h"
 
 // Encoding keys
-NSString* const ProfileImageKey = @"Picture";
+NSString* const ProfileImageKey = @"ProfilePicture";
 NSString* const BlockedContactsKey = @"BlockedContacts";
 NSString* const ContactsKey = @"Contacts";
-NSString* const FavouriteContactsKey = @"FavoriteContacts";
+NSString* const FavouriteContactsKey = @"FavouriteContacts";
 NSString* const LastSeensKey = @"LastSeens";
+NSString* const UserRecordKey = @"UserRecord";
+NSString* const UserRecordIDKey = @"UserRecordID";
+NSString* const FullNameKey = @"Name";
+
 
 @interface DUser ()
 
-@property (strong, nonatomic) DUser *currentUser;
-
-@property (strong, nonatomic) NSString * _Nullable firstName;
-@property (strong, nonatomic) NSString * _Nullable lastName;
+@property (strong, nonatomic) UIImage * _Nullable profileImage;
+@property (strong, nonatomic) NSString * _Nullable fullName;
+@property (strong, nonatomic) CKRecordID * _Nonnull recordID;
+// Set of user record IDs
+@property (strong, nonatomic) NSSet<CKReference *> * _Nullable blockedContacts;
+@property (strong, nonatomic) NSSet<CKReference *> * _Nullable contacts;
+@property (strong, nonatomic) NSSet<CKReference *> * _Nullable favouriteContacts;
+// List of assets to records
+@property (strong, nonatomic) NSArray * _Nullable lastSeens;
 
 @end
 
+
 @implementation DUser
 
-@dynamic firstName, lastName;
-@synthesize lastSeens, profileImage, blockedContacts, contacts, favouriteContacts;
+@synthesize lastSeens, profileImage, blockedContacts, contacts, favouriteContacts, fullName;
 
 #pragma mark - Initializations
-+ (instancetype _Nullable)userWithRecord:(CKRecord*)record {
-  DUser *user = [DUser new];
-  
-  // Get the profile image
-  CKReference *profileImageReference = record[ProfileImageKey];
-  
-  CKFetchRecordsOperation *profileImageFetchOperation = [[CKFetchRecordsOperation alloc] initWithRecordIDs:@[profileImageReference.recordID]];
-  profileImageFetchOperation.fetchRecordsCompletionBlock = ^(NSDictionary <CKRecordID * , CKRecord *> * __nullable recordsByRecordID, NSError * __nullable operationError) {
-    if (operationError) {
-      NSLog(@"error fetching profile image of user");
+
+- (instancetype _Nullable)initWithCKRecord:(CKRecord * _Nonnull)userRecord {
+  if ((self = [DUser alloc])) {
+    CKAsset *profileImageAsset = userRecord[ProfileImageKey];
+    self.profileImage = [UIImage imageWithData:[NSData dataWithContentsOfURL:profileImageAsset.fileURL]];
     
-    } else if (recordsByRecordID) {
-      for (CKRecord *record in [recordsByRecordID allKeys]) {
-        user.profileImage = record[ProfileImageKey];
-      }
-    }
-  };
-  
-  [[[CKContainer defaultContainer] publicCloudDatabase] addOperation:profileImageFetchOperation];
-  
-  user.recordID = record.recordID;
-  user.userRecord = record;
-  user.blockedContacts = record[BlockedContactsKey];
-  user.favouriteContacts = record[FavouriteContactsKey];
-  user.contacts = record[ContactsKey];
-  
-  for (CKReference *lastSeenReference in (NSArray *)record[LastSeensKey]) {
-    CKFetchRecordsOperation *lastSeenFetchOperation = [[CKFetchRecordsOperation alloc] initWithRecordIDs:@[lastSeenReference.recordID]];
-    lastSeenFetchOperation.fetchRecordsCompletionBlock = ^(NSDictionary <CKRecordID * , CKRecord *> * __nullable recordsByRecordID, NSError * __nullable operationError) {
-      if (operationError) {
-        NSLog(@"error fetching a lastSeen of the user");
-        
-      } else if (recordsByRecordID) {
-        for (CKRecord *record in [recordsByRecordID allKeys]) {
-          NSMutableArray *lastSeens = [NSMutableArray arrayWithArray:user.lastSeens];
-          [lastSeens addObject:record];
-          
-          user.lastSeens = lastSeens;
-        }
-      }
-    };
+    self.recordID = userRecord.recordID;
+    self.userRecord = userRecord;
+    self.blockedContacts = userRecord[BlockedContactsKey];
+    self.contacts = userRecord[ContactsKey];
+    self.favouriteContacts = userRecord[FavouriteContactsKey];
     
-    [[[CKContainer defaultContainer] publicCloudDatabase] addOperation:lastSeenFetchOperation];
+    self.fullName = userRecord[FullNameKey];
   }
   
-  user.lastSeens = record[LastSeensKey];
+  return self;
+}
+
+#pragma mark - NSCoding
+
+- (void)encodeWithCoder:(NSCoder *)aCoder {
+  [aCoder encodeObject:self.userRecord forKey:UserRecordKey];
+  [aCoder encodeObject:self.recordID forKey:UserRecordIDKey];
+  [aCoder encodeObject:self.lastSeens forKey:LastSeensKey];
+  [aCoder encodeObject:self.fullName forKey:FullNameKey];
+}
+
+- (instancetype)initWithCoder:(NSCoder *)aDecoder {
+  self = [DUser new];
   
-  [user fetchName];
+  self.userRecord = [aDecoder decodeObjectForKey:UserRecordKey];
+  self.recordID = [aDecoder decodeObjectForKey:UserRecordIDKey];
+  self.lastSeens = [aDecoder decodeObjectForKey:LastSeensKey];
+  self.fullName = [aDecoder decodeObjectForKey:FullNameKey];
 
-  return user;
-}
-
-+ (instancetype _Nullable)currentUser {
-  // perform cache checks, update them if necessarya nd return nil.
-  CKRecordID *currentUserRecordID = [[NSUserDefaults standardUserDefaults] objectForKey:@"currentUserRecordID"];
-  CKRecord *currentUserRecord = [[NSUserDefaults standardUserDefaults] objectForKey:[NSString stringWithFormat:@"%@", currentUserRecordID]];
-  
-  if (!currentUserRecordID) {
-    // Update the cache
-    [[CKContainer defaultContainer] fetchUserRecordIDWithCompletionHandler:^(CKRecordID * _Nullable recordID, NSError * _Nullable error) {
-      [[NSUserDefaults standardUserDefaults] setObject:recordID forKey:@"currentUserRecordID"];
-      [[NSUserDefaults standardUserDefaults] synchronize];
-
-      DUser *user = [[DUser alloc] init];
-      
-      user.recordID = recordID;
-      
-      [user fetchWithSuccessBlock:^(DUser * _Nullable currentUser) {
-        [[NSUserDefaults standardUserDefaults] setObject:currentUser forKey:[NSString stringWithFormat:@"%@", user.recordID]];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-
-      } failureBlock:nil];
-      
-    }];
-    
-    return nil;
-    
-  } else if (!currentUserRecord) {
-    // Update the cache
-    DUser *user = [[DUser alloc] init];
-    
-    user.recordID = currentUserRecordID;
-    
-    [user fetchWithSuccessBlock:^(DUser * _Nullable currentUser) {
-      [[NSUserDefaults standardUserDefaults] setObject:currentUser forKey:[NSString stringWithFormat:@"%@", currentUser.recordID]];
-      [[NSUserDefaults standardUserDefaults] synchronize];
-
-    } failureBlock:nil];
-    
-    return user;
-  }
-  
-  return [DUser userWithRecord:currentUserRecord];
-}
-
-
-#pragma mark - Fetching
-- (void)fetchWithSuccessBlock:(void(^_Nullable)(DUser * _Nullable fetchedUser))successBlock failureBlock:(void(^_Nullable)(NSError * _Nullable error))failureBlock {
-  [[[CKContainer defaultContainer] publicCloudDatabase] fetchRecordWithID:self.recordID completionHandler:^(CKRecord * _Nullable record, NSError * _Nullable error) {
-
-    if (error) {
-      dispatch_async(dispatch_get_main_queue(), ^{
-        failureBlock(error);
-      });
-      
-    } else if (record) {
-      // Update the cache
-      [[NSUserDefaults standardUserDefaults] setObject:record forKey:[NSString stringWithFormat:@"%@", self.recordID]];
-      [[NSUserDefaults standardUserDefaults] synchronize];
-
-      dispatch_async(dispatch_get_main_queue(), ^{
-        successBlock([DUser userWithRecord:record]);
-      });
-    }
-  }];
-}
-
-- (instancetype _Nullable)fetchFromCache {
-  if (!self.recordID) {
-    return nil;
-  }
-  
-  return [[NSUserDefaults standardUserDefaults] objectForKey:[NSString stringWithFormat:@"%@", self.recordID]];
-}
-
-- (void)fetchName {
-  [[CKContainer defaultContainer] discoverUserInfoWithUserRecordID:self.recordID completionHandler:^(CKDiscoveredUserInfo * _Nullable userInfo, NSError * _Nullable error) {
-    self.firstName = userInfo.displayContact.givenName;
-    self.lastName = userInfo.displayContact.familyName;
-  }];
-}
-
-#pragma mark - Saving
-- (void)saveWithCompletion:(void(^_Nullable)(CKRecord * _Nullable record, NSError * _Nullable error))completionBlock {
-  [[[CKContainer defaultContainer] privateCloudDatabase] saveRecord:self.userRecord completionHandler:completionBlock];
-}
-
-#pragma mark - Setters and Getters
-
-- (void)setLastSeens:(NSArray *)lastSeensLcl {
-  self.userRecord[LastSeensKey] = lastSeensLcl;
-  self.lastSeens = lastSeensLcl;
-}
-
-- (void)setProfileImage:(NSData *)profileImageLcl {
-  self.userRecord[ProfileImageKey] = profileImageLcl;
-  self.profileImage = profileImageLcl;
-}
-
-- (void)setBlockedContacts:(NSSet *)blockedContactsLcl {
-  self.userRecord[BlockedContactsKey] = [blockedContactsLcl allObjects];
-  self.blockedContacts = blockedContactsLcl;
-}
-
-- (void)setContacts:(NSSet *)contactsLcl {
-  self.userRecord[ContactsKey] = [contactsLcl allObjects];
-  self.contacts = contactsLcl;
-}
-
-- (void)setFavouriteContacts:(NSSet *)favouriteContactsLcl {
-  self.userRecord[FavouriteContactsKey] = [favouriteContactsLcl allObjects];
-  self.favouriteContacts = favouriteContactsLcl;
-}
-
-#pragma mark - Logout
-+ (void)logOut {
-  // Create the userunique keys
-  NSString *contactsKey = [NSString stringWithFormat:@"contact%@", [DUser currentUser].recordID];
-  
-  // Clear the saved contacts for this username
-  [[NSUserDefaults standardUserDefaults] setObject:nil forKey:contactsKey];
-  
-  // Clear twitter & facebook preferences for this device
-  [[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"twitterAccountID"];
-  [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"askTwitter"];
-  
-  [[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"facebookAccountID"];
-  [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"askFacebook"];
-  
-  [[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"currentUserRecordID"];
-  
-  // Sync NSUserDefaults
-  [[NSUserDefaults standardUserDefaults] synchronize];
+  return self;
 }
 
 #pragma mark - Twitter & Facebook
 - (NSString* _Nonnull)CurrentUserTwitterUsername {
   // If twitter return user account
   ACAccountStore *accountStore = [ACAccountStore new];
-  ACAccount *account = [accountStore accountWithIdentifier:[[NSUserDefaults standardUserDefaults] stringForKey:@"twitterAccountID"]];
+  ACAccount *account = [accountStore accountWithIdentifier:[NSUserDefaults.standardUserDefaults stringForKey:@"twitterAccountID"]];
   
   return (account) ? [NSString stringWithFormat:@"@%@", account.username] : @"No Account Selected";
 }
@@ -227,12 +89,12 @@ NSString* const LastSeensKey = @"LastSeens";
 - (NSString* _Nonnull)CurrentUserFacebookUsername {
   // If twitter return user account
   ACAccountStore *accountStore = [ACAccountStore new];
-  ACAccount *account = [accountStore accountWithIdentifier:[[NSUserDefaults standardUserDefaults] stringForKey:@"facebookAccountID"]];
+  ACAccount *account = [accountStore accountWithIdentifier:[NSUserDefaults.standardUserDefaults stringForKey:@"facebookAccountID"]];
   
   return (account) ? account.username : @"No Account Selected";
 }
 
-- (void)selectTwitterAccountWithCompletion:(_Nullable AccountCompletionBlock)completion {
++ (void)selectTwitterAccountWithCompletion:(_Nullable AccountCompletionBlock)completion {
   ACAccountStore *accountStore = [ACAccountStore new];
   ACAccountType *twitterTypeAccount = [accountStore accountTypeWithAccountTypeIdentifier:ACAccountTypeIdentifierTwitter];
   
@@ -246,25 +108,25 @@ NSString* const LastSeensKey = @"LastSeens";
       }
       
       if (accounts.count > 1) {
-        [self showSelectionAlertControllerWithAccount:accounts andCompletionHandler:completion forTwitter:YES];
+        [[self class] showSelectionAlertControllerWithAccount:accounts andCompletionHandler:completion forTwitter:YES];
         
       } else {
         ACAccount *account = [accounts lastObject];
-        [[NSUserDefaults standardUserDefaults] setObject:account.identifier forKey:@"twitterAccountID"];
-        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"askTwitter"];
+        [NSUserDefaults.standardUserDefaults setObject:account.identifier forKey:@"twitterAccountID"];
+        [NSUserDefaults.standardUserDefaults setBool:NO forKey:@"askTwitter"];
         
         if (completion) completion(granted, account, error);
       }
       
     } else {
-      [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"askTwitter"];
+      [NSUserDefaults.standardUserDefaults setBool:NO forKey:@"askTwitter"];
       
       if (completion) completion(granted, nil, error);
     }
   }];
 }
 
-- (void)selectFacebookAccountWithCompletion:(_Nullable AccountCompletionBlock)completion {
++ (void)selectFacebookAccountWithCompletion:(_Nullable AccountCompletionBlock)completion {
   ACAccountStore *accountStore = [ACAccountStore new];
   
   ACAccountType *facebookTypeAccount = [accountStore accountTypeWithAccountTypeIdentifier:ACAccountTypeIdentifierFacebook];
@@ -285,18 +147,18 @@ NSString* const LastSeensKey = @"LastSeens";
       }
       
       if (accounts.count > 1) {
-        [self showSelectionAlertControllerWithAccount:accounts andCompletionHandler:completion forTwitter:NO];
+        [[self class] showSelectionAlertControllerWithAccount:accounts andCompletionHandler:completion forTwitter:NO];
         
       } else {
         ACAccount *account = [accounts lastObject];
-        [[NSUserDefaults standardUserDefaults] setObject:account.identifier forKey:@"facebookAccountID"];
-        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"askFacebook"];
+        [NSUserDefaults.standardUserDefaults setObject:account.identifier forKey:@"facebookAccountID"];
+        [NSUserDefaults.standardUserDefaults setBool:NO forKey:@"askFacebook"];
         
         if (completion) completion(granted, account, error);
       }
       
     } else {
-      [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"askFacebook"];
+      [NSUserDefaults.standardUserDefaults setBool:NO forKey:@"askFacebook"];
       
       if (completion) completion(granted, nil, error);
     }
@@ -305,8 +167,8 @@ NSString* const LastSeensKey = @"LastSeens";
 
 - (void)renewCredentials {
   ACAccountStore *accountStore = [ACAccountStore new];
-  ACAccount *twitterAccount = [accountStore accountWithIdentifier:[[NSUserDefaults standardUserDefaults] stringForKey:@"twitterAccountID"]];
-  ACAccount *facebookAccount = [accountStore accountWithIdentifier:[[NSUserDefaults standardUserDefaults] stringForKey:@"facebookAccountID"]];
+  ACAccount *twitterAccount = [accountStore accountWithIdentifier:[NSUserDefaults.standardUserDefaults stringForKey:@"twitterAccountID"]];
+  ACAccount *facebookAccount = [accountStore accountWithIdentifier:[NSUserDefaults.standardUserDefaults stringForKey:@"facebookAccountID"]];
   
   if (twitterAccount) {
     [accountStore renewCredentialsForAccount:twitterAccount completion:nil];
@@ -325,8 +187,8 @@ NSString* const LastSeensKey = @"LastSeens";
     
     for (ACAccount *account in accounts) {
       [ac addAction:[UIAlertAction actionWithTitle:account.username style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-        [[NSUserDefaults standardUserDefaults] setObject:account.identifier forKey:(twitter) ? @"twitterAccountID" : @"facebookAccountID"];
-        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:(twitter) ? @"askTwitter" : @"askFacebook"];
+        [NSUserDefaults.standardUserDefaults setObject:account.identifier forKey:(twitter) ? @"twitterAccountID" : @"facebookAccountID"];
+        [NSUserDefaults.standardUserDefaults setBool:NO forKey:(twitter) ? @"askTwitter" : @"askFacebook"];
                 
         if (completion) completion(YES, account, nil);
       }]];

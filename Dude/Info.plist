@@ -32,6 +32,10 @@
 	<string>Your location is used to create smart messages (Dudes) that you can send to your firends attached with your location too.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Your location is used to create smart messages (Dudes) that you can send to your firends attached with your location too.</string>
+	<key>NSMotionUsageDescription</key>
+	<string>We use the built-in accelerometer to gain contextuakl data, such as if you're riding a bike, or traveling by train. This in turn allows us to build smarter messages. Your movement is data is kept private.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Dude allows you to select. or take a picture to set as your profile picture. This picture is visble to anyone that searches for you by name or email.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>

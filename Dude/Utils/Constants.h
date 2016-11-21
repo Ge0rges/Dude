@@ -8,6 +8,7 @@
 
 #import "NSStringExtensions.h"
 #import "QNSURLConnection.h"
+#import "NSUserDefaultsExtension.h"
 
 #define WatchContactsKey @"favoriteContactsArray"// receiving key for contacts array
 #define WatchMessagesKey @"messagesArray"// receiving key for messages array

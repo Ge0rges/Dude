@@ -11,6 +11,9 @@
 // Classes
 #import "AppDelegate.h"
 
+// Managers
+#import "CloudKitManager.h"
+
 // Frameworks
 #import <Accounts/Accounts.h>
 #import <CloudKit/CloudKit.h>
@@ -34,9 +37,9 @@
 @property (strong, nonatomic) IBOutlet UILabel *stepLabel;
 @property (strong, nonatomic) IBOutlet UILabel *titleStepLabel;
 
-@property (strong, nonatomic) IBOutlet UITextField *textField;
-
 @property (strong, nonatomic) IBOutlet UIImageView *stepImageView;
+
+@property (strong, nonatomic) IBOutlet UITextField *textField;
 
 @property (strong, nonatomic) IBOutlet UIButton *confirmButton;
 @property (strong, nonatomic) IBOutlet UIButton *backButton;
@@ -52,11 +55,10 @@
   // Update status bar
   [self setNeedsStatusBarAppearanceUpdate];
   
-  // Start a timer to check if the button should be enabled
   [self.textField addTarget:self action:@selector(checkConfirmButton) forControlEvents:UIControlEventEditingChanged];
 
   // Simulate a first press for initial setup
-  [self confirmed:self.confirmButton];
+  [self proceedToPhoto];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -69,113 +71,42 @@
 
 #pragma mark - Steps
 - (IBAction)confirmed:(UIButton*)sender {
-    switch (self.confirmButton.tag) {
-      case 0: {
-        // Remove retake X image
-        [retakeImageView removeFromSuperview];
-        retakeImageView = nil;
-        
-        [self animateToStepWithInitialScreenshot:[self screenshot] fromRight:YES];
-        [self proceedToSocial];
-        break;
-      }
-        
-      case 1: {
-        // Fetch the current User
-        DUser *currentUser = [DUser currentUser];// Cache update
-        if (!currentUser) [DUser currentUser];
-        
-        if (currentUser) {
-          UIAlertController *incorrectCredentialsAlertController = [UIAlertController alertControllerWithTitle:@"Dude, we couldn't sign you up" message:@"" preferredStyle:UIAlertControllerStyleAlert];
-          [incorrectCredentialsAlertController addAction:[UIAlertAction actionWithTitle:@"Cool, open settings" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-            // Go back to the beginning
-            [self animateToStepWithInitialScreenshot:[self screenshot] fromRight:NO];
-            [self proceedToPhoto];
-            
-            self.confirmButton.tag -=5;
-          }]];
-          
-          dispatch_async(dispatch_get_main_queue(), ^{
-            [self presentViewController:incorrectCredentialsAlertController animated:YES completion:nil];
-          });
-          
-          
-        } else {
-          // Go back to the redirection controller
-          [self.presentingViewController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
-          
-          [currentUser selectFacebookAccountWithCompletion:nil];
-          [currentUser selectTwitterAccountWithCompletion:nil];
-          
-          // Save the user's profile image
-          CKRecord *profilePictureRecord = [[CKRecord alloc] initWithRecordType:@"ProfilePicture"];
-          profilePictureRecord[@"Picture"] = profileImageData;
-          profilePictureRecord[@"Owner"] = [[CKReference alloc] initWithRecordID:currentUser.recordID action:CKReferenceActionDeleteSelf];
-
-          [[[CKContainer defaultContainer] publicCloudDatabase] saveRecord:profilePictureRecord completionHandler:^(CKRecord * _Nullable record, NSError * _Nullable error) {
-            if (error) {
-              NSLog(@"Well shit. Couldnt upload the profile image.");
-            }
-          }];
-          
-          // Subscribe to last seen creation
-          NSPredicate *predicate = [NSPredicate predicateWithFormat:@"Receiver = %@", currentUser.recordID];
-          CKSubscription *lastSeenSubscription = [[CKSubscription alloc] initWithRecordType:@"LastSeen" predicate:predicate options:CKSubscriptionOptionsFiresOnRecordCreation | CKSubscriptionOptionsFiresOnRecordUpdate];
-          
-          CKNotificationInfo *lastSeenNotificationInfo = [CKNotificationInfo new];
-          lastSeenNotificationInfo.desiredKeys = @[@"Receiver",@"Sender", @"Message"];
-          lastSeenNotificationInfo.alertLocalizationArgs = @[@"NotificationAlert"];
-          lastSeenNotificationInfo.alertBody = @"%@";
-          lastSeenNotificationInfo.shouldBadge = YES;
-          lastSeenNotificationInfo.category = @"REPLY_CATEGORY";
-          
-          [lastSeenSubscription setNotificationInfo:lastSeenNotificationInfo];
-          
-          [[[CKContainer defaultContainer] publicCloudDatabase] saveSubscription:lastSeenSubscription completionHandler:^(CKSubscription *subscription, NSError *error) {
-            if (error) {
-              NSLog(@"Well shit. subscription didnt donkey.");
-            }
-          }];
-          
-          // Subscribe to notification creation
-          CKSubscription *notificationSubscription = [[CKSubscription alloc] initWithRecordType:@"Notification" predicate:predicate options:CKSubscriptionOptionsFiresOnRecordCreation];
-          
-          CKNotificationInfo *notificationInfo = [CKNotificationInfo new];
-          notificationInfo.alertLocalizationArgs = @[@"Message"];
-          notificationInfo.alertBody = @"%@";
-          notificationInfo.shouldBadge = NO;
-          
-          [notificationSubscription setNotificationInfo:notificationInfo];
-          
-          [[[CKContainer defaultContainer] publicCloudDatabase] saveSubscription:notificationSubscription completionHandler:^(CKSubscription *subscription, NSError *error) {
-            if (error) {
-              NSLog(@"Well shit. subscription didnt donkey.");
-            }
-          }];
-          
-#pragma mark DEVELOPER ONLY
-#if 1
-          // Subscribe to notification creation
-          NSPredicate *devPredicate = [NSPredicate predicateWithFormat:@"Developer = %@", @YES];
-          CKSubscription *devNotificationSubscription = [[CKSubscription alloc] initWithRecordType:@"Notification" predicate:devPredicate options:CKSubscriptionOptionsFiresOnRecordCreation];
-          
-          CKNotificationInfo *devNotificationInfo = [CKNotificationInfo new];
-          devNotificationInfo.alertLocalizationArgs = @[@"Message"];
-          devNotificationInfo.alertBody = @"%@ - Remember to delete the record!";
-          devNotificationInfo.shouldBadge = YES;
-          
-          [devNotificationSubscription setNotificationInfo:notificationInfo];
-          
-          [[[CKContainer defaultContainer] publicCloudDatabase] saveSubscription:devNotificationSubscription completionHandler:^(CKSubscription *subscription, NSError *error) {
-            if (error) {
-              NSLog(@"Well shit. subscription didnt donkey.");
-            }
-          }];
-#endif
-
-        }
-      }
+  NSString *userName;
+  switch (self.confirmButton.tag) {
+    case 0: {
+      [self proceedToName];
+      break;
     }
+      
+    case 1: {
+      // Get the textfield value and dismiss
+      [self.textField resignFirstResponder];
+      userName = self.textField.text;
+      
+      // Remove retake X image
+      [retakeImageView removeFromSuperview];
+      retakeImageView = nil;
+      
+      [self animateToStepWithInitialScreenshot:[self screenshot] fromRight:YES];
+      [self proceedToSocial];
+      break;
+    }
+      
+    case 2: {// Register the user.
+      // Save the user's profile image
+      [CloudKitManager registerNewUserWithProfileImage:[UIImage imageWithData:profileImageData] userName:userName completionHandler:^(BOOL registered, CKRecord * _Nullable results, NSError * _Nullable error) {
+        
+#warning handle error
+        // Go back to the redirection controller
+        dispatch_async(dispatch_get_main_queue(), ^{
+          [self.presentingViewController.presentingViewController dismissViewControllerAnimated:YES completion:^{
+            [DUser selectFacebookAccountWithCompletion:nil];
+            [DUser selectTwitterAccountWithCompletion:nil];
+          }];
+        });
+      }];
+    }
+  }
 
   // Initial check for next step
   [self checkConfirmButton];
@@ -187,8 +118,6 @@
   [self.stepLabel setText:@"We only use your Twitter and Facebook account when you use them to post messages."];
   [self.titleStepLabel setText:@"Accounts"];
   
-  [self.textField setHidden:YES];
-  
   [self.confirmButton setTitle:@"ASK ME" forState:UIControlStateNormal];
   [self.backButton setTitle:@" Photo" forState:UIControlStateNormal];
   
@@ -196,13 +125,14 @@
   
   [self.stepImageView removeGestureRecognizer:self.stepImageView.gestureRecognizers[0]];
   
-  [self.textField resignFirstResponder];
-  
   [retakeImageView removeFromSuperview];
   retakeImageView = nil;
   
   self.stepImageView.layer.cornerRadius = 0;
   self.stepImageView.clipsToBounds = NO;
+  
+  self.textField.hidden = YES;
+  [self.textField resignFirstResponder];
 }
 
 - (void)proceedToPhoto {
@@ -214,17 +144,13 @@
   [self.stepLabel setText:@"Your profile photo will be visible to other users. Smile!"];
   [self.titleStepLabel setText:@"Profile Photo"];
   
-  [self.textField setHidden:YES];
-  
   [self.confirmButton setTitle:@"CONTINUE" forState:UIControlStateNormal];
-  [self.backButton setTitle:@" Password" forState:UIControlStateNormal];
+  [self.backButton setTitle:@" Welcome" forState:UIControlStateNormal];
   
   self.confirmButton.tag++;
   
   UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(selectPicture)];
   [self.stepImageView addGestureRecognizer:tapGestureRecognizer];
-  
-  [self.textField resignFirstResponder];
   
   [retakeImageView removeFromSuperview];
   retakeImageView = nil;
@@ -233,6 +159,37 @@
   self.stepImageView.clipsToBounds = NO;
   
   profileImageData = nil;
+  
+  [self.textField resignFirstResponder];
+  self.textField.hidden = YES;
+}
+
+- (void)proceedToName {
+  // Update UI
+  [self.stepImageView setImage:[UIImage imageNamed:@"Name Tag"]];
+  [self.stepLabel setText:@"Your name will be shown to others along with your profile photo"];
+  [self.titleStepLabel setText:@"Your Name"];
+  
+  self.textField.placeholder = @"The Duderino";
+  self.textField.text = @"";
+  self.textField.hidden = NO;
+  
+  [self.confirmButton setTitle:@"CONTINUE" forState:UIControlStateNormal];
+  [self.backButton setTitle:@" Back" forState:UIControlStateNormal];
+  
+  self.confirmButton.tag++;
+  
+  if (self.stepImageView.gestureRecognizers.count > 0) {
+    [self.stepImageView removeGestureRecognizer:self.stepImageView.gestureRecognizers[0]];
+  }
+  
+  [self.textField performSelector:@selector(becomeFirstResponder) withObject:nil afterDelay:0.4];//.15 seconds after animation
+  
+  [retakeImageView removeFromSuperview];
+  retakeImageView = nil;
+  
+  self.stepImageView.layer.cornerRadius = 0;
+  self.stepImageView.clipsToBounds = NO;
 }
 
 #pragma mark - Animation
@@ -341,13 +298,13 @@
 
 - (void)checkConfirmButton {
   switch (self.confirmButton.tag) {
-    case 1: {
+    case 0: {
       self.confirmButton.enabled = (profileImageData) ? YES : NO;
       
       break;
     }
       
-    case 2: {
+    case 1: {
       self.confirmButton.enabled = YES;
       break;
     }
@@ -358,14 +315,13 @@
 
 - (IBAction)back {
   switch (self.confirmButton.tag) {
-    case 1: {
-      [self.textField resignFirstResponder];
+    case 0: {
       [self performSegueWithIdentifier:@"unwindToWelcomeViewController" sender:self];
       
       break;
     }
       
-    case 2: {
+    case 1: {
       [self animateToStepWithInitialScreenshot:[self screenshot] fromRight:NO];
         [self proceedToPhoto];
       

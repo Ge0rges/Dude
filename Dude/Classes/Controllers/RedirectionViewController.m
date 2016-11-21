@@ -11,6 +11,9 @@
 // Classes
 #import "AppDelegate.h"
 
+// Managers
+#import "CloudKitManager.h"
+
 // Controllers
 #import "SignUpViewController.h"
 
@@ -28,6 +31,7 @@
 
 @implementation RedirectionViewController
 
+#warning check if account exists on Apple ID (not locally), remove log in button from welcome.
 - (void)viewDidLoad {
   [super viewDidLoad];
   // Do any additional setup after loading the view.
@@ -58,21 +62,25 @@
   // Redirect the app to the correct View Controller if we have an internet connection in the first place
   if ([self.networkReachability currentReachabilityStatus] != NotReachable) {// Check if we have internet
     
-    DUser *currentUser = [DUser currentUser];
+    [CloudKitManager fetchCurrentUserWithSuccessBlock:^(CKRecord * _Nullable currentUserRecord) {
+      if (currentUserRecord) {
+      
+        // Fetch the latest currentUser
+        [self performSegueWithIdentifier:@"mainSegue" sender:nil];
+        
+      } else  {
+        // Clear user defaults to prevent issues
+        [CloudKitManager logOut];
+        
+        // Show the log/sign in view
+        [self performSegueWithIdentifier:@"welcomeSegue" sender:nil];
+      }
+
+    } failureBlock:^(NSError * _Nullable error) {
+      [self checkConnection:nil];// Could be that the internet failed.
+      
+    } preferCache:YES];
     
-    if (currentUser) {
-      // Fetch the latest currentUser
-      [currentUser fetchWithSuccessBlock:nil failureBlock:nil];
-      [self performSegueWithIdentifier:@"mainSegue" sender:nil];
-      
-    } else  {// User isn't authenticated
-      // Clear keychain to prevent issues
-      [DUser logOut];
-      
-      // Show the log/sign in view
-      [self performSegueWithIdentifier:@"welcomeSegue" sender:nil];
-      
-    }
   } else {// No internet
     [self checkConnection:nil];
   }

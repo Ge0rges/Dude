@@ -251,7 +251,7 @@
     return [NSArray arrayWithArray:returnArray];
     
   } else {
-    if (![[NSUserDefaults standardUserDefaults] boolForKey:@"noShowContextMessagingLocationAV"]) {
+    if (![NSUserDefaults.standardUserDefaults boolForKey:@"noShowContextMessagingLocationAV"]) {
       [self showLocationServicesAlert];
     }
     
@@ -304,11 +304,12 @@
   message.sendDate = [NSDate date];
   
   // Create a new LastSeen object
-  CKRecord *lastSeen = [[CKRecord alloc] initWithRecordType:@"LastSeen" recordID:[[CKRecordID alloc] initWithRecordName:[NSString stringWithFormat:@"%@%@", currentUser.recordID, user.recordID]]];
+  CKRecord *lastSeen = [[CKRecord alloc] initWithRecordType:@"LastSeen" recordID:[[CKRecordID alloc] initWithRecordName:[NSString stringWithFormat:@"%@-TO-%@", currentUser.recordID.recordName, user.recordID.recordName]]];
   
   lastSeen[@"Message"] = [NSKeyedArchiver archivedDataWithRootObject:message];
   lastSeen[@"NotificationAlert"] = message.notificationMessage;
   lastSeen[@"Receiver"] = [[CKReference alloc] initWithRecordID:user.recordID action:CKReferenceActionDeleteSelf];
+  lastSeen[@"ReceiverRecordIDName"] = user.recordID.recordName;
   lastSeen[@"Sender"] = [[CKReference alloc] initWithRecordID:currentUser.recordID action:CKReferenceActionNone];
   
   [[[CKContainer defaultContainer] publicCloudDatabase] saveRecord:lastSeen completionHandler:^(CKRecord * _Nullable record, NSError * _Nullable error) {
@@ -321,7 +322,7 @@
 
 - (void)tweetMessage:(DMessage* _Nonnull)message withCompletion:(_Nullable MessageCompletionBlock)handler {
   ACAccountStore *accountStore = [ACAccountStore new];
-  ACAccount *account = [accountStore accountWithIdentifier:[[NSUserDefaults standardUserDefaults] stringForKey:@"twitterAccountID"]];
+  ACAccount *account = [accountStore accountWithIdentifier:[NSUserDefaults.standardUserDefaults stringForKey:@"twitterAccountID"]];
   
   NSString *socialMessage = [message.message stringByReplacingOccurrencesOfString:@"Dude" withString:@"Dudes"];
   
@@ -387,7 +388,7 @@
 
 - (void)postMessage:(DMessage* _Nonnull)message withCompletion:(_Nullable MessageCompletionBlock)handler {
   ACAccountStore *accountStore = [ACAccountStore new];
-  ACAccount *account = [accountStore accountWithIdentifier:[[NSUserDefaults standardUserDefaults] stringForKey:@"facebookAccountID"]];
+  ACAccount *account = [accountStore accountWithIdentifier:[NSUserDefaults.standardUserDefaults stringForKey:@"facebookAccountID"]];
   
   NSString *socialMessage = [message.message stringByReplacingOccurrencesOfString:@"Dude" withString:@"Dudes"];
   

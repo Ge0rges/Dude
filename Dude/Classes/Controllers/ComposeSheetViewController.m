@@ -137,7 +137,7 @@
         cell.imageView.contentMode = UIViewContentModeScaleAspectFit;
 
         self.shareTwitterSwitch = [cell viewWithTag:3];
-        self.shareTwitterSwitch.enabled = (BOOL)([[NSUserDefaults standardUserDefaults] stringForKey:@"twitterAccountID"]);
+        self.shareTwitterSwitch.enabled = (BOOL)([NSUserDefaults.standardUserDefaults stringForKey:@"twitterAccountID"]);
         
         break;
       
@@ -148,7 +148,7 @@
         cell.imageView.contentMode = UIViewContentModeScaleAspectFit;
 
         self.shareFacebookSwitch = [cell viewWithTag:3];
-        self.shareFacebookSwitch.enabled = (BOOL)([[NSUserDefaults standardUserDefaults] stringForKey:@"facebookAccountID"]);
+        self.shareFacebookSwitch.enabled = (BOOL)([NSUserDefaults.standardUserDefaults stringForKey:@"facebookAccountID"]);
 
         break;
     

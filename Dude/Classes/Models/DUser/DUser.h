@@ -15,47 +15,36 @@
 
 typedef void (^AccountCompletionBlock)(BOOL success, ACAccount * _Nullable account, NSError * _Nullable error);
 
-@interface DUser : NSObject
+@interface DUser : NSObject <NSCoding>
 
-@property (strong, nonatomic) NSData * _Nullable profileImage;
+@property (strong, nonatomic, readonly) UIImage * _Nullable profileImage;
 
-@property (strong, nonatomic, readonly) NSString * _Nullable firstName;
-@property (strong, nonatomic, readonly) NSString * _Nullable lastName;
+@property (strong, nonatomic, readonly) NSString * _Nullable fullName;
 
-@property (strong, nonatomic) CKRecordID * _Nonnull recordID;
+@property (strong, nonatomic, readonly) CKRecordID * _Nonnull recordID;
 
 @property (strong, nonatomic) CKRecord * _Nonnull userRecord;
 
 // Set of user record IDs
-@property (strong, nonatomic) NSSet * _Nullable blockedContacts;
-@property (strong, nonatomic) NSSet * _Nullable contacts;
-@property (strong, nonatomic) NSSet * _Nullable favouriteContacts;
+@property (strong, nonatomic, readonly) NSSet<CKReference *> * _Nullable blockedContacts;
+@property (strong, nonatomic, readonly) NSSet<CKReference *> * _Nullable contacts;
+@property (strong, nonatomic, readonly) NSSet<CKReference *> * _Nullable favouriteContacts;
 
 // List of assets to records
-@property (strong, nonatomic) NSArray * _Nullable lastSeens;
+@property (strong, nonatomic, readonly) NSArray * _Nullable lastSeens;
 
 @property (strong, nonatomic, readonly) NSString * _Nonnull CurrentUserFacebookUsername;
 @property (strong, nonatomic, readonly) NSString * _Nonnull CurrentUserTwitterUsername;
 
-// Init and fetching
-+ (instancetype _Nullable)userWithRecord:(CKRecord* _Nonnull)record;
-+ (instancetype _Nullable)currentUser;
-
-- (void)fetchWithSuccessBlock:(void(^_Nullable)(DUser * _Nullable fetchedUser))successBlock failureBlock:(void(^_Nullable)(NSError * _Nullable error))failureBlock;
-- (instancetype _Nullable)fetchFromCache;// Record ID must be set
+// Init
+- (instancetype _Nullable)initWithCKRecord:(CKRecord * _Nonnull)userRecord;
 
 // Social Stuff
 + (void)showSocialServicesAlert;
 
-- (void)selectTwitterAccountWithCompletion:(_Nullable AccountCompletionBlock)completion;
-- (void)selectFacebookAccountWithCompletion:(_Nullable AccountCompletionBlock)completion;
++ (void)selectTwitterAccountWithCompletion:(_Nullable AccountCompletionBlock)completion;
++ (void)selectFacebookAccountWithCompletion:(_Nullable AccountCompletionBlock)completion;
 
 - (void)renewCredentials;
-
-// Saving
-- (void)saveWithCompletion:(void(^_Nullable)(CKRecord * _Nullable record, NSError * _Nullable error))completionBlock;
-
-// Log out
-+ (void)logOut;
 
 @end

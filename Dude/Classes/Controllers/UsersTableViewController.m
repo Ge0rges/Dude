@@ -102,21 +102,19 @@ typedef void(^completion)(BOOL validEmail);
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
   
-  DUser *currentUser = [DUser currentUser];
-  
   // Tell the delegate we are the visible view
   AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
   appDelegate.visibleViewController = self;
   
-  BOOL shouldRefreshTwitter = [[NSUserDefaults standardUserDefaults] boolForKey:@"askTwitter"];
-  BOOL shouldRefreshFacebook = [[NSUserDefaults standardUserDefaults] boolForKey:@"askFacebook"];
+  BOOL shouldRefreshTwitter = [NSUserDefaults.standardUserDefaults boolForKey:@"askTwitter"];
+  BOOL shouldRefreshFacebook = [NSUserDefaults.standardUserDefaults boolForKey:@"askFacebook"];
   
   if (shouldRefreshTwitter) {
-    [currentUser selectTwitterAccountWithCompletion:nil];
+    [DUser selectTwitterAccountWithCompletion:nil];
   }
   
   if (shouldRefreshFacebook) {
-    [currentUser selectFacebookAccountWithCompletion:nil];
+    [DUser selectFacebookAccountWithCompletion:nil];
   }
   
   // Add refresh control
@@ -132,19 +130,19 @@ typedef void(^completion)(BOOL validEmail);
   
   // Renew accounts
   ACAccountStore *accountStore = [ACAccountStore new];
-  ACAccount *twitterAccount = [accountStore accountWithIdentifier:[[NSUserDefaults standardUserDefaults] stringForKey:@"twiterAccountID"]];
-  ACAccount *facebookAccount = [accountStore accountWithIdentifier:[[NSUserDefaults standardUserDefaults] stringForKey:@"facebookAccountID"]];
+  ACAccount *twitterAccount = [accountStore accountWithIdentifier:[NSUserDefaults.standardUserDefaults stringForKey:@"twiterAccountID"]];
+  ACAccount *facebookAccount = [accountStore accountWithIdentifier:[NSUserDefaults.standardUserDefaults stringForKey:@"facebookAccountID"]];
   
   if (twitterAccount) {
     [accountStore renewCredentialsForAccount:twitterAccount completion:^(ACAccountCredentialRenewResult renewResult, NSError *error) {
       
       if (renewResult == ACAccountCredentialRenewResultRejected) {
-        [[NSUserDefaults standardUserDefaults] setObject:@"" forKey:@"twiterAccountID"];
+        [NSUserDefaults.standardUserDefaults setObject:@"" forKey:@"twiterAccountID"];
       }
       
       [accountStore renewCredentialsForAccount:facebookAccount completion:^(ACAccountCredentialRenewResult renewResult, NSError *error) {
         if (renewResult == ACAccountCredentialRenewResultRejected) {
-          [[NSUserDefaults standardUserDefaults] setObject:@"" forKey:@"facebookAccountID"];
+          [NSUserDefaults.standardUserDefaults setObject:@"" forKey:@"facebookAccountID"];
         }
       }];
     }];
@@ -152,16 +150,29 @@ typedef void(^completion)(BOOL validEmail);
   } else if (facebookAccount) {
     [accountStore renewCredentialsForAccount:facebookAccount completion:^(ACAccountCredentialRenewResult renewResult, NSError *error) {
       if (renewResult == ACAccountCredentialRenewResultRejected) {
-        [[NSUserDefaults standardUserDefaults] setObject:@"" forKey:@"facebookAccountID"];
+        [NSUserDefaults.standardUserDefaults setObject:@"" forKey:@"facebookAccountID"];
       }
     }];
   }
   
   // CloudKit discoverability
-  [[CKContainer defaultContainer] requestApplicationPermission:CKApplicationPermissionUserDiscoverability completionHandler:^(CKApplicationPermissionStatus applicationPermissionStatus, NSError * _Nullable error) {
-#warning do something
-  }];
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    [[CKContainer defaultContainer] requestApplicationPermission:CKApplicationPermissionUserDiscoverability completionHandler:^(CKApplicationPermissionStatus applicationPermissionStatus, NSError * _Nullable error) {
+      // Warn the user of the consequences.
+      if (error) {
+        UIAlertController *warningAlert = [UIAlertController alertControllerWithTitle:@"Dudes can't find you!" message:@"Dude, other dudes won't be able to send you brofists by disabling discovery. Your personal information is secure and private always, relaunch the app to enable." preferredStyle:UIAlertControllerStyleAlert];
+        [warningAlert addAction:[UIAlertAction actionWithTitle:@"Yep, dudes can't find me." style:UIAlertActionStyleDestructive handler:^(UIAlertAction * _Nonnull action) {
+          [warningAlert dismissViewControllerAnimated:YES completion:nil];
+        }]];
+        
+        [self presentViewController:warningAlert animated:YES completion:nil];
+      }
+    }];
+    
+  });
 }
+
 
 #pragma mark - Public Methods
 - (IBAction)reloadData:(id)sender {
@@ -188,7 +199,8 @@ typedef void(^completion)(BOOL validEmail);
           [self performSelectorOnMainThread:@selector(updateInterface) withObject:nil waitUntilDone:YES];
           
         } failureBlock:^(NSError * _Nullable error) {
-#warning do something
+          [self performSelectorOnMainThread:@selector(updateInterface) withObject:nil waitUntilDone:YES];
+
         }];
       }
       
@@ -305,7 +317,7 @@ typedef void(^completion)(BOOL validEmail);
     });
   });
   
-  [cell.imageView setImage:[[UIImage imageWithData:user.profileImage] resizedImage:CGSizeMake(60, 60) interpolationQuality:kCGInterpolationHigh]];
+  [cell.imageView setImage:[[UIImage imageWithData:user.profileImageData] resizedImage:CGSizeMake(60, 60) interpolationQuality:kCGInterpolationHigh]];
   
   return cell;
 }
@@ -451,7 +463,6 @@ typedef void(^completion)(BOOL validEmail);
 }
 
 - (IBAction)textfieldValueChanged:(UITextField*)textfield {
-  DUser *currentUser = [DUser currentUser];
   
   [self.searchResultButton removeTarget:self action:@selector(addFriend) forControlEvents:UIControlEventTouchUpInside];
   
@@ -459,7 +470,7 @@ typedef void(^completion)(BOOL validEmail);
     [self.searchResultButton setImage:nil forState:UIControlStateNormal];
     [self.searchResultButton setTitle:@"You" forState:UIControlStateNormal];
     [self.searchResultLabel setText:@"Dude you can't add yourself :p"];
-    [self.searchResultImageView setImage:[UIImage imageWithData:currentUser.profileImage]];
+    [self.searchResultImageView setImage:[UIImage imageWithData:currentUser.profileImageData]];
     
     [self.searchResultButton sizeToFit];
     
@@ -480,7 +491,8 @@ typedef void(^completion)(BOOL validEmail);
         [self.searchResultButton setTitle:@"" forState:UIControlStateNormal];
         
         // Get the user with that email to make sure its valid
-        CKQuery *userQuery = [[CKQuery alloc] initWithRecordType:@"Users" predicate:[NSPredicate predicateWithFormat:[NSString stringWithFormat:@"creatorRecordId = %@", textfield.text]]];
+        CKQuery *userQuery = [[CKQuery alloc] initWithRecordType:@"Users" predicate:[NSPredicate predicateWithFormat:@"creatorRecordId = %@" argumentArray:@[textfield.text]]];
+        
         
         [[[CKContainer defaultContainer] publicCloudDatabase] performQuery:userQuery inZoneWithID:nil completionHandler:^(NSArray<CKRecord *> * _Nullable results, NSError * _Nullable error) {
           
@@ -501,7 +513,7 @@ typedef void(^completion)(BOOL validEmail);
             }
             
             [UIView animateWithDuration:0.3 animations:^{
-              [self.searchResultImageView setImage:[UIImage imageWithData:friendSearchedUser.profileImage]];
+              [self.searchResultImageView setImage:[UIImage imageWithData:friendSearchedUser.profileImageData]];
               self.searchResultLabel.text = [NSString stringWithFormat:@"%@ %@", friendSearchedUser.firstName, friendSearchedUser.lastName];
               [self.searchResultButton setTitle:nil forState:UIControlStateNormal];
               [self.searchResultButton setImage:[UIImage imageNamed:imageName] forState:UIControlStateNormal];

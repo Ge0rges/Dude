@@ -138,8 +138,8 @@
         for (CKRecord *userRecord in results) {
           
           // Update the cache
-          [[NSUserDefaults standardUserDefaults] setObject:userRecord forKey:[NSString stringWithFormat:@"%@", userRecord.recordID]];
-          [[NSUserDefaults standardUserDefaults] synchronize];
+          [NSUserDefaults.standardUserDefaults setCKObject:userRecord forKey:[NSString stringWithFormat:@"%@", userRecord.recordID]];
+          [NSUserDefaults.standardUserDefaults synchronize];
           
           // Check if favorite
           if ([currentUser.favouriteContacts containsObject:userRecord.recordID]) {
@@ -152,7 +152,7 @@
               DUser *user = [DUser userWithRecord:userRecord];
               
               DUserWatch *watchUser = [DUserWatch new];
-              watchUser.profileImage = [UIImage  imageWithData:user.profileImage];
+              watchUser.profileImage = [UIImage  imageWithData:user.profileImageData];
               watchUser.fullName = [NSString stringWithFormat:@"%@ %@", user.firstName, user.lastName];
               watchUser.recordIDData = [NSKeyedArchiver archivedDataWithRootObject:user.recordID];
               
@@ -187,7 +187,7 @@
   NSMutableArray *users = [NSMutableArray new];
   for (CKRecordID *userID in (favorites) ? currentUser.favouriteContacts : currentUser.contacts) {
     // Get the user from the cache the cache
-    [users addObject:[[NSUserDefaults standardUserDefaults] objectForKey:[NSString stringWithFormat:@"%@", userID]]];
+    [users addObject:[NSUserDefaults.standardUserDefaults CKObjectForKey:[NSString stringWithFormat:@"%@", userID]]];
   }
   
   return [NSSet setWithArray:users];
@@ -197,7 +197,7 @@
 - (DMessage*)latestMessageForContact:(DUser*)user {
   DUser *currentUser = [DUser currentUser];
 
-  __block DMessage *message = [[NSUserDefaults standardUserDefaults] objectForKey:[NSString stringWithFormat:@"lastSeen%@%@", currentUser.recordID, user.recordID]];
+  __block DMessage *message = [NSUserDefaults.standardUserDefaults objectForKey:[NSString stringWithFormat:@"lastSeen%@%@", currentUser.recordID, user.recordID]];
   if (message) {
     return message;
   }
@@ -212,7 +212,7 @@
         
         [[[CKContainer defaultContainer] publicCloudDatabase] fetchRecordWithID:reference.recordID completionHandler:^(CKRecord * _Nullable record, NSError * _Nullable error) {
           message = (DMessage*)[NSKeyedUnarchiver unarchiveObjectWithData:record[@"Message"]];// Unarchive the NSData into DMessage
-          [[NSUserDefaults standardUserDefaults] setObject:message forKey:[NSString stringWithFormat:@"lastSeen%@%@", currentUser.recordID, user.recordID]];
+          [NSUserDefaults.standardUserDefaults setObject:message forKey:[NSString stringWithFormat:@"lastSeen%@%@", currentUser.recordID, user.recordID]];
         }];
       }
     }
@@ -342,8 +342,9 @@
   // Build the notification record
   CKRecord *notificationRecord = [[CKRecord alloc] initWithRecordType:@"Notification"];
   notificationRecord[@"Message"] = [NSString stringWithFormat:@"Duderino, %@ just added you. Why not add them back?", currentUser.firstName];
-  notificationRecord[@"Receiver"] = [NSString stringWithFormat:@"%@", user.recordID];
-  notificationRecord[@"Developer"] = @NO;
+  notificationRecord[@"ReceiverRecordIDName"] = user.recordID.recordName;
+  notificationRecord[@"Receiver"] = [[CKReference alloc] initWithRecordID:user.recordID action:CKReferenceActionDeleteSelf];
+  notificationRecord[@"Developer"] = 0;
 
   // Send the notification.
   [[[CKContainer defaultContainer] publicCloudDatabase] saveRecord:notificationRecord completionHandler:^(CKRecord * _Nullable record, NSError * _Nullable error) {
@@ -359,12 +360,12 @@
 
   NSString *key = [NSString stringWithFormat:@"lastStatusRequest%@", user.recordID];
   
-  NSDate *lastRequestDate = [[NSUserDefaults standardUserDefaults] objectForKey:key];
+  NSDate *lastRequestDate = [NSUserDefaults.standardUserDefaults objectForKey:key];
   
   if (!user.recordID || (-[lastRequestDate timeIntervalSinceNow] <= 600 && lastRequestDate)) return NO;
   
   // Set time for status request
-  [[NSUserDefaults standardUserDefaults] setObject:[NSDate date] forKey:key];
+  [NSUserDefaults.standardUserDefaults setObject:[NSDate date] forKey:key];
   
   // Make sure we are allowed request the status
   BOOL isBlocked = [user.blockedContacts containsObject:currentUser.recordID];
@@ -375,8 +376,9 @@
   // Build the notification record
   CKRecord *notificationRecord = [[CKRecord alloc] initWithRecordType:@"Notification"];
   notificationRecord[@"Message"] = [NSString stringWithFormat:@"Duderino, %@ would like to know what you're up to.", currentUser.firstName];
-  notificationRecord[@"Receiver"] = [NSString stringWithFormat:@"%@", user.recordID];
-  notificationRecord[@"Developer"] = @NO;
+  notificationRecord[@"ReceiverRecordIDName"] = user.recordID.recordName;
+  notificationRecord[@"Receiver"] = [[CKReference alloc] initWithRecordID:user.recordID action:CKReferenceActionDeleteSelf];
+  notificationRecord[@"Developer"] = 0;
 
   // Send the notification.
   [[[CKContainer defaultContainer] publicCloudDatabase] saveRecord:notificationRecord completionHandler:^(CKRecord * _Nullable record, NSError * _Nullable error) {

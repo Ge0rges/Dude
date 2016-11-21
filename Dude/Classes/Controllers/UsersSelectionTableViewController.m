@@ -105,7 +105,7 @@
   DUser *user = ((NSArray*)splittedContacts[(NSString*)[indexTitles allObjects][indexPath.section]])[indexPath.row];
   cell.textLabel.text = [NSString stringWithFormat:@"%@ %@", user.firstName, user.lastName];
   
-  [cell.imageView setImage:[UIImage imageWithData:user.profileImage]];
+  [cell.imageView setImage:[UIImage imageWithData:user.profileImageData]];
   
   // Add checkmarck if user is already selected
   cell.accessoryType = ([selectedContacts containsObject:user]) ? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;

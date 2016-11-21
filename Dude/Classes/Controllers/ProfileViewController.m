@@ -54,6 +54,8 @@
 
 @property (strong, nonatomic) IBOutlet UIToolbar *toolbar;
 
+@property (nonatomic) BOOL isCurrentUser;
+
 @end
 
 @implementation ProfileViewController
@@ -64,13 +66,17 @@
   // Update status bar
   [self setNeedsStatusBarAppearanceUpdate];
   
+  // Check if we're showing the current user's profile
   if (!self.profileUser) {
     self.profileUser = [DUser currentUser];
+
+    self.isCurrentUser = YES;
   }
   
   // Update UI
   [self updateProfileInterface];
   
+#warning make this on notification
   // Refresh the timestamp and message
   [NSTimer scheduledTimerWithTimeInterval:60.0 target:self selector:@selector(updateProfileInterface) userInfo:nil repeats:YES];
 }
@@ -78,7 +84,7 @@
 - (void)viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
   
-  if ([self.profileUser isEqual:[DUser currentUser]]) {
+  if (self.isCurrentUser) {
     [self.profileUser fetchWithSuccessBlock:^(DUser * _Nullable fetchedUser) {
       self.profileUser = fetchedUser;
       
@@ -106,8 +112,8 @@
   DMessage *message = [[ContactsManager sharedInstance] latestMessageForContact:self.profileUser];
 
   // Status Update
-  NSString *locationErrorText = ([self.profileUser isEqual:[DUser currentUser]]) ? @"Dude, share a public location" : @"Dude, no known location";
-  NSString *lastSeenErrorText = ([self.profileUser isEqual:[DUser currentUser]]) ? @"Dude, share a public status" : @"Dude, no status available";
+  NSString *locationErrorText = (self.isCurrentUser) ? @"Dude, share a public location" : @"Dude, no known location";
+  NSString *lastSeenErrorText = (self.isCurrentUser) ? @"Dude, share a public status" : @"Dude, no status available";
   
   NSString *locationText = [NSString stringWithFormat:@"%@ - %@", message.city, message.timestamp];
   
@@ -144,7 +150,7 @@
     } else {
       // Create new Pin
       userLocationAnnotation = [MKPointAnnotation new];
-      userLocationAnnotation.title = ([self.profileUser isEqual:[DUser currentUser]]) ? @"Your Public Location" : [NSString stringWithFormat:@"%@'s Location", self.profileUser.firstName];
+      userLocationAnnotation.title = (self.isCurrentUser) ? @"Your Public Location" : [NSString stringWithFormat:@"%@'s Location", self.profileUser.firstName];
     }
     
     userLocationAnnotation.coordinate = message.location.coordinate;
@@ -163,7 +169,7 @@
     [self.statusLocationMapView setRegion:region animated:YES];
     
   } else if (!message) {
-    // modify height constraint
+    // Modify height constraint
     NSLayoutConstraint *heightConstraint;
     for (NSLayoutConstraint *constraint in self.statusLocationMapView.constraints) {
       if (constraint.firstAttribute == NSLayoutAttributeHeight) {
@@ -178,8 +184,11 @@
     self.statusLocationMapView.hidden = YES;
   }
   
-  // Variable
-  if (![self.profileUser isEqual:[DUser currentUser]]) {
+  [self.view updateConstraints];
+  
+  // Based on if not current user
+  if (!self.isCurrentUser) {
+    
     // Secondary button
     if ([[ContactsManager sharedInstance] contactBlockedCurrentUser:self.profileUser]) {
       [self.secondaryButton setImage:[UIImage imageNamed:@"Blocked"] forState:UIControlStateNormal];
@@ -191,6 +200,7 @@
     } else {
       [self.secondaryButton setImage:[UIImage imageNamed:@"Block Person"] forState:UIControlStateNormal];
       [self.secondaryButton addTarget:self action:@selector(toggleBlock) forControlEvents:UIControlEventTouchUpInside];
+
     }
     
     // Favorite
@@ -210,7 +220,7 @@
     
     // Request Button
     NSString *key = [NSString stringWithFormat:@"lastStatusRequest%@", self.profileUser.recordID];
-    NSDate *lastRequestDate = [[NSUserDefaults standardUserDefaults] objectForKey:key];
+    NSDate *lastRequestDate = [NSUserDefaults.standardUserDefaults objectForKey:key];
     
     if (-[lastRequestDate timeIntervalSinceNow] <= 600 && lastRequestDate) {
       // Disable the button, change the text and reenable it in 10 mins.
@@ -226,17 +236,17 @@
       [self.requestStatusButton setTitle:[NSString stringWithFormat:@"     What's up %@?", self.profileUser.firstName] forState:UIControlStateNormal];
     }
     
-  } else {// Current user
+  } else {// It's the current user
     // Secondary button - Email
     [self.secondaryButton setTitle:@"" forState:UIControlStateNormal];
     [self.secondaryButton setImage:nil forState:UIControlStateNormal];
-    
+
     // Send update text
     self.sendUpdateLabel.text = @"Compose a new Update";
   }
   
   // Profile Image
-  [self.profileImageView setImage:[UIImage imageWithData:self.profileUser.profileImage]];
+  [self.profileImageView setImage:[UIImage imageWithData:self.profileUser.profileImageData]];
   
   // Name label
   [self.nameLabel setText:[NSString stringWithFormat:@"%@ %@", self.profileUser.firstName, self.profileUser.lastName]];
@@ -265,7 +275,7 @@
   
   if (requested) {
     NSString *key = [NSString stringWithFormat:@"lastStatusRequest%@", self.profileUser.recordID];
-    NSDate *lastRequestDate = [[NSUserDefaults standardUserDefaults] objectForKey:key];
+    NSDate *lastRequestDate = [NSUserDefaults.standardUserDefaults objectForKey:key];
 
     // Disable the button, change the text and reenable it in 10 mins.
     self.requestStatusButton.enabled = NO;
@@ -361,7 +371,7 @@
 }
 
 - (IBAction)composeUpdate:(id)sender {
-  [self performSegueWithIdentifier:@"showMessages" sender:(![self.profileUser isEqual:[DUser currentUser]]) ? self.profileUser : nil];
+  [self performSegueWithIdentifier:@"showMessages" sender:(!self.isCurrentUser) ? self.profileUser : nil];
 }
 
 - (IBAction)editProfileImage:(id)sender {
@@ -427,29 +437,12 @@
   }
 }
 
-- (IBAction)changeEmail {
-  // Tell the user that this will be avaible in the future
-  UIAlertController *incorrectCredentialsAlertController = [UIAlertController alertControllerWithTitle:@"Can't change Email" message:@"Dude, you can't change your account's email in app yet. Contact us on getdudeapp.com" preferredStyle:UIAlertControllerStyleAlert];
-  [incorrectCredentialsAlertController addAction:[UIAlertAction actionWithTitle:@"Open Link" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-    // Open link in safari
-    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"https://getdudeapp.com/contact"]];
-  }]];
-  
-  [incorrectCredentialsAlertController addAction:[UIAlertAction actionWithTitle:@"Ok" style:UIAlertActionStyleCancel handler:nil]];
-  
-}
-
-- (IBAction)logout:(id)sender {
-  [DUser logOut];
-  [self dismissViewControllerAnimated:YES completion:nil];
-}
-
 #pragma mark - UIImagePickerController
 - (void)imagePickerControllerDidCancel:(UIImagePickerController*)picker {
   [picker dismissViewControllerAnimated:YES completion:NULL];
 }
 
-- (void)imagePickerController:(UIImagePickerController*)picker didFinishPickingMediaWithInfo:(NSDictionary*)info {
+- (void)imagePickerController:(UIImagePickerController*)picker didFinishPickingMediaWithInfo:(nonnull NSDictionary<NSString *,id> *)info {
   [picker dismissViewControllerAnimated:YES completion:nil];
   
   UIImage *selectedImage = info[UIImagePickerControllerEditedImage];
@@ -458,14 +451,25 @@
   // Set user image file
   NSData *selectedImageData = UIImageJPEGRepresentation(thumbnailImage, 1);
   
-  DUser *currentUser = [DUser currentUser];
-  
   if (selectedImageData) {
-    currentUser.profileImage = selectedImageData;
+    self.profileUser.profileImageData = selectedImageData;
     [self.profileImageView setImage:thumbnailImage];
+  
+  } else {
+#warning handle error
+    NSLog(@"No image data for selected image. wut.");
   }
   
-  [currentUser saveWithCompletion:nil];
+  [self.profileUser saveWithCompletion:^(CKRecord * _Nullable record, NSError * _Nullable error) {
+    if (error) {
+#warning handle
+      NSLog(@"Error saving image: %@", error);
+    
+    } else {
+      self.profileUser = [DUser currentUser];
+      [self updateProfileInterface];
+    }
+  }];
 }
 
 #pragma mark - Navigation

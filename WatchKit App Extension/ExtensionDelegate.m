@@ -40,7 +40,6 @@
     
     DUserWatch *sendUser;
     
-#warning check if payload has a recordID key that is valid
     if (!remoteNotification[@"recordID"]) {
       NSLog(@"%@", remoteNotification);
     }

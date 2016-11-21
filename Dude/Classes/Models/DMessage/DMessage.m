@@ -78,8 +78,7 @@ NSString* const SenderFullNameKey = @"senderFullName";
         // Notify Devs || Build the notification record
         CKRecord *notificationRecord = [[CKRecord alloc] initWithRecordType:@"Notification"];
         notificationRecord[@"Message"] = [NSString stringWithFormat:@"Dude, unsupported category: [%@]", self.category];
-        notificationRecord[@"Receiver"] = @"";
-        notificationRecord[@"Developer"] = @YES;
+        notificationRecord[@"Developer"] = @1;
         
         // Send the notification.
         [[[CKContainer defaultContainer] publicCloudDatabase] saveRecord:notificationRecord completionHandler:^(CKRecord * _Nullable record, NSError * _Nullable error) {
@@ -668,8 +667,8 @@ NSString* const SenderFullNameKey = @"senderFullName";
            @"Lounge":	@"Dude, I'm relaxing at name.",
            @"Night Market":	@"Dude, I'm shopping at name.",
            @"Nightclub":	@"Dude, I'm partying at name.",
-           @"Other Nightlife":	@"Dude, I'm having fun at name.",
-           @"Pub": 	@"Dude, I'm pumping it up at name.",
+           @"Other Nightlife":	@"Dude, I'm having a blast at name.",
+           @"Pub": 	@"Dude, I'm staying up all night at name.",
            @"Sake Bar":	@"Dude, I'm drinking sake at name.",
            @"Speakeasy":	@"Dude, I'm buying adult beverages at name.",
            @"Sports Bar":	@"Dude, I'm socializing at name.",
