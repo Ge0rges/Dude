@@ -4,32 +4,32 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
+		<key>Bolts-iOS.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>Bolts-watchOS.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>JCNotificationBannerPresenter.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>Pods-Dude-Bolts.xcscheme</key>
+		<key>Parse-iOS.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>Pods-Dude-Parse.xcscheme</key>
+		<key>Parse-watchOS.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 		</dict>
 		<key>Pods-Dude.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
-		<key>Pods-Watch Extension-Bolts.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
-		<key>Pods-Watch Extension-Parse.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
@@ -52,47 +52,47 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>0D29EB2EE1D3FC1DF0681DEC54D16ED5</key>
+		<key>0628D87544C53EE85E85536657A71E4A</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>17310B6D1F477C6236CF57A712E92059</key>
+		<key>76CBE61BFA641D10C1E2F5C4BB75605C</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>3C96F3CB4F01920556B65E64A9526048</key>
+		<key>78D6FAA999DCA45A1C2F21D5F1184C4F</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>86F7231B5D6C7D918C28F8A5E78E12ED</key>
+		<key>7D47C51FF727A0A6221B0535519B4AFE</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>8CF3F4808D7134592E943E394F303360</key>
+		<key>7D4AC162D20B2562D3CF6AA629CC47C7</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>8DF227F81D0903E1E1C37BEEB3317FC7</key>
+		<key>8FE92979BA9D13806D4AEB2F0E868FDE</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>A1042EDDDF18E66CA7DC4A6EFBDE1730</key>
+		<key>A0DBBFFCE57369D5CBB09023909CBC89</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>C0537291D567CA222A6C061601E6570C</key>
+		<key>AB8A0F99C08D2AC25AACC9C8E56B21D9</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>F4071B8F9AB8B0D6233F77812D090893</key>
+		<key>D35C8D21E0238B2C0B31A76489626139</key>
 		<dict>
 			<key>primary</key>
 			<true/>

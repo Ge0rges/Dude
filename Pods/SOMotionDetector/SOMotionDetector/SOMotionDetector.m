@@ -36,7 +36,7 @@ CGFloat kMinimumRunningAcceleration = 3.5f;
 @property (strong, nonatomic) NSTimer *shakeDetectingTimer;
 
 @property (strong, nonatomic) CLLocation *currentLocation;
-@property (nonatomic) SOMotionType previouseMotionType;
+@property (nonatomic) SOMotionType previousMotionType;
 
 #pragma mark - Accelerometer manager
 @property (strong, nonatomic) CMMotionManager *motionManager;
@@ -61,13 +61,26 @@ CGFloat kMinimumRunningAcceleration = 3.5f;
 - (id)init
 {
     self = [super init];
-    if (self)
-    {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleLocationChangedNotification:) name:LOCATION_DID_CHANGED_NOTIFICATION object:nil];
+    if (self) {
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(handleLocationChangedNotification:)
+                                                     name:LOCATION_DID_CHANGED_NOTIFICATION
+                                                   object:nil];
         self.motionManager = [[CMMotionManager alloc] init];
     }
     
     return self;
+}
+
++ (BOOL)motionHardwareAvailable
+{
+    static BOOL isAvailable = NO;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        isAvailable = [CMMotionActivityManager isActivityAvailable];
+    });
+    
+    return isAvailable;
 }
 
 #pragma mark - Public Methods
@@ -75,55 +88,62 @@ CGFloat kMinimumRunningAcceleration = 3.5f;
 {
     [[SOLocationManager sharedInstance] start];
     
-    self.shakeDetectingTimer = [NSTimer scheduledTimerWithTimeInterval:0.01f target:self selector:@selector(detectShaking) userInfo:Nil repeats:YES];
+    self.shakeDetectingTimer = [NSTimer scheduledTimerWithTimeInterval:0.01f
+                                                                target:self
+                                                              selector:@selector(detectShaking)
+                                                              userInfo:Nil
+                                                               repeats:YES];
     
-    [self.motionManager startAccelerometerUpdatesToQueue:[[NSOperationQueue alloc] init] withHandler:^(CMAccelerometerData *accelerometerData, NSError *error)
-     {
+    [self.motionManager startAccelerometerUpdatesToQueue:[[NSOperationQueue alloc] init]
+                                             withHandler:^(CMAccelerometerData *accelerometerData, NSError *error)
+    {
          _acceleration = accelerometerData.acceleration;
          [self calculateMotionType];
          dispatch_async(dispatch_get_main_queue(), ^{
-             if (self.delegate && [self.delegate respondsToSelector:@selector(motionDetector:accelerationChanged:)])
-             {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+             if (self.delegate && [self.delegate respondsToSelector:@selector(motionDetector:accelerationChanged:)]) {
                  [self.delegate motionDetector:self accelerationChanged:self.acceleration];
+             }
+#pragma GCC diagnostic pop
+             
+             
+             if (self.accelerationChangedBlock) {
+                 self.accelerationChangedBlock (self.acceleration);
              }
          });
      }];
     
-    if (self.useM7IfAvailable && [CMMotionActivityManager isActivityAvailable])
-    {
-        if (!self.motionActivityManager)
-        {
+    if (self.useM7IfAvailable && [SOMotionDetector motionHardwareAvailable]) {
+        if (!self.motionActivityManager) {
             self.motionActivityManager = [[CMMotionActivityManager alloc] init];
         }
         
         [self.motionActivityManager startActivityUpdatesToQueue:[[NSOperationQueue alloc] init] withHandler:^(CMMotionActivity *activity) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 
-                if (activity.walking)
-                {
+                if (activity.walking) {
                     _motionType = MotionTypeWalking;
-                }
-                else if (activity.running)
-                {
+                } else if (activity.running) {
                     _motionType = MotionTypeRunning;
-                }
-                else if (activity.automotive)
-                {
+                } else if (activity.automotive) {
                     _motionType = MotionTypeAutomotive;
-                }
-                else if (activity.stationary || activity.unknown)
-                {
+                } else if (activity.stationary || activity.unknown) {
                     _motionType = MotionTypeNotMoving;
                 }
                 
                 // If type was changed, then call delegate method
-                if (self.motionType != self.previouseMotionType)
-                {
-                    self.previouseMotionType = self.motionType;
-                    
-                    if (self.delegate && [self.delegate respondsToSelector:@selector(motionDetector:motionTypeChanged:)])
-                    {
+                if (self.motionType != self.previousMotionType) {
+                    self.previousMotionType = self.motionType;
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+                    if (self.delegate && [self.delegate respondsToSelector:@selector(motionDetector:motionTypeChanged:)]) {
                         [self.delegate motionDetector:self motionTypeChanged:self.motionType];
+                    }
+#pragma GCC diagnostic pop
+                    
+                    if (self.motionTypeChangedBlock) {
+                        self.motionTypeChangedBlock (self.motionType);
                     }
                 }
             });
@@ -165,37 +185,34 @@ CGFloat kMinimumRunningAcceleration = 3.5f;
 #pragma mark - Private Methods
 - (void)calculateMotionType
 {
-    if (self.useM7IfAvailable && [CMMotionActivityManager isActivityAvailable])
-    {
+    if (self.useM7IfAvailable && [SOMotionDetector motionHardwareAvailable]) {
         return;
     }
     
-    if (_currentSpeed < kMinimumSpeed)
-    {
+    if (_currentSpeed < kMinimumSpeed) {
         _motionType = MotionTypeNotMoving;
-    }
-    else if (_currentSpeed <= kMaximumWalkingSpeed)
-    {
+    } else if (_currentSpeed <= kMaximumWalkingSpeed) {
         _motionType = _isShaking ? MotionTypeRunning : MotionTypeWalking;
-    }
-    else if (_currentSpeed <= kMaximumRunningSpeed)
-    {
+    } else if (_currentSpeed <= kMaximumRunningSpeed) {
         _motionType = _isShaking ? MotionTypeRunning : MotionTypeAutomotive;
-    }
-    else
-    {
+    } else {
         _motionType = MotionTypeAutomotive;
     }
     
     // If type was changed, then call delegate method
-    if (self.motionType != self.previouseMotionType)
-    {
-        self.previouseMotionType = self.motionType;
+    if (self.motionType != self.previousMotionType) {
+        self.previousMotionType = self.motionType;
         
         dispatch_async(dispatch_get_main_queue(), ^{
-            if (self.delegate && [self.delegate respondsToSelector:@selector(motionDetector:motionTypeChanged:)])
-            {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+            if (self.delegate && [self.delegate respondsToSelector:@selector(motionDetector:motionTypeChanged:)]) {
                 [self.delegate motionDetector:self motionTypeChanged:self.motionType];
+            }
+#pragma GCC diagnostic pop
+            
+            if (self.motionTypeChangedBlock) {
+                self.motionTypeChangedBlock (self.motionType);
             }
         });
     }
@@ -205,22 +222,19 @@ CGFloat kMinimumRunningAcceleration = 3.5f;
 {
     //Array for collecting acceleration for last one seconds period.
     static NSMutableArray *shakeDataForOneSec = nil;
-    //Counter for calculating complition of one second interval
+    //Counter for calculating completion of one second interval
     static float currentFiringTimeInterval = 0.0f;
     
     currentFiringTimeInterval += 0.01f;
-    if (currentFiringTimeInterval < 1.0f) // if one second time intervall not completed yet
-    {
+    if (currentFiringTimeInterval < 1.0f) {// if one second time intervall not completed yet
         if (!shakeDataForOneSec)
             shakeDataForOneSec = [NSMutableArray array];
         
         // Add current acceleration to array
         NSValue *boxedAcceleration = [NSValue value:&_acceleration withObjCType:@encode(CMAcceleration)];
         [shakeDataForOneSec addObject:boxedAcceleration];
-    }
-    else
-    {
-        // Now, when one second was elapsed, calculate shake count in this interval. If the will be at least one shake then
+    } else {
+        // Now, when one second was elapsed, calculate shake count in this interval. If there will be at least one shake then
         // we'll determine it as shaked in all this one second interval.
         
         int shakeCount = 0;
@@ -237,8 +251,7 @@ CGFloat kMinimumRunningAcceleration = 3.5f;
             
             double vectorSum = sqrt(accX_2 + accY_2 + accZ_2);
             
-            if (vectorSum >= kMinimumRunningAcceleration)
-            {
+            if (vectorSum >= kMinimumRunningAcceleration) {
                 shakeCount++;
             }
             /*********************************/
@@ -255,13 +268,20 @@ CGFloat kMinimumRunningAcceleration = 3.5f;
 {
     self.currentLocation = [SOLocationManager sharedInstance].lastLocation;
     _currentSpeed = self.currentLocation.speed;
-    if (_currentSpeed < 0)
+    if (_currentSpeed < 0) {
         _currentSpeed = 0;
+    }
     
     dispatch_async(dispatch_get_main_queue(), ^{
-        if (self.delegate && [self.delegate respondsToSelector:@selector(motionDetector:locationChanged:)])
-        {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+        if (self.delegate && [self.delegate respondsToSelector:@selector(motionDetector:locationChanged:)]) {
             [self.delegate motionDetector:self locationChanged:self.currentLocation];
+        }
+#pragma GCC diagnostic pop
+        
+        if (self.locationChangedBlock) {
+            self.locationChangedBlock (self.currentLocation);
         }
     });
 

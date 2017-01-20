@@ -1,6 +1,5 @@
 source 'https://github.com/CocoaPods/Specs.git'
-platform :ios, '9.0'
-link_with 'Dude', 'Watch Extension'
+platform :ios, '10.0'
 
 def shared_pods
   pod 'Parse'

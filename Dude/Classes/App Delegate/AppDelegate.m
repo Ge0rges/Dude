@@ -43,7 +43,13 @@
   // Register our subclass
   [DUser registerSubclass];
 
-  [Parse setApplicationId:@"Lwdk0Qnb9755omfrz9Jt1462lzCyzBSTU4lSs37S" clientKey:@"bqhjVGFBHTtfjyoRG8WlYBrjqkulOjcilhtQursd"];
+  [Parse initializeWithConfiguration:[ParseClientConfiguration configurationWithBlock:^(id configuration) {
+    configuration.applicationId = @"Lwdk0Qnb9755omfrz9Jt1462lzCyzBSTU4lSs37S";
+    configuration.clientKey = @"bqhjVGFBHTtfjyoRG8WlYBrjqkulOjcilhtQursd";
+    configuration.server = @"https://parseapi.back4app.com";
+    configuration.localDatastoreEnabled = YES; // Enable local data store
+  }]];
+  
   [PFAnalytics trackAppOpenedWithLaunchOptions:launchOptions];
   
   [PFUser enableRevocableSessionInBackground];
