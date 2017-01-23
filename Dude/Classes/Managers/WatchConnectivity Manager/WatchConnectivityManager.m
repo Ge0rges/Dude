@@ -46,6 +46,18 @@
 }
 
 #pragma mark - WCSessionDelegate
+- (void)session:(WCSession *)session activationDidCompleteWithState:(WCSessionActivationState)activationState error:(NSError *)error {
+  return;
+}
+
+- (void)sessionDidBecomeInactive:(WCSession *)session {
+  return;
+}
+
+- (void)sessionDidDeactivate:(WCSession *)session {
+  return;
+}
+
 - (void)session:(WCSession *)session didReceiveMessage:(nonnull NSDictionary<NSString *,id> *)message {
   // Send a message
   if ([message[WatchRequestTypeKey] isEqualToString:WatchRequestSendMessageValue]) {

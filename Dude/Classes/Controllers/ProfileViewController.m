@@ -408,7 +408,7 @@
   UIAlertController *incorrectCredentialsAlertController = [UIAlertController alertControllerWithTitle:@"Can't change Email" message:@"Dude, you can't change your account's email in app yet. Contact us on getdudeapp.com" preferredStyle:UIAlertControllerStyleAlert];
   [incorrectCredentialsAlertController addAction:[UIAlertAction actionWithTitle:@"Open Link" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
     // Open link in safari
-    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"https://getdudeapp.com/contact"]];
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"https://getdudeapp.com/contact"]  options:@{} completionHandler:nil];
   }]];
   
   [incorrectCredentialsAlertController addAction:[UIAlertAction actionWithTitle:@"Ok" style:UIAlertActionStyleCancel handler:nil]];

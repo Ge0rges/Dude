@@ -72,13 +72,13 @@ NSString* const LastSeensKey = @"lastSeens";
   if ([key isEqualToString:@"lastSeens"]) {
     return;
   }
+
   
-#warning much bad such ignorance of standards
+  // Make sure we don't have our own email in any of the contact arrays
   if ([object isKindOfClass:[NSSet class]]) {
     NSMutableSet *objectSet = [(NSSet*)object mutableCopy];
     
-    // Make sure we don't have our own email in any of the contact arrays
-    if (self.email) {// Check that email isn't nil, it will cause a crash otherwise
+    if (self.email) {// Check that email isn't nil (it should never be)
       [objectSet removeObject:self.email];
     }
     
@@ -252,7 +252,7 @@ NSString* const LastSeensKey = @"lastSeens";
     
     if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]]) {
       [ac addAction:[UIAlertAction actionWithTitle:@"Open Preferences" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]];
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString] options:@{} completionHandler:nil];
       }]];
     }
     

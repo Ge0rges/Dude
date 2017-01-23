@@ -11,6 +11,7 @@
 // Controllers
 #import "UsersTableViewController.h"
 #import "MessagesTableViewController.h"
+#import "ProfileViewController.h"
 
 // Managers
 #import "MessagesManager.h"
@@ -26,6 +27,7 @@
 
 // Frameworks
 #import <Accounts/Accounts.h>
+#import <UserNotifications/UserNotifications.h>
 
 @interface AppDelegate ()
 
@@ -43,41 +45,25 @@
   // Register our subclass
   [DUser registerSubclass];
 
-  [Parse initializeWithConfiguration:[ParseClientConfiguration configurationWithBlock:^(id configuration) {
-    configuration.applicationId = @"Lwdk0Qnb9755omfrz9Jt1462lzCyzBSTU4lSs37S";
-    configuration.clientKey = @"bqhjVGFBHTtfjyoRG8WlYBrjqkulOjcilhtQursd";
-    configuration.server = @"https://parseapi.back4app.com";
+  [Parse initializeWithConfiguration:[ParseClientConfiguration configurationWithBlock:^(id<ParseMutableClientConfiguration> configuration) {
+    configuration.applicationId = @"fc8a22bb-5ff9-4fff-b114-b6be71619e4a";
+    configuration.clientKey = @"";
+    configuration.server = @"https://parseapi.buddy.com/parse";
     configuration.localDatastoreEnabled = YES; // Enable local data store
   }]];
   
-  [PFAnalytics trackAppOpenedWithLaunchOptions:launchOptions];
   
   [PFUser enableRevocableSessionInBackground];
   
   // Register for Push Notifications
-  UIUserNotificationType userNotificationTypes = (UIUserNotificationTypeAlert | UIUserNotificationTypeBadge | UIUserNotificationTypeSound);
   
   // Notification Actions
-  UIMutableUserNotificationAction *resetAction = [UIMutableUserNotificationAction new];
-  resetAction.identifier = @"REPLY_ACTION";
-  resetAction.title = @"Reply";
-  resetAction.activationMode = UIUserNotificationActivationModeForeground;
+  UNNotificationAction *resetAction = [UNNotificationAction actionWithIdentifier:@"REPLY_ACTION" title:@"Reply" options:UNNotificationActionOptionForeground];
   
-  UIMutableUserNotificationCategory *replyCategory = [UIMutableUserNotificationCategory new];
-  replyCategory.identifier = @"REPLY_CATEGORY";
-  [replyCategory setActions:@[resetAction] forContext:UIUserNotificationActionContextMinimal];
+  UNNotificationCategory *replyCategory = [UNNotificationCategory categoryWithIdentifier:@"REPLY_CATEGORY" actions:@[resetAction] intentIdentifiers:@[] options:UNNotificationCategoryOptionNone];
   
-  UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:userNotificationTypes categories:[NSSet setWithObject:replyCategory]];
-  
-  [application registerUserNotificationSettings:settings];
-  [application registerForRemoteNotifications];
-  
-  // Check if app was opened from a location
-  UILocalNotification *notification = launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];
-  if (notification) {
-    [self application:application didReceiveRemoteNotification:(NSDictionary*)notification];
-  }
-  
+  [[UNUserNotificationCenter currentNotificationCenter] setNotificationCategories:[NSSet setWithObject:replyCategory]];
+
   // Start a WCSession to receive messages
   [[WatchConnectivityManager sharedManager] activateSession];
   
@@ -120,10 +106,10 @@
 
 - (void)application:(UIApplication*)application didReceiveRemoteNotification:(NSDictionary*)userInfo {
   // Get the push data
-  NSString *title = userInfo[@"aps"][@"alert"][@"title"];
+  NSString *notificationTitle = userInfo[@"aps"][@"alert"][@"title"];
   NSString *notificationMessage = userInfo[@"aps"][@"alert"][@"body"];
-  NSString *username = userInfo[@"username"];
-  NSString *email = userInfo[@"email"];
+  NSString *senderUsername = userInfo[@"username"];
+  NSString *senderEmail = userInfo[@"email"];
   
   url = [NSURL URLWithString:userInfo[@"url"]];
   
@@ -134,23 +120,35 @@
   if (application) {// While in app
     JCNotificationBanner *banner;
     if (url) {
-      banner = [[JCNotificationBanner alloc] initWithTitle:title message:notificationMessage tapHandler:^{
-        [[UIApplication sharedApplication] openURL:url];
+      banner = [[JCNotificationBanner alloc] initWithTitle:notificationTitle message:notificationMessage tapHandler:^{
+        [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
       }];
       
       
     } else if (latitude && longitude) {
       MKPlacemark *placemark = [[MKPlacemark alloc] initWithCoordinate:CLLocationCoordinate2DMake(latitude, longitude) addressDictionary:nil];
       mapItem = [[MKMapItem alloc] initWithPlacemark:placemark];
-      mapItem.name = [NSString stringWithFormat:@"%@'s Location", username];
+      mapItem.name = [NSString stringWithFormat:@"%@'s Location", senderUsername];
       
-      banner = [[JCNotificationBanner alloc] initWithTitle:title message:notificationMessage tapHandler:^{
+      banner = [[JCNotificationBanner alloc] initWithTitle:notificationTitle message:notificationMessage tapHandler:^{
         [mapItem openInMapsWithLaunchOptions:nil];
       }];
       
     } else {
-      banner = [[JCNotificationBanner alloc] initWithTitle:title message:notificationMessage tapHandler:^{
-#warning open the PVC of the user
+      banner = [[JCNotificationBanner alloc] initWithTitle:notificationTitle message:notificationMessage tapHandler:^{
+        // Fetch the sender
+        PFQuery *senderQuery = [DUser query];
+        [senderQuery whereKey:@"email" equalTo:senderEmail];
+        
+        [senderQuery fromLocalDatastore];
+        
+        DUser *sender = (DUser*)[senderQuery getFirstObject];
+        
+        // Present the Profile VC of the user
+        ProfileViewController *profileViewController = [self.window.rootViewController.storyboard instantiateViewControllerWithIdentifier:@"profileVC"];
+        profileViewController.profileUser = sender;
+        
+        [self.visibleViewController presentViewController:profileViewController animated:YES completion:nil];
       }];
       
     }
@@ -162,8 +160,8 @@
     DUser *currentUser = [DUser currentUser];
 
     NSMutableArray *contacts = [currentUser.contactsEmails mutableCopy];
-    [contacts removeObject:email];
-    [contacts insertObject:email atIndex:0];
+    [contacts removeObject:senderEmail];
+    [contacts insertObject:senderEmail atIndex:0];
     
     [currentUser setContactsEmails:[NSSet setWithArray:contacts]];
 
@@ -179,17 +177,30 @@
     
   } else {// Regular notification
     if (url) {
-      [[UIApplication sharedApplication] openURL:url];
+      [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
       
     } else if (latitude && longitude) {
       MKPlacemark *placemark = [[MKPlacemark alloc] initWithCoordinate:CLLocationCoordinate2DMake(latitude, longitude) addressDictionary:nil];
       mapItem = [[MKMapItem alloc] initWithPlacemark:placemark];
-      mapItem.name = [NSString stringWithFormat:@"%@'s Location", username];
+      mapItem.name = [NSString stringWithFormat:@"%@'s Location", senderEmail];
       
       [mapItem openInMapsWithLaunchOptions:nil];
       
     } else {
-#warning open the PVC of the user
+      // Fetch the sender
+      PFQuery *senderQuery = [DUser query];
+      [senderQuery whereKey:@"email" equalTo:senderEmail];
+      
+      [senderQuery fromLocalDatastore];
+      
+      DUser *sender = (DUser*)[senderQuery getFirstObject];
+      
+      // Present the Profile VC of the user
+      ProfileViewController *profileViewController = [self.window.rootViewController.storyboard instantiateViewControllerWithIdentifier:@"profileVC"];
+      profileViewController.profileUser = sender;
+      
+      [self.visibleViewController presentViewController:profileViewController animated:YES completion:nil];
+      
       [PFPush handlePush:userInfo];
     }
   }
@@ -205,10 +216,10 @@
   
   DUser *sender = (DUser*)[senderQuery getFirstObject];
   
-  MessagesTableViewController *messagesTableVC = [self.window.rootViewController.storyboard instantiateViewControllerWithIdentifier:@"MessagesTable"];
-  messagesTableVC.selectedUsers = @[sender];
+  MessagesTableViewController *messagesTableViewController = [self.window.rootViewController.storyboard instantiateViewControllerWithIdentifier:@"MessagesTable"];
+  messagesTableViewController.selectedUsers = @[sender];
   
-  [self.window.rootViewController.navigationController presentViewController:messagesTableVC animated:YES completion:nil];
+  [self.window.rootViewController.navigationController presentViewController:messagesTableViewController animated:YES completion:nil];
   
   completionHandler();
 }
