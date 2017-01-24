@@ -48,7 +48,7 @@
   [Parse initializeWithConfiguration:[ParseClientConfiguration configurationWithBlock:^(id<ParseMutableClientConfiguration> configuration) {
     configuration.applicationId = @"fc8a22bb-5ff9-4fff-b114-b6be71619e4a";
     configuration.clientKey = @"";
-    configuration.server = @"https://parseapi.buddy.com/parse";
+    configuration.server = @"https://api.parse.buddy.com/parse/";
     configuration.localDatastoreEnabled = YES; // Enable local data store
   }]];
   

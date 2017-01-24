@@ -32,6 +32,10 @@
 	<string>Your location is used to create smart messages (Dudes) that you can send to your firends attached with your location too.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Your location is used to create smart messages (Dudes) that you can send to your firends attached with your location too.</string>
+	<key>NSMotionUsageDescription</key>
+	<string>Your motion data is used to build smarter messages. The data is kept private at all times.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Access to your photo library is required to choose a profile picture.</string>
 	<key>UILaunchStoryboardName</key>
 	<string>Launch Screen</string>
 	<key>UIMainStoryboardFile</key>

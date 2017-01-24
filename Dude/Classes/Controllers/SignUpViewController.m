@@ -510,7 +510,7 @@
       
       } else {
         NSBlockOperation *validateEmailOperation = [NSBlockOperation blockOperationWithBlock:^{
-          BOOL isValid = [self isValidEmailWithAlert:NO];
+          BOOL isValid = [self isValidEmailWithAlert:YES];
           dispatch_async(dispatch_get_main_queue(), ^{
             self.confirmButton.enabled = isValid;
           });

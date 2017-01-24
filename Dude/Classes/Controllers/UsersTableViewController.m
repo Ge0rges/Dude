@@ -510,9 +510,11 @@ typedef void(^completion)(BOOL validEmail);
           [self.searchResultLabel setText:@"Dude enter your friend's email"];
           [self.searchResultImageView setImage:[UIImage imageNamed:@"Default Profile Image"]];
           
-        } else {
+        } else if (![textfield.text isEqualToString:currentUser.email]) {
           [self.searchResultLabel setText:@"Searching..."];
           [self.searchResultButton setTitle:@"" forState:UIControlStateNormal];
+          [self.searchResultImageView setImage:[UIImage imageNamed:@"Default Profile Image"]];
+
           
           // Get the user with that email to make sure its valid
           PFQuery *userQuery = [DUser query];
@@ -543,7 +545,7 @@ typedef void(^completion)(BOOL validEmail);
 
               }];
               
-            }  else {
+            } else {
               friendSearchedUser = nil;
               
               [self.searchResultLabel setText:@"Not Found."];

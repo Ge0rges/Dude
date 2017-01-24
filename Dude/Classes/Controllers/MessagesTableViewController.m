@@ -37,6 +37,11 @@
   
   // Update status bar
   [self setNeedsStatusBarAppearanceUpdate];
+  
+  // Generate messages
+  if (self.messages.count == 0) {
+    [self performSelectorInBackground:@selector(reloadData) withObject:nil];
+  }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -46,12 +51,11 @@
   AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
   appDelegate.visibleViewController = self;
   
-  // Generate Messages
-  [self performSelectorInBackground:@selector(reloadData) withObject:nil];
-  
-  // Begin refreshing
-  [self.tableView setContentOffset:CGPointMake(0, -self.refreshControl.frame.size.height)];
-  [self.refreshControl performSelector:@selector(beginRefreshing) withObject:nil afterDelay:0.0];// Otherwise it doesn't render properly
+  // Show refreshing UI
+  if (self.messages.count == 0) {
+    [self.tableView setContentOffset:CGPointMake(0, -self.refreshControl.frame.size.height)];
+    [self.refreshControl performSelector:@selector(beginRefreshing) withObject:nil afterDelay:0.0];// Otherwise it doesn't render properly
+  }
 }
 
 - (void)didReceiveMemoryWarning {

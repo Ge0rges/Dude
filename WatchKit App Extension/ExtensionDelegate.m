@@ -26,6 +26,10 @@
 
 @implementation ExtensionDelegate
 
+- (void)session:(WCSession *)session activationDidCompleteWithState:(WCSessionActivationState)activationState error:(NSError *)error {
+  return;
+}
+
 - (void)applicationDidFinishLaunching {
   // Perform any final initialization of your application.
     

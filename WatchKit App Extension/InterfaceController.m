@@ -138,6 +138,10 @@
 }
 
 #pragma mark - WCSession Manager
+- (void)session:(WCSession *)session activationDidCompleteWithState:(WCSessionActivationState)activationState error:(NSError *)error {
+  return;
+}
+
 - (void)session:(WCSession *)localSession didReceiveApplicationContext:(NSDictionary<NSString *,id> *)applicationContext {
   [self reloadContactsFromApplicationContext:applicationContext];
 }

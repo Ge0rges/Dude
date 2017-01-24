@@ -117,4 +117,10 @@
   [self popToRootController];
 }
 
+#pragma mark - WCSessionDelegate
+
+- (void)session:(WCSession *)session activationDidCompleteWithState:(WCSessionActivationState)activationState error:(NSError *)error {
+  return;
+}
+
 @end
