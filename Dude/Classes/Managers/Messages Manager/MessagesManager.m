@@ -567,7 +567,6 @@
 
 #pragma mark - Helper Methods
 - (void)showLocationServicesAlert {
-  dispatch_async(dispatch_get_main_queue(), ^{
     UIAlertController *locationServicesAlertController = [UIAlertController alertControllerWithTitle:@"Error" message:@"You must enable location services to be able to send your location and generate meaningfull messages." preferredStyle:UIAlertControllerStyleAlert];
     
     if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]]) {
@@ -579,6 +578,7 @@
     [locationServicesAlertController addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleCancel handler:nil]];
     
     AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
+  dispatch_sync(dispatch_get_main_queue(), ^{
     [appDelegate.visibleViewController presentViewController:locationServicesAlertController animated:YES completion:nil];
   });
 }

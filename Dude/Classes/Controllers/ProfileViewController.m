@@ -263,7 +263,7 @@
   // No multiple presses
   [self.secondaryButton setEnabled:NO];
   
-  // Asyncly perform the action (block/unblock)
+  // Asyncly perform the action (block/unblock). Then update on completion.
   NSBlockOperation *toggleBlockOperation = [NSBlockOperation blockOperationWithBlock:^{
     if ([[ContactsManager sharedInstance] currentUserBlockedContact:self.profileUser]) {
       [[ContactsManager sharedInstance] unblockContact:self.profileUser];
@@ -272,9 +272,6 @@
       [[ContactsManager sharedInstance] blockContact:self.profileUser];
     }
   }];
-  
-  toggleBlockOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
-  toggleBlockOperation.qualityOfService = NSQualityOfServiceUserInitiated;
   
   toggleBlockOperation.completionBlock = ^{
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -295,6 +292,9 @@
     });
   };
   
+  toggleBlockOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
+  toggleBlockOperation.qualityOfService = NSQualityOfServiceUserInitiated;
+  
   [[[NSThread alloc] initWithTarget:toggleBlockOperation selector:@selector(start) object:nil] start];
 }
 
@@ -314,9 +314,6 @@
     }
   }];
   
-  toggleFavoriteOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
-  toggleFavoriteOperation.qualityOfService = NSQualityOfServiceUserInitiated;
-  
   toggleFavoriteOperation.completionBlock = ^{
     dispatch_async(dispatch_get_main_queue(), ^{
       // Update the image
@@ -333,6 +330,9 @@
     });
   };
   
+  toggleFavoriteOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
+  toggleFavoriteOperation.qualityOfService = NSQualityOfServiceUserInitiated;
+
   [[[NSThread alloc] initWithTarget:toggleFavoriteOperation selector:@selector(start) object:nil] start];
 }
 

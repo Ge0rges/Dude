@@ -66,7 +66,7 @@
 #pragma mark - Table view data source
 - (IBAction)reloadData {
   __weak MessagesManager *messagesManager = [MessagesManager sharedInstance];
-
+  
   if (self.messages.count == 0) {
     // Generate quickly default while others load
     [messagesManager setLocationForMessageGenerationWithCompletion:^(NSError *error) {
@@ -81,21 +81,17 @@
   [messagesManager setLocationForMessageGenerationWithCompletion:^(NSError *error) {
     if (!error) {
       self.messages = [messagesManager generateMessages:20];
-
-      [self.tableView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];
       
-      dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{// Otherwise its jerky
-        [self.refreshControl endRefreshing];
-      });
+      [self.tableView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];
+      [self.refreshControl performSelectorOnMainThread:@selector(endRefreshing) withObject:nil waitUntilDone:NO];
       
     } else if (error.code == 500 && [error.domain isEqualToString:@"LocationAuthorization"]) {
       [self reloadData];
       
     } else {
       [DUser showSocialServicesAlert];
-      dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{// Otherwise its jerky
-        [self.refreshControl endRefreshing];
-      });
+      
+      [self.refreshControl performSelectorOnMainThread:@selector(endRefreshing) withObject:nil waitUntilDone:NO];
     }
   }];
 }
@@ -127,12 +123,12 @@
       [cell.imageView setImage:[image resizedImage:CGSizeMake(50, 50) interpolationQuality:kCGInterpolationHigh]];
       [cell layoutSubviews];
     }];
-  
+    
   } else {// Default messages handle image differently
     NSString *imageName = [message.imageURL.absoluteString stringByReplacingOccurrencesOfString:@"_" withString:@" "];
     imageName = [imageName stringByReplacingOccurrencesOfString:@"http://" withString:@""];
     imageName = [imageName stringByReplacingOccurrencesOfString:@".com" withString:@""];
-
+    
     [cell.imageView setImage:[[UIImage imageNamed:imageName] resizedImage:CGSizeMake(50, 50) interpolationQuality:kCGInterpolationHigh]];
   }
   
@@ -192,7 +188,6 @@
 
 #pragma mark - Helpers
 - (void)showLocationServicesAlert {
-  dispatch_async(dispatch_get_main_queue(), ^{
     UIAlertController *locationServicesAlertController = [UIAlertController alertControllerWithTitle:@"Error" message:@"You must enable location services to be able to send your location and generate meaningfull messages." preferredStyle:UIAlertControllerStyleAlert];
     
     if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]]) {
@@ -206,6 +201,8 @@
     }]];
     
     AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
+  
+  dispatch_sync(dispatch_get_main_queue(), ^{
     [appDelegate.visibleViewController presentViewController:locationServicesAlertController animated:YES completion:nil];
   });
 }
@@ -217,15 +214,11 @@
   if ([segue.identifier isEqualToString:@"showComposingSheetSegue"]) {
     UITableViewCell *cell = (UITableViewCell*)sender;
     DMessage *message = self.messages[[self.tableView indexPathForCell:cell].section];
-
+    
     ComposeSheetViewController *composeSheetViewController = (ComposeSheetViewController*)[segue destinationViewController];
     composeSheetViewController.selectedMessage = message;
     composeSheetViewController.selectedUsers = [NSSet setWithArray:self.selectedUsers];
   }
-}
-
-- (IBAction)dismissViewController:(id)sender {
-  [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark - Status Bar

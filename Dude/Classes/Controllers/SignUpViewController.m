@@ -206,17 +206,8 @@
 
             
           } else {
-            // Tell the user to confirm his email
-            UIAlertController *confirmEmailAlertController = [UIAlertController alertControllerWithTitle:@"Dude, confirm your email" message:@"We've sent you an email to verify your you. Confirm it to log in." preferredStyle:UIAlertControllerStyleAlert];
             
-            [confirmEmailAlertController addAction:[UIAlertAction actionWithTitle:@"Will do!" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-              // Go back to the redirection controller
-              [self.presentingViewController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
-            }]];
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-              [self presentViewController:confirmEmailAlertController animated:YES completion:nil];
-            });
+            [self.presentingViewController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
             
             [user selectFacebookAccountWithCompletion:nil];
             [user selectTwitterAccountWithCompletion:nil];

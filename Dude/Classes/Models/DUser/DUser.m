@@ -68,7 +68,6 @@ NSString* const LastSeensKey = @"lastSeens";
 
 #pragma mark - Support NSSet
 - (void)setObject:(nonnull id)object forKey:(nonnull NSString*)key {
-#warning make lastSeens readonly instead
   if ([key isEqualToString:@"lastSeens"]) {
     return;
   }
@@ -223,7 +222,6 @@ NSString* const LastSeensKey = @"lastSeens";
 }
 
 - (void)showSelectionAlertControllerWithAccount:(NSArray*)accounts andCompletionHandler:(AccountCompletionBlock)completion forTwitter:(BOOL)twitter {
-  dispatch_async(dispatch_get_main_queue(), ^{
     NSString *title = (twitter) ? @"Which Twitter account would you like to use?" : @"Which Facebook account would you like to use?" ;
     
     UIAlertController *ac = [UIAlertController alertControllerWithTitle:title message:nil preferredStyle:UIAlertControllerStyleAlert];
@@ -241,13 +239,14 @@ NSString* const LastSeensKey = @"lastSeens";
     
     // Present the alert on the visible view controller
     AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
+  
+  dispatch_sync(dispatch_get_main_queue(), ^{
     [appDelegate.visibleViewController presentViewController:ac animated:YES completion:nil];
   });
 }
 
 #pragma mark - Other helpers
 + (void)showSocialServicesAlert {
-  dispatch_async(dispatch_get_main_queue(), ^{
     UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"Error" message:@"You must be logged in to either Twitter or Facebook and allow access to social accounts to be able to use them within the app." preferredStyle:UIAlertControllerStyleAlert];
     
     if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]]) {
@@ -260,6 +259,8 @@ NSString* const LastSeensKey = @"lastSeens";
     
     // Present the alert on the visible view controller
     AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
+  
+  dispatch_sync(dispatch_get_main_queue(), ^{
     [appDelegate.visibleViewController presentViewController:ac animated:YES completion:nil];
   });
 }
