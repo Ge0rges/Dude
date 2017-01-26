@@ -4,10 +4,20 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
-		<key>Dude WatchKit App.xcscheme</key>
+		<key>Dude Intents.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>12</integer>
+		</dict>
+		<key>Dude IntentsUI.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>13</integer>
+		</dict>
+		<key>Dude WatchKit App.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>1</integer>
 		</dict>
 		<key>Dude.xcscheme</key>
 		<dict>
@@ -17,7 +27,7 @@
 		<key>Notification - WatchKit App.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>14</integer>
+			<integer>2</integer>
 		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
@@ -33,6 +43,16 @@
 			<true/>
 		</dict>
 		<key>FB4C5D901BF5EFA8002B5A58</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>FB7B12171E3A6641009BC794</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>FB7B12211E3A6641009BC794</key>
 		<dict>
 			<key>primary</key>
 			<true/>

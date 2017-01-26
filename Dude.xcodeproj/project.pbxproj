@@ -54,6 +54,12 @@
 		FB68259C1C91BFFA00A88579 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB68259B1C91BFFA00A88579 /* MessageUI.framework */; };
 		FB68259E1C91D63300A88579 /* WatchConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB68259D1C91D63300A88579 /* WatchConnectivity.framework */; };
 		FB6F4E251C2FF2830083DCD8 /* ComposeSheetViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FB6F4E241C2FF2830083DCD8 /* ComposeSheetViewController.m */; };
+		FB7B121C1E3A6641009BC794 /* IntentHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = FB7B121B1E3A6641009BC794 /* IntentHandler.m */; };
+		FB7B12241E3A6641009BC794 /* IntentsUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB7B12231E3A6641009BC794 /* IntentsUI.framework */; };
+		FB7B12281E3A6641009BC794 /* IntentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FB7B12271E3A6641009BC794 /* IntentViewController.m */; };
+		FB7B122B1E3A6641009BC794 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FB7B12291E3A6641009BC794 /* MainInterface.storyboard */; };
+		FB7B122F1E3A6641009BC794 /* Dude IntentsUI.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = FB7B12221E3A6641009BC794 /* Dude IntentsUI.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		FB7B12321E3A6641009BC794 /* Dude Intents.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = FB7B12181E3A6641009BC794 /* Dude Intents.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		FBDDF4801C9988A4001CE414 /* WatchConnectivityManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FBDDF47F1C9988A4001CE414 /* WatchConnectivityManager.m */; };
 		FBDE26D71B81E0B5006485D0 /* SlidingSegues.m in Sources */ = {isa = PBXBuildFile; fileRef = FBDE26D61B81E0B5006485D0 /* SlidingSegues.m */; };
 		FBED25161E362B5100A29D31 /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FBED25151E362B5100A29D31 /* UserNotifications.framework */; };
@@ -74,6 +80,20 @@
 			proxyType = 1;
 			remoteGlobalIDString = FB4C5D901BF5EFA8002B5A58;
 			remoteInfo = watchkitapp;
+		};
+		FB7B122D1E3A6641009BC794 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DA6F4C401A1E439800D40186 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = FB7B12211E3A6641009BC794;
+			remoteInfo = "Dude IntentsUI";
+		};
+		FB7B12301E3A6641009BC794 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DA6F4C401A1E439800D40186 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = FB7B12171E3A6641009BC794;
+			remoteInfo = "Dude Intents";
 		};
 /* End PBXContainerItemProxy section */
 
@@ -98,6 +118,18 @@
 				FB4C5DB21BF5EFA8002B5A58 /* Watch App.app in Embed Watch Content */,
 			);
 			name = "Embed Watch Content";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FB7B12391E3A6641009BC794 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				FB7B122F1E3A6641009BC794 /* Dude IntentsUI.appex in Embed App Extensions */,
+				FB7B12321E3A6641009BC794 /* Dude Intents.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -188,6 +220,16 @@
 		FB68259D1C91D63300A88579 /* WatchConnectivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WatchConnectivity.framework; path = System/Library/Frameworks/WatchConnectivity.framework; sourceTree = SDKROOT; };
 		FB6F4E231C2FF2830083DCD8 /* ComposeSheetViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ComposeSheetViewController.h; path = Classes/Controllers/ComposeSheetViewController.h; sourceTree = "<group>"; };
 		FB6F4E241C2FF2830083DCD8 /* ComposeSheetViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ComposeSheetViewController.m; path = Classes/Controllers/ComposeSheetViewController.m; sourceTree = "<group>"; };
+		FB7B12181E3A6641009BC794 /* Dude Intents.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Dude Intents.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		FB7B121A1E3A6641009BC794 /* IntentHandler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IntentHandler.h; sourceTree = "<group>"; };
+		FB7B121B1E3A6641009BC794 /* IntentHandler.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IntentHandler.m; sourceTree = "<group>"; };
+		FB7B121D1E3A6641009BC794 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		FB7B12221E3A6641009BC794 /* Dude IntentsUI.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Dude IntentsUI.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		FB7B12231E3A6641009BC794 /* IntentsUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IntentsUI.framework; path = System/Library/Frameworks/IntentsUI.framework; sourceTree = SDKROOT; };
+		FB7B12261E3A6641009BC794 /* IntentViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IntentViewController.h; sourceTree = "<group>"; };
+		FB7B12271E3A6641009BC794 /* IntentViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IntentViewController.m; sourceTree = "<group>"; };
+		FB7B122A1E3A6641009BC794 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
+		FB7B122C1E3A6641009BC794 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FBA0019D1C23217E00E9A263 /* Watch Extension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Watch Extension.entitlements"; sourceTree = SOURCE_ROOT; };
 		FBA0019E1C23218600E9A263 /* Watch App.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Watch App.entitlements"; sourceTree = SOURCE_ROOT; };
 		FBDDF47E1C9988A4001CE414 /* WatchConnectivityManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WatchConnectivityManager.h; path = "Classes/Managers/WatchConnectivity Manager/WatchConnectivityManager.h"; sourceTree = "<group>"; };
@@ -233,6 +275,21 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		FB7B12151E3A6641009BC794 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FB7B121F1E3A6641009BC794 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FB7B12241E3A6641009BC794 /* IntentsUI.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -242,6 +299,8 @@
 				DA6F4C4A1A1E439800D40186 /* Dude */,
 				FB4C5D921BF5EFA8002B5A58 /* Watch App */,
 				FB4C5DA11BF5EFA8002B5A58 /* Watch Extension */,
+				FB7B12191E3A6641009BC794 /* Dude Intents */,
+				FB7B12251E3A6641009BC794 /* Dude IntentsUI */,
 				DA6F4C491A1E439800D40186 /* Products */,
 				F569341E6D59A1D0A110C94E /* Frameworks */,
 				DEBA8C613B6FB1468BCA1D33 /* Pods */,
@@ -254,6 +313,8 @@
 				DA6F4C481A1E439800D40186 /* Dude.app */,
 				FB4C5D911BF5EFA8002B5A58 /* Watch App.app */,
 				FB4C5D9D1BF5EFA8002B5A58 /* Watch Extension.appex */,
+				FB7B12181E3A6641009BC794 /* Dude Intents.appex */,
+				FB7B12221E3A6641009BC794 /* Dude IntentsUI.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -474,6 +535,7 @@
 				FB4FC3C91BAD976200FC5F01 /* StoreKit.framework */,
 				B20AA49CB92713306F24EEBF /* libPods-Dude.a */,
 				7DEF172DDAF82FB27D740CE1 /* libPods-Watch Extension.a */,
+				FB7B12231E3A6641009BC794 /* IntentsUI.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -573,6 +635,27 @@
 			name = QNSURLConnection;
 			sourceTree = "<group>";
 		};
+		FB7B12191E3A6641009BC794 /* Dude Intents */ = {
+			isa = PBXGroup;
+			children = (
+				FB7B121A1E3A6641009BC794 /* IntentHandler.h */,
+				FB7B121B1E3A6641009BC794 /* IntentHandler.m */,
+				FB7B121D1E3A6641009BC794 /* Info.plist */,
+			);
+			path = "Dude Intents";
+			sourceTree = "<group>";
+		};
+		FB7B12251E3A6641009BC794 /* Dude IntentsUI */ = {
+			isa = PBXGroup;
+			children = (
+				FB7B12261E3A6641009BC794 /* IntentViewController.h */,
+				FB7B12271E3A6641009BC794 /* IntentViewController.m */,
+				FB7B12291E3A6641009BC794 /* MainInterface.storyboard */,
+				FB7B122C1E3A6641009BC794 /* Info.plist */,
+			);
+			path = "Dude IntentsUI";
+			sourceTree = "<group>";
+		};
 		FBDDF4821C9988AA001CE414 /* WatchConnectivity Manager */ = {
 			isa = PBXGroup;
 			children = (
@@ -606,11 +689,14 @@
 				FB4FC3C41BAD90AB00FC5F01 /* Embed Watch Content */,
 				2033709EDE2BDDFC73751EF7 /* [CP] Embed Pods Frameworks */,
 				65F22B2D6691CBB012B4D751 /* [CP] Copy Pods Resources */,
+				FB7B12391E3A6641009BC794 /* Embed App Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				FB4C5DB11BF5EFA8002B5A58 /* PBXTargetDependency */,
+				FB7B122E1E3A6641009BC794 /* PBXTargetDependency */,
+				FB7B12311E3A6641009BC794 /* PBXTargetDependency */,
 			);
 			name = Dude;
 			productName = Dude;
@@ -654,6 +740,40 @@
 			productName = "watchkitapp Extension";
 			productReference = FB4C5D9D1BF5EFA8002B5A58 /* Watch Extension.appex */;
 			productType = "com.apple.product-type.watchkit2-extension";
+		};
+		FB7B12171E3A6641009BC794 /* Dude Intents */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FB7B12381E3A6641009BC794 /* Build configuration list for PBXNativeTarget "Dude Intents" */;
+			buildPhases = (
+				FB7B12141E3A6641009BC794 /* Sources */,
+				FB7B12151E3A6641009BC794 /* Frameworks */,
+				FB7B12161E3A6641009BC794 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Dude Intents";
+			productName = "Dude Intents";
+			productReference = FB7B12181E3A6641009BC794 /* Dude Intents.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		FB7B12211E3A6641009BC794 /* Dude IntentsUI */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FB7B12371E3A6641009BC794 /* Build configuration list for PBXNativeTarget "Dude IntentsUI" */;
+			buildPhases = (
+				FB7B121E1E3A6641009BC794 /* Sources */,
+				FB7B121F1E3A6641009BC794 /* Frameworks */,
+				FB7B12201E3A6641009BC794 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Dude IntentsUI";
+			productName = "Dude IntentsUI";
+			productReference = FB7B12221E3A6641009BC794 /* Dude IntentsUI.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -701,6 +821,14 @@
 							};
 						};
 					};
+					FB7B12171E3A6641009BC794 = {
+						CreatedOnToolsVersion = 8.2.1;
+						ProvisioningStyle = Automatic;
+					};
+					FB7B12211E3A6641009BC794 = {
+						CreatedOnToolsVersion = 8.2.1;
+						ProvisioningStyle = Automatic;
+					};
 				};
 			};
 			buildConfigurationList = DA6F4C431A1E439800D40186 /* Build configuration list for PBXProject "Dude" */;
@@ -719,6 +847,8 @@
 				DA6F4C471A1E439800D40186 /* Dude */,
 				FB4C5D901BF5EFA8002B5A58 /* Watch App */,
 				FB4C5D9C1BF5EFA8002B5A58 /* Watch Extension */,
+				FB7B12171E3A6641009BC794 /* Dude Intents */,
+				FB7B12211E3A6641009BC794 /* Dude IntentsUI */,
 			);
 		};
 /* End PBXProject section */
@@ -748,6 +878,21 @@
 			buildActionMask = 2147483647;
 			files = (
 				FB4C5DAE1BF5EFA8002B5A58 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FB7B12161E3A6641009BC794 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FB7B12201E3A6641009BC794 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FB7B122B1E3A6641009BC794 /* MainInterface.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -904,6 +1049,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		FB7B12141E3A6641009BC794 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FB7B121C1E3A6641009BC794 /* IntentHandler.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FB7B121E1E3A6641009BC794 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FB7B12281E3A6641009BC794 /* IntentViewController.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -916,6 +1077,16 @@
 			isa = PBXTargetDependency;
 			target = FB4C5D901BF5EFA8002B5A58 /* Watch App */;
 			targetProxy = FB4C5DB01BF5EFA8002B5A58 /* PBXContainerItemProxy */;
+		};
+		FB7B122E1E3A6641009BC794 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = FB7B12211E3A6641009BC794 /* Dude IntentsUI */;
+			targetProxy = FB7B122D1E3A6641009BC794 /* PBXContainerItemProxy */;
+		};
+		FB7B12311E3A6641009BC794 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = FB7B12171E3A6641009BC794 /* Dude Intents */;
+			targetProxy = FB7B12301E3A6641009BC794 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -934,6 +1105,14 @@
 				FB4C5D941BF5EFA8002B5A58 /* Base */,
 			);
 			name = Interface.storyboard;
+			sourceTree = "<group>";
+		};
+		FB7B12291E3A6641009BC794 /* MainInterface.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				FB7B122A1E3A6641009BC794 /* Base */,
+			);
+			name = MainInterface.storyboard;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
@@ -1176,6 +1355,86 @@
 			};
 			name = Release;
 		};
+		FB7B12331E3A6641009BC794 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = "Dude Intents/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.2;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.ge0rges.Dude.Dude-Intents";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		FB7B12341E3A6641009BC794 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				INFOPLIST_FILE = "Dude Intents/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.2;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.ge0rges.Dude.Dude-Intents";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+		FB7B12351E3A6641009BC794 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = "Dude IntentsUI/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.2;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.ge0rges.Dude.Dude-IntentsUI";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		FB7B12361E3A6641009BC794 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				INFOPLIST_FILE = "Dude IntentsUI/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.2;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.ge0rges.Dude.Dude-IntentsUI";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1214,6 +1473,22 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
+		};
+		FB7B12371E3A6641009BC794 /* Build configuration list for PBXNativeTarget "Dude IntentsUI" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FB7B12351E3A6641009BC794 /* Debug */,
+				FB7B12361E3A6641009BC794 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		FB7B12381E3A6641009BC794 /* Build configuration list for PBXNativeTarget "Dude Intents" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FB7B12331E3A6641009BC794 /* Debug */,
+				FB7B12341E3A6641009BC794 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
 		};
 /* End XCConfigurationList section */
 	};
