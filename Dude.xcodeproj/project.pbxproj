@@ -823,10 +823,12 @@
 					};
 					FB7B12171E3A6641009BC794 = {
 						CreatedOnToolsVersion = 8.2.1;
+						DevelopmentTeam = 7DTJP5N92F;
 						ProvisioningStyle = Automatic;
 					};
 					FB7B12211E3A6641009BC794 = {
 						CreatedOnToolsVersion = 8.2.1;
+						DevelopmentTeam = 7DTJP5N92F;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -1363,13 +1365,14 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 7DTJP5N92F;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = "Dude Intents/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MTL_ENABLE_DEBUG_INFO = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.ge0rges.Dude.Dude-Intents";
@@ -1386,8 +1389,9 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 7DTJP5N92F;
 				INFOPLIST_FILE = "Dude Intents/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.ge0rges.Dude.Dude-Intents";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1403,13 +1407,14 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 7DTJP5N92F;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = "Dude IntentsUI/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MTL_ENABLE_DEBUG_INFO = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.ge0rges.Dude.Dude-IntentsUI";
@@ -1426,8 +1431,9 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 7DTJP5N92F;
 				INFOPLIST_FILE = "Dude IntentsUI/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.ge0rges.Dude.Dude-IntentsUI";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1481,6 +1487,7 @@
 				FB7B12361E3A6641009BC794 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
 		};
 		FB7B12381E3A6641009BC794 /* Build configuration list for PBXNativeTarget "Dude Intents" */ = {
 			isa = XCConfigurationList;
@@ -1489,6 +1496,7 @@
 				FB7B12341E3A6641009BC794 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
 	};

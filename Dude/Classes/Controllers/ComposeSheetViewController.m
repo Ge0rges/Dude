@@ -270,7 +270,7 @@
     
     // Share via iMessage
     if (self.shareByMessageSwitch.on) {
-      [self sendViaMessages];
+      [self performSelectorOnMainThread:@selector(sendViaMessages) withObject:nil waitUntilDone:NO];
     }
   });
   
@@ -281,13 +281,14 @@
 }
 
 - (void)sendViaMessages {
-  MFMessageComposeViewController *composeVC = [[MFMessageComposeViewController alloc] init];
+  MFMessageComposeViewController *composeVC = [MFMessageComposeViewController new];
   composeVC.messageComposeDelegate = self;
   
   // Configure the fields of the interface.
   composeVC.body = self.selectedMessage.message;
   
   // Present the view controller modally.
+#warning investigate why this takes time
   [self presentViewController:composeVC animated:YES completion:nil];
 }
 
