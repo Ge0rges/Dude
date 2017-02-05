@@ -501,7 +501,7 @@
       
       } else {
         NSBlockOperation *validateEmailOperation = [NSBlockOperation blockOperationWithBlock:^{
-          BOOL isValid = [self isValidEmailWithAlert:YES];
+          BOOL isValid = [self isValidEmailWithAlert:NO];
           dispatch_async(dispatch_get_main_queue(), ^{
             self.confirmButton.enabled = isValid;
           });
@@ -682,7 +682,7 @@
   
   BOOL taken = NO;
   
-  if (validEmail && !self.logIn) {// We rent in log in so check the taken status of the email
+  if (validEmail && !self.logIn) {// We aren't in log in so check the taken status of the email
     [emailTakenQuery cancel];
     emailTakenQuery = nil;
     
@@ -699,7 +699,9 @@
     UIAlertController *ac = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
     [ac addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleCancel handler:nil]];
     
-    [self presentViewController:ac animated:YES completion:nil];
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [self presentViewController:ac animated:YES completion:nil];
+    });
     
     return NO;
   }
